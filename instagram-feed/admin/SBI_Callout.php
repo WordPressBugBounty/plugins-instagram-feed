@@ -374,13 +374,17 @@ class SBI_Callout
 			return false;
 		}
 
+		// Thrive Architect Compatibility.
+		if (isset($_GET['tve']) && $_GET['tve'] == 'true') {
+			return false;
+		}
+
 		// Current Plugin Options.
 		$plugin = $plugins_list[self::PLUGIN_NAME];
 		$plugin_statuses = get_option($plugin['statuses'], []);
 
 		if (!isset($plugin_statuses['first_install'])) {
-			$plugin_statuses['first_install'] = time();
-			update_option($plugin['statuses'], $plugin_statuses);
+			return false;
 		}
 		// If the plugin has no feed, then we don't display the callout unless it's been 2 weeks after installation.
 		$been_2_weeks = intval($plugin_statuses['first_install']) + self::TWO_WEEKS_WAIT > time() ;

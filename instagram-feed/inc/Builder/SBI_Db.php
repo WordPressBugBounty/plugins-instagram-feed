@@ -27,6 +27,23 @@ class SBI_Db {
 		$sources_table_name = $wpdb->prefix . 'sbi_sources';
 		$feeds_table_name   = $wpdb->prefix . 'sbi_feeds';
 
+		$sbi_statuses = get_option('sbi_statuses', array());
+		if (empty($sbi_statuses['database']['connect_type_column'])) {
+			$column_exists = $wpdb->get_results("SHOW COLUMNS FROM $sources_table_name LIKE 'connect_type'");
+			if (empty($column_exists)) {
+				$wpdb->query("ALTER TABLE $sources_table_name ADD COLUMN connect_type VARCHAR(100) DEFAULT '' NOT NULL");
+				$wpdb->query("
+					UPDATE $sources_table_name 
+					SET connect_type = CASE 
+						WHEN account_type = 'business' THEN 'business_advanced' 
+						ELSE 'personal' 
+					END
+				");
+			}
+			$sbi_statuses['database']['connect_type_column'] = true;
+			update_option('sbi_statuses', $sbi_statuses);
+		}
+
 		$page = 0;
 		if ( isset( $args['page'] ) ) {
 			$page = (int) $args['page'] - 1;
@@ -38,9 +55,9 @@ class SBI_Db {
 		if ( empty( $args ) ) {
 
 			$limit = 400;
-			$sql   = "SELECT s.id, s.account_id, s.account_type, s.privilege, s.access_token, s.username, s.info, s.error, s.expires, count(f.id) as used_in
+			$sql   = "SELECT s.id, s.account_id, s.account_type, s.privilege, s.access_token, s.username, s.info, s.error, s.expires, s.connect_type, count(f.id) as used_in
 				FROM $sources_table_name s
-				LEFT JOIN $feeds_table_name f ON f.settings LIKE CONCAT('%', s.account_id, '%')
+				LEFT JOIN $feeds_table_name f ON f.settings LIKE CONCAT('%', s.account_id, '%') OR f.settings LIKE CONCAT('%', s.username, '%')
 				GROUP BY s.id, s.account_id
 				LIMIT $limit
 				OFFSET $offset;
@@ -55,13 +72,16 @@ class SBI_Db {
 			$i = 0;
 			foreach ( $results as $result ) {
 				if ( (int) $result['used_in'] > 0 ) {
-					$results[ $i ]['instances'] = $wpdb->get_results( $wpdb->prepare(
+					$results[$i]['instances'] = $wpdb->get_results($wpdb->prepare(
 						"SELECT *
 						FROM $feeds_table_name
-						WHERE settings LIKE CONCAT('%', %s, '%')
+						WHERE settings LIKE CONCAT('%', %s, '%') OR settings LIKE CONCAT('%', %s, '%')
 						GROUP BY id
 						LIMIT 100;
-						", $result['account_id'] ), ARRAY_A );
+						",
+						$result['account_id'],
+						$result['username']
+					), ARRAY_A);
 				}
 				$i++;
 			}
@@ -69,34 +89,52 @@ class SBI_Db {
 			return $results;
 		}
 
-		if ( ! empty( $args['expiring'] ) ) {
+		if (! empty($args['expiring'])) {
 			$sql = $wpdb->prepare(
-				"
-			SELECT * FROM $sources_table_name
-			WHERE account_type = 'personal'
-			AND expires < %s
-			AND last_updated < %s
-			ORDER BY expires ASC
-			LIMIT 5;
-		 ",
-				gmdate( 'Y-m-d H:i:s', time() + SBI_REFRESH_THRESHOLD_OFFSET ),
-				gmdate( 'Y-m-d H:i:s', time() - SBI_MINIMUM_INTERVAL )
+				"SELECT * FROM $sources_table_name
+				WHERE account_type IN ('personal', 'basic')
+				AND expires < %s
+				AND last_updated < %s
+				ORDER BY expires ASC
+				LIMIT 5;",
+				gmdate('Y-m-d H:i:s', time() + SBI_REFRESH_THRESHOLD_OFFSET),
+				gmdate('Y-m-d H:i:s', time() - SBI_MINIMUM_INTERVAL)
 			);
 
-			return $wpdb->get_results( $sql, ARRAY_A );
+			return $wpdb->get_results($sql, ARRAY_A);
 		}
 
-		if ( ! empty( $args['username'] ) ) {
-			return $wpdb->get_results(
-				$wpdb->prepare(
-					"
-			SELECT * FROM $sources_table_name
-			WHERE username = %s;
-		 ",
+		if (! empty($args['username'])) {
+			if (is_array($args['username'])) {
+				// Sanitize each username and prepare placeholders for the query.
+				$placeholders = array_fill(0, count($args['username']), '%s');
+				$placeholders_string = implode(', ', $placeholders);
+
+				// Prepare the SQL query with placeholders.
+				$sql = $wpdb->prepare(
+					"SELECT * FROM $sources_table_name WHERE username IN ($placeholders_string)",
 					$args['username']
-				),
-				ARRAY_A
+				);
+			} else {
+				$sql = $wpdb->prepare(
+					"SELECT * FROM $sources_table_name
+					WHERE username = %s;",
+					$args['username']
+				);
+			}
+
+			return $wpdb->get_results($sql, ARRAY_A);
+		}
+
+		if (! empty($args['type']) && $args['type'] === 'basic') {
+			$sql = $wpdb->prepare(
+				"SELECT * FROM $sources_table_name WHERE account_type IN (%s, %s) AND connect_type = %s",
+				'basic',
+				'personal',
+				'personal'
 			);
+
+			return $wpdb->get_results($sql, ARRAY_A);
 		}
 
 		if ( isset( $args['access_token'] ) && ! isset( $args['id'] ) ) {
@@ -243,6 +281,10 @@ class SBI_Db {
 			$data['author'] = $to_update['author'];
 			$format[]       = '%d';
 		}
+		if (isset($to_update['connect_type'])) {
+			$data['connect_type'] = $to_update['connect_type'];
+			$format[]             = '%s';
+		}
 
 		if ( isset( $where_data['type'] ) ) {
 			$where['account_type'] = $where_data['type'];
@@ -263,6 +305,10 @@ class SBI_Db {
 		if ( isset( $where_data['record_id'] ) ) {
 			$where['id']    = $where_data['record_id'];
 			$where_format[] = '%d';
+		}
+		if (isset($where_data['connect_type'])) {
+			$where['connect_type'] = $where_data['connect_type'];
+			$where_format[]        = '%s';
 		}
 		$affected = $wpdb->update( $sources_table_name, $data, $where, $format, $where_format );
 
@@ -332,6 +378,10 @@ class SBI_Db {
 		} else {
 			$data['author'] = get_current_user_id();
 			$format[]       = '%d';
+		}
+		if (isset($to_insert['connect_type'])) {
+			$data['connect_type'] = $to_insert['connect_type'];
+			$format[]        = '%s';
 		}
 
 		return $wpdb->insert( $sources_table_name, $data, $format );
@@ -768,6 +818,7 @@ class SBI_Db {
                 expires datetime NOT NULL,
                 last_updated datetime NOT NULL,
                 author bigint(20) unsigned NOT NULL default '1',
+				connect_type varchar(100) NOT NULL default '',
                 PRIMARY KEY  (id),
                 KEY account_type (account_type($max_index_length)),
                 KEY author (author)

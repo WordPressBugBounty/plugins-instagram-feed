@@ -114,10 +114,12 @@ class SBI_Support {
             true
         );
 
+		wp_register_script('feed-builder-svgs', SBI_PLUGIN_URL . 'assets/svgs/svgs.js');
+
 		wp_enqueue_script(
 			'support-app',
 			SBI_PLUGIN_URL . 'admin/assets/js/support.js',
-			null,
+			array('feed-builder-svgs'),
 			SBIVER,
 			true
 		);
@@ -159,7 +161,6 @@ class SBI_Support {
 			'system_info_n'       => str_replace( '</br>', "\n", $this->get_system_info() ),
 			'feeds'               => $feeds,
 			'supportUrl'          => $this->get_support_url(),
-			'svgIcons'            => SBI_Feed_Builder::builder_svg_icons(),
 			'socialWallLinks'     => \InstagramFeed\Builder\SBI_Feed_Builder::get_social_wall_links(),
 			'tempUser' => \InstagramFeed\Admin\SBI_Support_Tool::check_temporary_user_exists(),
 
@@ -534,10 +535,10 @@ class SBI_Support {
 		$manager     = new \SB_Instagram_Data_Manager();
 
 		foreach ( $source_list as $source ) {
-
+			$account_type = isset($source['header_data']['account_type']) ? $source['header_data']['account_type'] : 'Business Advanced';
 			$output .= $source['account_id'];
 			$output .= '</br>';
-			$output .= 'Type: ' . esc_html( $source['account_type'] );
+			$output .= 'Type: ' . esc_html($account_type);
 			$output .= '</br>';
 			$output .= 'Username: ' . esc_html( $source['username'] );
 			$output .= '</br>';

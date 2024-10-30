@@ -2,7 +2,6 @@
 
 namespace InstagramFeed\Vendor\Smashballoon\Framework\Utilities\PlatformTracking\Platforms;
 
-/** @internal */
 class Kinsta implements PlatformInterface
 {
     /**
@@ -10,14 +9,14 @@ class Kinsta implements PlatformInterface
      */
     public function register()
     {
-        \add_filter('sb_hosting_platform', [$this, 'filter_sb_hosting_platform']);
+        add_filter('sb_hosting_platform', [$this, 'filter_sb_hosting_platform']);
     }
     /**
      * @inheritDoc
      */
     public function filter_sb_hosting_platform($platform)
     {
-        if (!empty(\getenv('KINSTA_CACHE_ZONE'))) {
+        if (!empty(getenv('KINSTA_CACHE_ZONE'))) {
             $platform = 'kinsta';
         }
         return $platform;

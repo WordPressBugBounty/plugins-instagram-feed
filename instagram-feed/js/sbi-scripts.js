@@ -898,6 +898,9 @@ if(!sbi_js_exists) {
           this.settings.consentGiven = Cookiebot.consented;
         } else if (typeof window.BorlabsCookie !== 'undefined') { // Borlabs Cookie by Borlabs
           this.settings.consentGiven = typeof window.BorlabsCookie.Consents !== 'undefined' ? window.BorlabsCookie.Consents.hasConsent('instagram') : window.BorlabsCookie.checkCookieConsent('instagram');
+        } else if (sbiCmplzGetCookie('moove_gdpr_popup')) { // Moove GDPR Popup
+          var moove_gdpr_popup = JSON.parse(decodeURIComponent(sbiCmplzGetCookie('moove_gdpr_popup')));
+          this.settings.consentGiven = typeof moove_gdpr_popup.thirdparty !== "undefined" && moove_gdpr_popup.thirdparty === "1";
         }
 
         var evt = jQuery.Event('sbicheckconsent');
@@ -1045,6 +1048,30 @@ if(!sbi_js_exists) {
         window.sbi.feeds[ index ].afterConsentToggled();
       });
     });
-  });
 
+    // Real Cookie Banner by Devowl.io
+    if (typeof window.consentApi !== 'undefined') {
+      window.consentApi?.consent("smash-balloon-social-photo-feed").then(() => {
+        try {
+          // applies full features to feed
+          $.each(window.sbi.feeds,function(index){
+            window.sbi.feeds[ index ].settings.consentGiven = true;
+            window.sbi.feeds[ index ].afterConsentToggled();
+          });
+        }
+        catch (error) {
+          // do nothing
+        }
+      });
+    }
+
+    // Moove
+    $('.moove-gdpr-infobar-allow-all').on('click',function() {
+      setTimeout(function() {
+        $.each(window.sbi.feeds,function(index){
+          window.sbi.feeds[ index ].afterConsentToggled();
+        });
+      },1000);
+    });
+  });
 } // if sbi_js_exists

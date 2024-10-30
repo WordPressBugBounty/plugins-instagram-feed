@@ -323,91 +323,102 @@ class SBI_Admin_Notices
 			return;
 		}
 
-		$has_custom_templates = Util::sbi_has_custom_templates();
-        $sbi_statuses = get_option( 'sbi_statuses', array() );
-
-		if ( ! $has_custom_templates ) {
-			$sbi_statuses['custom_templates_notice'] = true;
-			update_option( 'sbi_statuses', $sbi_statuses );
-			return;
-		}
-
-		if ( true == get_option( 'sbi_custom_templates_notice_dismissed' ) || isset( $sbi_statuses['custom_templates_notice'] ) ) {
-			return;
-		}
-
-		global $sbi_notices;
-		$title    = __( 'Heads Up! Feed Item Files and CSS Have Changed', 'instagram-feed' );
-		$message  = '<p>' . __( 'Version 6.3 includes changes to the HTML and CSS files that make up your feeds. If you have customized your feed through custom theme templates, custom CSS, or custom JavaScript, your customizations may have been affected.', 'instagram-feed' ) . '</p>';
-		$message .= '<p>' . __( 'You can use the CSS file from previous versions if needed. Enable the related setting on the Advanced tab of the settings page.', 'instagram-feed' ) . '</p>';
-
-		$error_args = array(
-			'class'       => 'sbi-admin-notices sbi-admin-notices-spaced-p',
-			'title'              => array(
-				'text'  => $title,
-				'class' => 'sb-notice-title',
-				'tag'   => 'h4',
-			),
-			'message'     => $message,
-			'dismissible' => true,
-			'dismiss'     => array(
-				'class' => 'sbi-notice-dismiss',
-				'icon'  => SBI_PLUGIN_URL . 'admin/assets/img/sbi-dismiss-icon.svg',
-				'tag'   => 'a',
-				'href' => array(
-					'args' => array(
-						'sb-dismiss-notice' => 'custom_feed_templates'
-					),
-					'action' => 'sb_dismiss_notice_nonce',
-					'nonce' => '_sb_notice_nonce',
-				)
-			),
-			'buttons' => array(
-				array(
-					'text' => __('Sounds good!', 'instagram-feed'),
-					'class' => 'button button-primary',
-					'id' => 'custom_feed_templates_dismiss',
-					'url' => array(
-						'args' => array(
-							'sb-dismiss-notice' => 'custom_feed_templates'
-						),
-						'action' => 'sb_dismiss_notice_nonce',
-						'nonce' => '_sb_notice_nonce',
-					),
-					'tag' => 'a',
-				),
-				array(
-					'text' => __('Learn More', 'instagram-feed'),
-					'class' => 'button button-secondary',
-					'id' => 'custom_feed_templates_learn',
-					'url' => 'https://smashballoon.com/doc/instagram-css-layout-changes/?utm_source=instagram-pro&utm_medium=dashboard-notice&utm_campaign=63changes&utm_content=LearnMore',
-					'target' => 'blank',
-					'tag' => 'a',
-				),
-			),
-			'buttons_wrap_start' => '<p class="sbi-error-directions">',
-			'buttons_wrap_end'   => '</p>',
-			'priority'    => 1,
-			'page'        => array(
-				'sbi-feed-builder',
-				'sbi-settings',
-				'sbi-oembeds-manager',
-				'sbi-extensions-manager',
-				'sbi-about-us',
-				'sbi-support',
-			),
-			'icon'        => array(
-				'src'  => SBI_PLUGIN_URL . 'admin/assets/img/balloon.svg',
-				'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
-			),
-			'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-body">{title}{message}</div>{dismiss}{buttons}</div>',
-		);
-
-		$sbi_notices->add_notice( 'custom_feed_templates', 'information', $error_args );
-		
-		$sbi_statuses['custom_templates_notice'] = true;
-		update_option( 'sbi_statuses', $sbi_statuses );
+        $this->sbi_custom_feed_templates_notice();
+        $this->sbi_personal_api_deprecation_notice();
 	}
+
+    /**
+     * Custom Feed Templates Notice
+     * 
+     * @since 6.3
+     */
+    public function sbi_custom_feed_templates_notice()
+    {
+        $has_custom_templates = Util::sbi_has_custom_templates();
+        $sbi_statuses = get_option('sbi_statuses', array());
+
+        if (! $has_custom_templates) {
+            $sbi_statuses['custom_templates_notice'] = true;
+            update_option('sbi_statuses', $sbi_statuses);
+            return;
+        }
+
+        if (true == get_option('sbi_custom_templates_notice_dismissed') || isset($sbi_statuses['custom_templates_notice'])) {
+            return;
+        }
+
+        global $sbi_notices;
+        $title    = __('Heads Up! Feed Item Files and CSS Have Changed', 'instagram-feed');
+        $message  = '<p>' . __('Version 6.3 includes changes to the HTML and CSS files that make up your feeds. If you have customized your feed through custom theme templates, custom CSS, or custom JavaScript, your customizations may have been affected.', 'instagram-feed') . '</p>';
+        $message .= '<p>' . __('You can use the CSS file from previous versions if needed. Enable the related setting on the Advanced tab of the settings page.', 'instagram-feed') . '</p>';
+
+        $error_args = array(
+            'class'       => 'sbi-admin-notices sbi-admin-notices-spaced-p',
+            'title'              => array(
+                'text'  => $title,
+                'class' => 'sb-notice-title',
+                'tag'   => 'h4',
+            ),
+            'message'     => $message,
+            'dismissible' => true,
+            'dismiss'     => array(
+                'class' => 'sbi-notice-dismiss',
+                'icon'  => SBI_PLUGIN_URL . 'admin/assets/img/sbi-dismiss-icon.svg',
+                'tag'   => 'a',
+                'href' => array(
+                    'args' => array(
+                        'sb-dismiss-notice' => 'custom_feed_templates'
+                    ),
+                    'action' => 'sb_dismiss_notice_nonce',
+                    'nonce' => '_sb_notice_nonce',
+                )
+            ),
+            'buttons' => array(
+                array(
+                    'text' => __('Sounds good!', 'instagram-feed'),
+                    'class' => 'button button-primary',
+                    'id' => 'custom_feed_templates_dismiss',
+                    'url' => array(
+                        'args' => array(
+                            'sb-dismiss-notice' => 'custom_feed_templates'
+                        ),
+                        'action' => 'sb_dismiss_notice_nonce',
+                        'nonce' => '_sb_notice_nonce',
+                    ),
+                    'tag' => 'a',
+                ),
+                array(
+                    'text' => __('Learn More', 'instagram-feed'),
+                    'class' => 'button button-secondary',
+                    'id' => 'custom_feed_templates_learn',
+                    'url' => 'https://smashballoon.com/doc/instagram-css-layout-changes/?utm_source=instagram-pro&utm_medium=dashboard-notice&utm_campaign=63changes&utm_content=LearnMore',
+                    'target' => 'blank',
+                    'tag' => 'a',
+                ),
+            ),
+            'buttons_wrap_start' => '<p class="sbi-error-directions">',
+            'buttons_wrap_end'   => '</p>',
+            'priority'    => 1,
+            'page'        => array(
+                'sbi-feed-builder',
+                'sbi-settings',
+                'sbi-oembeds-manager',
+                'sbi-extensions-manager',
+                'sbi-about-us',
+                'sbi-support',
+            ),
+            'icon'        => array(
+                'src'  => SBI_PLUGIN_URL . 'admin/assets/img/balloon.svg',
+                'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
+            ),
+            'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-body">{title}{message}</div>{dismiss}{buttons}</div>',
+        );
+
+        $sbi_notices->add_notice('custom_feed_templates', 'information', $error_args);
+
+        $sbi_statuses['custom_templates_notice'] = true;
+        update_option('sbi_statuses', $sbi_statuses);
+    }
 
     /**
 	 * Dismiss custom feeds template admin notices
@@ -419,4 +430,78 @@ class SBI_Admin_Notices
 			update_option( 'sbi_custom_templates_notice_dismissed', true );
 		}
 	}
+
+    /**
+     * Display notice for personal API deprecation
+     *
+     * @since 6.3
+     */
+    public function sbi_personal_api_deprecation_notice()
+    {
+        global $sbi_notices;
+        $personal_accounts = \InstagramFeed\Builder\SBI_Db::source_query(array('type' => 'basic'));
+        if (empty($personal_accounts)) {
+            $personal_api_notice = $sbi_notices->get_notice('personal_api_deprecation');
+            if (!empty($personal_api_notice)) {
+                $sbi_notices->remove_notice('personal_api_deprecation');
+            }
+            return;
+        }
+
+        $title   = __('Deprecation notice', 'instagram-feed');
+        $message = '<p>' . __('Due to changes by Instagram, all “Personal” accounts will stop working as of December 2024. To continue to use the plugin, reconnect all personal accounts as a “Business” account.', 'instagram-feed') . '</p>';
+
+        $notice_args = array(
+            'class'       => 'sbi-admin-notices',
+            'title'       => array(
+                'text' => $title,
+                'class' => 'sb-notice-title',
+                'tag' => 'h4',
+            ),
+            'message'     => $message,
+            'buttons'     => array(
+                array(
+                    'text'      => __('Update Sources', 'instagram-feed'),
+                    'url'       => admin_url('admin.php?page=sbi-settings'),
+                    'class'     => 'sbi-notice-btn',
+                    'tag'       => 'a',
+                    'condition' => array(
+                        'key'     => 'screen',
+                        'compare' => '!==',
+                        'value'   => 'sbi-settings',
+                    ),
+                ),
+                array(
+                    'text' => __('Learn More', 'instagram-feed'),
+                    'class' => 'sbi-notice-btn',
+                    'url' => 'https://smashballoon.com/doc/instagram-business-basic/?instagram&utm_campaign=instagram-free&utm_source=notice&utm_medium=basicdisplaydeprecation&utm_content=learnmore',
+                    'target' => 'blank',
+                    'tag' => 'a',
+                ),
+            ),
+            'buttons_wrap_start' => '<div class="sb-notice-buttons">',
+            'buttons_wrap_end'   => '</div>',
+            'priority'    => 1,
+            'page'        => array(
+                'sbi-feed-builder',
+                'sbi-settings',
+                'sbi-oembeds-manager',
+                'sbi-extensions-manager',
+                'sbi-about-us',
+                'sbi-support',
+            ),
+            'icon'        => array(
+                'src'  => SBI_PLUGIN_URL . 'admin/assets/img/sbi-exclamation.svg',
+                'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
+            ),
+            'styles'      => array(
+                'display' => 'flex',
+                'justify-content' => 'space-between',
+                'gap' => '2rem',
+            ),
+            'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-wrap" {styles}><div class="sbi-notice-body">{title}{message}</div>{buttons}</div></div>',
+        );
+
+        $sbi_notices->add_notice('personal_api_deprecation', 'information', $notice_args);
+    }
 }

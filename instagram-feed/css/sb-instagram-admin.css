@@ -3877,3 +3877,28 @@ body .sbi_review_step1_notice .sbi-btn-link:not(:last-child) {
 	background: #E6F4E3;
 	color: #203E1A;
 }
+#personal_api_deprecation.sbi-admin-notices {
+	border-radius: 3px;
+	border: 1px solid #FFEFCC;
+	box-shadow: 0px 1px 2px 0px #0000000D;
+	background: #FFF7E5;
+	color: #663D00;
+}
+
+.sbi-admin-notices .sb-notice-buttons {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+.sbi-admin-notices .sb-notice-buttons .sbi-notice-btn {
+	background-color: #F9F9FA;
+	border: 1px solid #E6E6EB;
+	box-shadow: 0px -1px 1px 0px #0000001F inset;
+	cursor: pointer;
+}
+
+.sbi-notice-body {
+	flex: 1;
+}

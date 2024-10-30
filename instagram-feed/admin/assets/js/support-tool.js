@@ -59,13 +59,14 @@ jQuery(document).ready(function ($) {
 
         let user_id = $(this).data('user-id');
         let account_type = $(this).data('account-type');
+        let connect_type = $(this).data('connect-type');
         let nonce = sbi_support_tool.nonce;
         let ajax_action = 'user_info';
 
         let responseDiv = $('.sbi-response[data-id="' + user_id + '"]');
         responseDiv.html('<div class="sbi-response-message"><p>Loading...</p></div>');
 
-        handleAjaxRequest(nonce, { user_id, account_type, ajax_action }, function (response) {
+        handleAjaxRequest(nonce, { user_id, account_type, connect_type, ajax_action }, function (response) {
             handleResponse(response, responseDiv);
         });
     });

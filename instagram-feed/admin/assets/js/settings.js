@@ -67,7 +67,7 @@ var settings_data = {
 
     cogSVG: sbi_settings.cogSVG,
     deleteSVG: sbi_settings.deleteSVG,
-    svgIcons: sbi_settings.svgIcons,
+    svgIcons: sbi_svgs,
 
     testConnectionStatus: null,
     recheckLicenseStatus: null,

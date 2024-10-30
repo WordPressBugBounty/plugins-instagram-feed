@@ -94,11 +94,15 @@ class SBI_Feed_Saver_Manager {
 		$source_ids = $_POST['sources'];
 		$args = array( 'id' => $source_ids );
 		$source_query = SBI_Db::source_query( $args );
-
 		$sources = array();
-		if ( ! empty( $source_query ) ) {
-			foreach ( $source_query as $source ) {
+		$source_details = array();
+		if (! empty($source_query)) {
+			foreach ($source_query as $source) {
 				$sources[] = $source['account_id'];
+				$source_details[] = array(
+					'id' => $source['account_id'],
+					'username' => $source['username']
+				);
 			}
 		}
 
@@ -106,6 +110,7 @@ class SBI_Feed_Saver_Manager {
 		if ( $feed_id !== 'legacy' ) {
 			unset( $settings_data['sources'] );
 			$settings_data['id'] = implode(',', $sources );
+			$settings_data['source_details'] = $source_details;
 		} else {
 			if ( isset( $settings_data['feed'] ) ) {
 				unset( $settings_data['feed'] );
@@ -213,8 +218,10 @@ class SBI_Feed_Saver_Manager {
 				$args = array( 'username' => $username );
 
 				$source_query = SBI_Db::source_query( $args );
-
-				\SB_Instagram_Connected_Account::delete_local_avatar( $source_query['username'] );
+				if (!empty($source_query) && isset($source_query[0]['username'])) {
+					$source_username = sanitize_text_field($source_query[0]['username']);
+					\SB_Instagram_Connected_Account::delete_local_avatar($source_username);
+				}
 			}
 			$source_id = absint( $_POST['source_id'] );
 			SBI_Db::delete_source_query( $source_id );
@@ -663,44 +670,51 @@ class SBI_Feed_Saver_Manager {
 	 *
 	 * @since 6.0
 	 */
-	public static function get_data_type( $key ) {
-		switch ( $key ) {
-			case 'sources' :
-			$return = array(
-				'table' => 'feed_settings',
-				'sanitization' => 'sanitize_text_field'
-			);
-			break;
-			case 'feed_title' :
-			$return = array(
-				'table' => 'feeds',
-				'sanitization' => 'sanitize_text_field'
-			);
-			break;
-			case 'feed_name' :
-			$return = array(
-				'table' => 'feeds',
-				'sanitization' => 'sanitize_text_field'
-			);
-			break;
-			case 'status' :
-			$return = array(
-				'table' => 'feeds',
-				'sanitization' => 'sanitize_text_field'
-			);
-			break;
-			case 'author' :
-			$return = array(
-				'table' => 'feeds',
-				'sanitization' => 'int'
-			);
-			break;
+	public static function get_data_type($key)
+	{
+		switch ($key) {
+			case 'sources':
+				$return = array(
+					'table' => 'feed_settings',
+					'sanitization' => 'sanitize_text_field'
+				);
+				break;
+			case 'feed_title':
+				$return = array(
+					'table' => 'feeds',
+					'sanitization' => 'sanitize_text_field'
+				);
+				break;
+			case 'feed_name':
+				$return = array(
+					'table' => 'feeds',
+					'sanitization' => 'sanitize_text_field'
+				);
+				break;
+			case 'status':
+				$return = array(
+					'table' => 'feeds',
+					'sanitization' => 'sanitize_text_field'
+				);
+				break;
+			case 'author':
+				$return = array(
+					'table' => 'feeds',
+					'sanitization' => 'int'
+				);
+				break;
+			case 'source_details':
+				$return = array(
+					'table'        => 'feed_settings',
+					'sanitization' => 'array',
+				);
+				break;
 			default:
-			$return = array(
-				'table' => 'feed_settings',
-				'sanitization' => 'sanitize_text_field'
-			);
-			break;
+				$return = array(
+					'table' => 'feed_settings',
+					'sanitization' => 'sanitize_text_field'
+				);
+				break;
 		}
 
 		return $return;
@@ -711,23 +725,39 @@ class SBI_Feed_Saver_Manager {
 	 * for a value
 	 *
 	 * @param string $type
-	 * @param int|string $value
+	 * @param int|string|array $value
 	 *
 	 * @return int|string
 	 *
 	 * @since 6.0
 	 */
-	public static function sanitize( $type, $value ) {
-		switch ( $type ) {
-			case 'int' :
-				$return = intval( $value );
-			break;
-			case 'boolean' :
+	public static function sanitize($type, $value)
+	{
+		if (is_string($value) && $type === 'array') {
+			$type = 'string';
+		}
+
+		switch ($type) {
+			case 'int':
+				$return = intval($value);
+				break;
+
+			case 'boolean':
 				$return = self::cast_boolean($value);
-			break;
+				break;
+
+			case 'array':
+				$keys = array_keys($value);
+				$keys = array_map('sanitize_key', $keys);
+				$values = array_values($value);
+				$values = array_map('sanitize_text_field', $values);
+				$return = array_combine($keys, $values);
+				break;
+
+			case 'string':
 			default:
-				$return = sanitize_text_field( stripslashes($value) );
-			break;
+				$return = sanitize_text_field(stripslashes($value));
+				break;
 		}
 
 		return $return;

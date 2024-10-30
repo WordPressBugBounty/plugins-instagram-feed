@@ -179,6 +179,7 @@ class SBI_Source {
 					'id'           => sanitize_text_field( $single_source['id'] ),
 					'type'         => sanitize_text_field( $single_source['type'] ),
 					'username'     => isset( $single_source['username'] ) ? sanitize_text_field( $single_source['username'] ) : '',
+					'privilege'    => ''
 				);
 
 				if ( $single_source['type'] === 'business' ) {
@@ -281,11 +282,11 @@ class SBI_Source {
 			return false;
 		}
 		if ( isset( $_GET['sbi_access_token'] ) && isset( $_GET['sbi_graph_api'] ) ) {
-			$return = self::retrieve_available_business_accounts();
+			$return = self::retrieve_available_advanced_business_accounts();
 			return $return;
 
 		} elseif ( isset( $_GET['sbi_access_token'] ) && isset( $_GET['sbi_account_type'] ) ) {
-			$return = self::retrieve_available_personal_accounts();
+			$return = self::retrieve_available_basic_accounts();
 
 			return $return;
 		}
@@ -301,7 +302,7 @@ class SBI_Source {
 	 *
 	 * @since 6.0
 	 */
-	public static function retrieve_available_personal_accounts() {
+	public static function retrieve_available_basic_accounts() {
 		$encryption = new \SB_Instagram_Data_Encryption();
 		$return     = array(
 			'type'                     => 'personal',
@@ -318,6 +319,8 @@ class SBI_Source {
 		$user_name         = sanitize_text_field( $_GET['sbi_username'] );
 		$expires_in        = (int) $_GET['sbi_expires_in'];
 		$expires_timestamp = time() + $expires_in;
+		$account_type      = isset($_GET['sbi_account_type']) ? sanitize_text_field($_GET['sbi_account_type']) : 'personal';
+		$connect_type 	   = isset($_GET['sbi_connect_type']) ? sanitize_text_field($_GET['sbi_connect_type']) : 'personal';
 
 		$source_data = array(
 			'access_token' => $access_token,
@@ -327,6 +330,7 @@ class SBI_Source {
 			'username'     => $user_name,
 			'privilege'    => '',
 			'expires'      => date( 'Y-m-d H:i:s', $expires_timestamp ),
+			'connect_type' => $connect_type,
 		);
 
 		$connection = new \SB_Instagram_API_Connect( $source_data, 'header', array() );
@@ -338,6 +342,7 @@ class SBI_Source {
 
 			$header_details_array    = self::merge_account_details( $header_details_array, $source_data );
 			$source_data['username'] = $header_details_array['username'];
+			$header_details_array['connect_type'] = $connect_type;
 			$header_details          = sbi_json_encode( $header_details_array );
 		} else {
 			$source_data['error'] = $connection;
@@ -373,11 +378,11 @@ class SBI_Source {
 		$return['unconnectedAccounts'][] = $source_data;
 
 		$args                                  = array(
-			'id' => $user_id,
+			'username' => $source_data['username'],
 		);
 		$results                               = SBI_Db::source_query( $args );
-		$already_connected_as_business_account = ( isset( $results[0] ) && $results[0]['account_type'] === 'business' );
-		$matches_existing_personal             = ( isset( $results[0] ) && $results[0]['account_type'] !== 'business' );
+		$already_connected_as_business_account = isset( $results[0] ) && $results[0]['account_type'] === 'business';
+		$matches_existing_personal             = isset( $results[0] ) && $results[0]['account_type'] !== 'business';
 
 		if ( $already_connected_as_business_account ) {
 			$return['matchingExistingAccounts']           = $results[0];
@@ -396,6 +401,15 @@ class SBI_Source {
 			$return['didQuickUpdate'] = true;
 		}
 
+		$personal_accounts = SBI_Db::source_query( array( 'type' => 'basic' ) );
+		if ( empty( $personal_accounts ) ) {
+			global $sbi_notices;
+			$personal_api_notice = $sbi_notices->get_notice('personal_api_deprecation');
+			if (!empty($personal_api_notice)) {
+				$sbi_notices->remove_notice('personal_api_deprecation');
+			}
+		}
+
 		return $return;
 	}
 
@@ -406,7 +420,7 @@ class SBI_Source {
 	 *
 	 * @since 6.0
 	 */
-	public static function retrieve_available_business_accounts() {
+	public static function retrieve_available_advanced_business_accounts() {
 
 		$return = array(
 			'type'                     => 'business',
@@ -486,6 +500,7 @@ class SBI_Source {
 					$instagram_account_data = json_decode( $instagram_account_info, true );
 
 					$instagram_biz_img = isset( $instagram_account_data['profile_picture_url'] ) ? $instagram_account_data['profile_picture_url'] : false;
+					$instagram_account_data['connect_type'] = 'business_advanced';
 					$source_data       = array(
 						'access_token' => $access_token,
 						'id'           => $instagram_business_id,
@@ -494,17 +509,18 @@ class SBI_Source {
 						'username'     => $instagram_account_data['username'],
 						'avatar'       => $instagram_biz_img,
 						'privilege'    => 'tagged',
+						'connect_type' => 'business_advanced',
 					);
 
 					$source_data['info']             = sbi_json_encode( $instagram_account_data );
 					$return['unconnectedAccounts'][] = $source_data;
 
-					$args                                  = array(
-						'id' => $instagram_business_id,
+					$args = array(
+						'username' => $instagram_account_data['username'],
 					);
-					$results                               = SBI_Db::source_query( $args );
-					$already_connected_as_business_account = ( isset( $results[0] ) && $results[0]['account_type'] === 'business' );
-					$matches_existing_personal             = ( isset( $results[0] ) && $results[0]['account_type'] !== 'business' );
+					$results = SBI_Db::source_query( $args );
+					$already_connected_as_business_account = isset( $results[0] ) && $results[0]['account_type'] === 'business';
+					$matches_existing_personal             = isset($results[0]) && in_array($results[0]['account_type'], array('personal', 'basic'));
 
 					if ( $already_connected_as_business_account ) {
 						SBI_Db::delete_source( $results[0]['id'] );
@@ -709,6 +725,7 @@ class SBI_Source {
 	 */
 	public static function update_single_source( $connected_account, $connect_if_error = true ) {
 		$account_type = isset( $connected_account['account_type'] ) ? $connected_account['account_type'] : 'business';
+		$connect_type = isset($connected_account['connect_type']) ? $connected_account['connect_type'] : 'personal';
 
 		$connection = new \SB_Instagram_API_Connect( $connected_account, 'header', array() );
 
@@ -723,6 +740,7 @@ class SBI_Source {
 			'type'         => $account_type,
 			'username'     => $connected_account['username'],
 			'privilege'    => ! empty( $connected_account['use_tagged'] ) ? 'tagged' : '',
+			'connect_type' => $connect_type,
 		);
 
 		if ( ! empty( $connected_account['expires_timestamp'] ) ) {
@@ -772,7 +790,16 @@ class SBI_Source {
 		}
 
 		if ( empty( $source_data['error'] ) || $connect_if_error ) {
-			self::update_or_insert( $source_data );
+			$args = array(
+				'username' => $source_data['username'],
+			);
+			$results = SBI_Db::source_query($args);
+			$already_connected = isset($results[0]) && $results[0]['username'] === $source_data['username'];
+
+			if ($already_connected) {
+				SBI_Db::delete_source($results[0]['id']);
+			}
+			self::update_or_insert($source_data);
 		}
 
 		$source_data['record_id']    = 0;
@@ -892,6 +919,7 @@ class SBI_Source {
 				'is_valid'          => empty( $source_datum['error'] ),
 				'profile_picture'   => $avatar,
 				'last_checked'      => isset( $source_datum['last_updated'] ) ? strtotime( $source_datum['last_updated'] ) : time(),
+				'connect_type'      => isset($source_datum['connect_type']) ? $source_datum['connect_type'] : 'personal',
 			);
 			if ( ! empty( $info['private'] ) ) {
 				$connected_account['private'] = $info['private'];

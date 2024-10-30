@@ -94,8 +94,7 @@ class SBI_Customize_Tab{
 	 * @return array
 	*/
 	public static function get_customize_feedlayout_controls(){
-		$svg_icons = SBI_Feed_Builder::builder_svg_icons();
-		$svg_rocket_icon = $svg_icons['rocketPremiumBlue'];
+		$svg_rocket_icon = SBI_Feed_Builder::builder_svg_icons('rocketPremiumBlue');
 
 		return [
 			[

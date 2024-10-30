@@ -1,0 +1,11 @@
+parameters:
+    level: 5
+    paths:
+        - inc
+        - admin
+        - templates
+    excludePaths:
+        - vendor
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    reportUnmatchedIgnoredErrors: false

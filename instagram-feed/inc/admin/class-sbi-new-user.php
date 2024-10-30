@@ -535,7 +535,7 @@ class SBI_New_User extends SBI_Notifications {
 		$user_id             = $current_user->ID;
 		$sbi_statuses_option = get_option('sbi_statuses', array());
 
-		TODO: // Remove after 6.0
+		// TODO: Remove at 7.0.0
 		global $sbi_notices;
 		$discount_notice = $sbi_notices->get_notice('discount');
 		if ($discount_notice && !isset($sbi_statuses_option['preexisting_discount_notice_check'])) {
@@ -544,6 +544,38 @@ class SBI_New_User extends SBI_Notifications {
 		}
 		$sbi_statuses_option['preexisting_discount_notice_check'] = true;
 		update_option('sbi_statuses', $sbi_statuses_option);
+
+		//TODO:: Remove at 7.0.0
+		$rating_notice_found = false;
+		$rating_notices = array(
+			'review_step_1',
+			'review_step_1_all_pages',
+			'review_step_2',
+			'review_step_2_all_pages',
+		);
+
+		foreach ($rating_notices as $rating_notice) {
+			$notice = $sbi_notices->get_notice($rating_notice);
+			if ($notice) {
+				$rating_notice_found = $notice;
+				break;
+			}
+		}
+
+		$sbi_rating_notice_option = get_option('sbi_rating_notice', false);
+		$sbi_rating_notice_waiting = get_transient('instagram_feed_rating_notice_waiting');
+
+		if (!empty($rating_notice_found) && $sbi_rating_notice_option === false && $sbi_rating_notice_waiting === false) {
+			foreach ($rating_notices as $rating_notice) {
+				$sbi_notices->remove_notice($rating_notice);
+			}
+
+			update_option('sbi_rating_notice', 'dismissed', false);
+			$sbi_statuses_option['rating_notice_dismissed'] = sbi_get_current_time();
+			update_option('sbi_statuses', $sbi_statuses_option, false);
+
+			update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+		}
 
 		if ( isset( $_GET['sbi_ignore_rating_notice_nag'] ) ) {
 			$rating_ignore = false;

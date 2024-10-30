@@ -344,7 +344,7 @@ class SB_Instagram_Feed
 	public function set_post_data_from_cache( $atts = array() ) {
 		$posts_json = $this->cache->get( 'posts' );
 
-		$posts_data = json_decode( $posts_json, true );
+		$posts_data = $posts_json !== null ? json_decode($posts_json, true) : false;
 
 		if ( $posts_data ) {
 			$post_data = isset( $posts_data['data'] ) ? $posts_data['data'] : array();

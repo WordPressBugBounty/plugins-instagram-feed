@@ -46,6 +46,9 @@ class SB_Instagram_GDPR_Integrations {
 	 * @return bool|string
 	 */
 	public static function gdpr_plugins_active() {
+		if ( defined( 'RCB_ROOT_SLUG' ) ) {
+			return 'Real Cookie Banner by devowl.io';
+		}
 		if ( class_exists( 'Cookie_Notice' ) ) {
 			return 'Cookie Notice by dFactory';
 		}
@@ -63,6 +66,9 @@ class SB_Instagram_GDPR_Integrations {
 		}
 		if ( function_exists( 'BorlabsCookieHelper' ) || ( defined( 'BORLABS_COOKIE_VERSION' ) && version_compare( BORLABS_COOKIE_VERSION, '3.0', '>=' ) ) ) {
 			return 'Borlabs Cookie by Borlabs';
+		}
+		if ( function_exists( 'gdpr_cookie_is_accepted' ) ) {
+			return 'GDPR Cookie Compliance by Moove Agency';
 		}
 
 		return false;
@@ -97,7 +103,7 @@ class SB_Instagram_GDPR_Integrations {
 		}
 		$sbi_statuses_option = get_option( 'sbi_statuses', array() );
 
-		if ( $sbi_statuses_option['gdpr']['from_update_success'] ) {
+		if ( !empty($sbi_statuses_option['gdpr']['from_update_success'] )) {
 			return ( self::gdpr_plugins_active() !== false );
 		}
 		return false;

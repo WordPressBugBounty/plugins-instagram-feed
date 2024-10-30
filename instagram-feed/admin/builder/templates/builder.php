@@ -1,6 +1,8 @@
 <div id="sbi-builder-app" class="sbi-fb-fs sbi-builder-app"  :class="dismissLite == false ? 'sbi-builder-app-lite-dismiss' : '' " :data-app-loaded="appLoaded === true ? 'true' : 'false'">
 	<?php
-		$icons = InstagramFeed\Builder\SBI_Feed_Builder::builder_svg_icons();
+		$icons = function ($icon) {
+			return InstagramFeed\Builder\SBI_Feed_Builder::builder_svg_icons($icon);
+		};
 
 		include_once SBI_BUILDER_DIR . 'templates/sections/header.php';
 		include_once SBI_BUILDER_DIR . 'templates/screens/select-feed.php';

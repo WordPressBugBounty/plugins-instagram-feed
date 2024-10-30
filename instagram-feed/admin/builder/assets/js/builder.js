@@ -68,7 +68,7 @@ sbiBuilder = new Vue({
 		dummyLightBoxData: sbi_builder.dummyLightBoxData,
 		dummyLightBoxScreen 	: false,
 
-		svgIcons: sbi_builder.svgIcons,
+		svgIcons: sbi_svgs,
 		feedsList: sbi_builder.feeds,
 		manualSourcePopupInit: sbi_builder.manualSourcePopupInit,
 		feedTypes: sbi_builder.feedTypes,

@@ -277,22 +277,26 @@ class SB_Instagram_API_Connect
 	 */
 	protected function set_url( $connected_account, $endpoint_slug, $params ) {
 		$account_type = ! empty( $connected_account['type'] ) ? $connected_account['type'] : 'personal';
+		$connect_type = isset($connected_account['connect_type']) ? $connected_account['connect_type'] : 'personal';
 		$num          = ! empty( $params['num'] ) ? (int) $params['num'] : 33;
 
-		if ( $account_type === 'basic' || $account_type === 'personal' ) {
+		if ($account_type === 'basic' || $account_type === 'personal' && ($connect_type === 'business_basic' || $connect_type === 'personal')) {
 			$access_token = sbi_maybe_clean( $connected_account['access_token'] );
 			if ( strpos( $access_token, 'IG' ) !== 0 ) {
 				$this->encryption_error = true;
 
 				$url = '';
 			} else {
-				if ( $endpoint_slug === 'access_token' ) {
+				$fields = ($connect_type === 'business_basic') ? 'user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count,biography' : 'id,username,media_count,account_type';
+				$media_fields = ($connect_type === 'business_basic') ? 'media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D' : 'media_url,thumbnail_url,caption,id,media_type,timestamp,username,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D';
+
+				if ($endpoint_slug === 'access_token') {
 					$url = 'https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=' . $access_token;
-				} elseif ( $endpoint_slug === 'header' ) {
-					$url = 'https://graph.instagram.com/me?fields=id,username,media_count,account_type&access_token=' . $access_token;
+				} elseif ($endpoint_slug === 'header') {
+					$url = 'https://graph.instagram.com/me?fields=' . $fields . '&access_token=' . $access_token;
 				} else {
-					$num = min( $num, 200 );
-					$url = 'https://graph.instagram.com/' . $connected_account['user_id'] . '/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D&limit=' . $num . '&access_token=' . $access_token;
+					$num = min($num, 200);
+					$url = 'https://graph.instagram.com/' . $connected_account['user_id'] . '/media?fields=' . $media_fields . '&limit=' . $num . '&access_token=' . $access_token;
 				}
 			}
 

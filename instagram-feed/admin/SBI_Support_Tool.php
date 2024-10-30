@@ -517,6 +517,7 @@ class SBI_Support_Tool {
 		$user_id = isset($_POST['user_id']) ? sanitize_text_field($_POST['user_id']) : false;
 		$ajax_action = isset($_POST['ajax_action']) ? sanitize_text_field($_POST['ajax_action']) : 'user_info';
 		$account_type = isset($_POST['account_type']) ? sanitize_text_field($_POST['account_type']) : 'basic';
+		$connect_type = isset($_POST['connect_type']) ? sanitize_text_field($_POST['connect_type']) : 'personal';
 
 		if (! $user_id) {
 			wp_send_json_error(__('User ID is required', 'instagram-feed'));
@@ -542,6 +543,7 @@ class SBI_Support_Tool {
 					'user_id' => $user_id,
 					'access_token' => $access_token,
 					'account_type' => $account_type,
+					'connect_type' => $connect_type,
 				));
 				break;
 
@@ -597,13 +599,16 @@ class SBI_Support_Tool {
 		$user_id = isset($args['user_id']) ? sanitize_text_field($args['user_id']) : false;
 		$access_token = isset($args['access_token']) ? sanitize_text_field($args['access_token']) : false;
 		$account_type = isset($args['account_type']) ? sanitize_text_field($args['account_type']) : 'basic';
+		$connect_type = isset($args['connect_type']) ? sanitize_text_field($args['connect_type']) : 'personal';
 
 		if (!$user_id || !$access_token) {
 			return new \WP_Error('missing_params', __('User ID and Access Token are required', 'instagram-feed'));
 		}
 
-		if ($account_type === 'basic' || $account_type === 'personal') {
-			$me_endpoint_url = self::$basic_display_api . $user_id . '?fields=id,username,account_type,media_count&access_token=' . $access_token;
+		if ($account_type === 'basic' || $account_type === 'personal' && ($connect_type === 'business_basic' || $connect_type === 'personal')) {
+			$fields = ($connect_type === 'business_basic') ? 'user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count,biography' : 'id,username,media_count,account_type';
+
+			$me_endpoint_url = self::$basic_display_api . $user_id . '?fields=' . $fields . '&access_token=' . $access_token;
 		} else {
 			$me_endpoint_url = self::$graph_api . $user_id . '?fields=biography,id,username,website,followers_count,media_count,profile_picture_url,name&access_token=' . $access_token;
 		}

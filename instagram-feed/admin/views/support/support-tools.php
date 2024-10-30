@@ -1,4 +1,5 @@
 <?php
+
 /**
  * For use with the API debugging support page
  *
@@ -9,23 +10,24 @@ use InstagramFeed\Admin\SBI_Support_Tool;
 use InstagramFeed\Admin\SBI_Support;
 use InstagramFeed\Builder\SBI_Feed_Builder;
 
-require_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/class-sb-instagram-data-encryption.php';
+require_once trailingslashit(SBI_PLUGIN_DIR) . 'inc/class-sb-instagram-data-encryption.php';
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	return;
 }
 
 $role_id = SBI_Support_Tool::$plugin . SBI_Support_Tool::$role;
 $cap     = $role_id;
 
-if ( ! current_user_can( $cap ) ) {
+if (! current_user_can($cap)) {
 	return;
 }
 
-$ids_with_accounts      = get_option( 'sbi_hashtag_ids_with_connected_accounts', array() );
+$ids_with_accounts      = get_option('sbi_hashtag_ids_with_connected_accounts', array());
 $encryption             = new SB_Instagram_Data_Encryption();
 $all_connected_accounts = SB_Instagram_Connected_Account::get_all_connected_accounts();
-$basic_media_fields = 'id,username,media_type,media_url,thumbnail_url,caption,timestamp,permalink,children';
+$personal_media_fields = 'id,username,media_type,media_url,thumbnail_url,caption,timestamp,permalink,children';
+$basic_media_fields = 'media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children';
 $business_media_fields = 'id,username,media_product_type,media_url,thumbnail_url,caption,timestamp,comments_count,like_count,permalink,children';
 $default_checked = 'id,username,media_type,media_product_type,timestamp,permalink,media_url,caption';
 $default_checked = explode(',', $default_checked);
@@ -40,7 +42,7 @@ $feeds_list  = SBI_Feed_Builder::get_feed_list();
 		</button>
 		<button class="sbi-support-tool-tablinks" onclick="openTab(event, 'Feeds')">
 			<span><?php esc_html_e('Feeds', 'instagram-feed'); ?></span>
-		</buton>
+		</button>
 		<button class="sbi-support-tool-tablinks" onclick="openTab(event, 'SystemInfo')">
 			<span><?php esc_html_e('System Info', 'instagram-feed'); ?></span>
 		</button>
@@ -55,12 +57,15 @@ $feeds_list  = SBI_Feed_Builder::get_feed_list();
 				<p><?php esc_html_e('Below is a list of all connected accounts. Click the "Get Account Info" button to retrieve the account info. Click the "Get Media" button to retrieve the media for the account.', 'instagram-feed'); ?></p>
 
 				<div class="sb-srcs-item">
-					<?php foreach ($all_connected_accounts as $connected_account) : ?>
+					<?php foreach ($all_connected_accounts as $connected_account) :
+						$connect_type = isset($connected_account['connect_type']) ? $connected_account['connect_type'] : 'personal';
+						$account_type = $connect_type === 'business_basic' ? 'Business Basic' : ($connect_type === 'business_advanced' ? 'Business Advanced' : 'Personal');
+					?>
 						<div class="sbi-fb-srcs-item-ins">
 							<?php if (!empty($connected_account['profile_picture'])) : ?>
 								<div class="sb-srcs-item-avatar">
 									<img src="<?php echo esc_url($connected_account['profile_picture']); ?>" height="42" width="42" alt="<?php echo esc_attr($connected_account['username']); ?>">
-								</div> 
+								</div>
 							<?php endif; ?>
 
 							<div class="sb-srcs-item-info">
@@ -68,18 +73,18 @@ $feeds_list  = SBI_Feed_Builder::get_feed_list();
 								<strong><?php esc_html_e('ID', 'instagram-feed') ?>:</strong>
 								<span><?php echo esc_html($connected_account['id']); ?></span><br>
 								<strong><?php esc_html_e('Account Type', 'instagram-feed'); ?>:</strong>
-								<span><?php echo esc_html(ucfirst($connected_account['account_type'])); ?></span><br><br>
+								<span><?php echo esc_html($account_type); ?></span><br><br>
 							</div>
 
 							<div class="sb-srcs-item-actions">
-								<button class="button sbi-get-account-info" data-user-id="<?php echo esc_attr($connected_account['id']); ?>" data-account-type="<?php echo esc_attr($connected_account['account_type']) ?>"><?php esc_html_e('Get Account Info', 'instagram-feed'); ?></button>
-								
-								<button class="button sbi-get-media" data-user-id="<?php echo esc_attr($connected_account['id']); ?>" data-account-type="<?php echo esc_attr($connected_account['account_type']) ?>"><?php echo sprintf(esc_html__('Get Media (%s)', 'instagram-feed'), esc_html(ucfirst($connected_account['account_type']))); ?></button>
+								<button class="button sbi-get-account-info" data-user-id="<?php echo esc_attr($connected_account['id']); ?>" data-account-type="<?php echo esc_attr($connected_account['account_type']) ?>" data-connect-type="<?php echo esc_attr($connect_type); ?>"><?php esc_html_e('Get Account Info', 'instagram-feed'); ?></button>
 
-								<div class="sbi-checkboxes" data-user-id="<?php echo esc_attr($connected_account['id']); ?>" style="display: none;"> 
+								<button class="button sbi-get-media" data-user-id="<?php echo esc_attr($connected_account['id']); ?>" data-account-type="<?php echo esc_attr($connected_account['account_type']) ?>"><?php echo sprintf(esc_html__('Get Media (%s)', 'instagram-feed'), $account_type); ?></button>
+
+								<div class="sbi-checkboxes" data-user-id="<?php echo esc_attr($connected_account['id']); ?>" style="display: none;">
 									<?php
-										$media_fields = $connected_account['account_type'] === 'business' ? $business_media_fields : $basic_media_fields;
-										$media_fields = explode(',', $media_fields);
+									$media_fields = $connect_type === 'business_basic' ? $basic_media_fields : ($connect_type === 'business_advanced' ? $business_media_fields : $personal_media_fields);
+									$media_fields = explode(',', $media_fields);
 
 									foreach ($media_fields as $media_field) {
 										$media_field = trim($media_field);
@@ -133,7 +138,10 @@ $feeds_list  = SBI_Feed_Builder::get_feed_list();
 							<?php if (!empty($feed['settings']['sources'])) : ?>
 								<strong><?php esc_html_e('Connected User Account(s)', 'instagram-feed'); ?>:</strong>
 
-								<?php foreach ($feed['settings']['sources'] as $connected_account) : ?>
+								<?php foreach ($feed['settings']['sources'] as $connected_account) :
+									$connect_type = isset($connected_account['connect_type']) ? $connected_account['connect_type'] : 'personal';
+									$account_type = $connect_type === 'business_basic' ? 'Business Basic' : ($connect_type === 'business_advanced' ? 'Business Advanced' : 'Personal');
+								?>
 									<div class="sbi-feeds-connected-accounts">
 										<strong><?php esc_html_e('ID', 'instagram-feed'); ?>: </strong>
 										<span><?php echo esc_html($connected_account['user_id']); ?></span>
@@ -142,7 +150,7 @@ $feeds_list  = SBI_Feed_Builder::get_feed_list();
 										<span><?php echo esc_html($connected_account['username']); ?></span>
 
 										<strong><?php esc_html_e('Account Type', 'instagram-feed'); ?>: </strong>
-										<span><?php echo esc_html(ucfirst($connected_account['type'])); ?></span>
+										<span><?php echo esc_html($account_type); ?></span>
 									</div>
 								<?php endforeach; ?>
 								<br>
@@ -159,12 +167,11 @@ $feeds_list  = SBI_Feed_Builder::get_feed_list();
 			<p><?php esc_html_e('This information can be helpful when troubleshooting issues.', 'instagram-feed'); ?></p>
 			<div class="sbi-system-info">
 				<?php
-					$sbi_support = new SBI_Support();
-					echo $sbi_support->get_system_info();
+				$sbi_support = new SBI_Support();
+				echo $sbi_support->get_system_info();
 				?>
 			</div>
 		</div>
 	</div>
 </div>
 <?php
-

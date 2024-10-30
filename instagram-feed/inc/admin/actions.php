@@ -116,6 +116,12 @@ function sb_menu_notice_bubble() {
 		}
 	}
 
+	global $sbi_notices;
+	$api_notice = $sbi_notices->get_notice('personal_api_deprecation');
+	if(!empty($api_notice)){
+		$notifications = $notifications && $notifications > 0 ? $notifications + 1 : 1;
+	}
+
 	$callout = SBI_Callout::print_callout_ob_html('side-menu');
 	$print_callout = $callout !== false ? $callout : '';
 

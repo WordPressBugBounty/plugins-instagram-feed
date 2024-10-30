@@ -21,7 +21,7 @@ var support_data = {
     nonce: sbi_support.nonce,
     icons: sbi_support.icons,
     images: sbi_support.images,
-    svgIcons : sbi_support.svgIcons,
+    svgIcons: sbi_svgs,
     notificationElement : {
         type : 'success', // success, error, warning, message
         text : '',

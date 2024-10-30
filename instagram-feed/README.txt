@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 6.6
-Stable tag: 6.5.1
+Stable tag: 6.6.0
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -310,8 +310,15 @@ If you like our WordPress Instagram plugin, then consider checking out our other
 Visit [WPBeginner](https://wpbeginner.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) to learn from our [WordPress Tutorials](https://www.wpbeginner.com/category/wp-tutorials/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) and about the [best WordPress plugins](https://www.wpbeginner.com/category/plugins/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links).
 
 == Changelog ==
+= 6.6.0 =
+* Important: For users with a personal account connection, you will need to reconnect your account before December 2024 after updating to version 6.6 or higher. [Learn more](https://smashballoon.com/doc/instagram-business-basic/?utm_campaign=instagram-free-readme&utm_source=changelog&utm_medium=basicdisplayapichange "Learn more")
+* New: Added support for GDPR Cookie Compliance by Moove Agency and Real Cookie Banner GDPR plugins.
+* Fix: Existing data is no longer deleted after removing the free version if the Pro version is also installed.
+* Fix: Fixed a rare issue causing 404 errors when editing a feed.
+* Fix: Improved compatibility with the [Thrive Architect plugin](https://thrivethemes.com/?utm_campaign=instagram-free-readme&utm_source=changelog&utm_medium=architectfix).
+
 = 6.5.1 =
-* Fix: Plugin hardening;
+* Fix: Plugin hardening.
 
 = 6.5.0 =
 * New: Added webp image support for the local image optimization feature. This will improve the performance of your feed by serving images in the webp format when possible.

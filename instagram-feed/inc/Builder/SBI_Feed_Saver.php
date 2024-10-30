@@ -333,10 +333,7 @@ class SBI_Feed_Saver {
 			$return['feed_name'] = $settings_db_data[0]['feed_name'];
 		}
 
-
 		$return = wp_parse_args( $return, SBI_Feed_Saver::settings_defaults() );
-
-
 		if ( empty( $return['id'] ) ) {
 			return $return;
 		}
@@ -353,6 +350,30 @@ class SBI_Feed_Saver {
 		$args = array( 'id' => $return['id'] );
 
 		$source_query = SBI_Db::source_query( $args );
+
+		//fallback to source details [username] if source not found.
+		$source_details = isset($return['source_details']) ? $return['source_details'] : array();
+		$type_change = empty($source_query) || (count($source_query) != count($return['id']));
+		if ($type_change && ! empty($source_details)) {
+			if (is_array($source_details) && isset($source_details['id']) && isset($source_details['username'])) {
+				$source_details = array($source_details);
+			}
+
+			$usernames = array();
+			foreach ($source_details as $source) {
+				if (is_array($source) && isset($source['username'])) {
+					$usernames[] = $source['username'];
+				}
+			}
+			$args = array('username' => $usernames);
+			$source_query = SBI_Db::source_query($args);
+			if (! empty($source_query)) {
+				$return['id'] = array();
+				foreach ($source_query as $source) {
+					$return['id'][] = $source['account_id'];
+				}
+			}
+		}
 
 		$return['sources'] = array();
 
@@ -417,7 +438,8 @@ class SBI_Feed_Saver {
 			'error' => stripslashes( $source['error'] ),
 			'expires' => stripslashes( $source['expires'] ),
 			'profile_picture' => $cdn_avatar_url,
-			'local_avatar_url' => \SB_Instagram_Connected_Account::maybe_local_avatar( $source['username'], $cdn_avatar_url )
+			'local_avatar_url' => \SB_Instagram_Connected_Account::maybe_local_avatar( $source['username'], $cdn_avatar_url ),
+			'connect_type'     => isset($source['connect_type']) ? stripslashes($source['connect_type']) : ''
 		);
 
 		return $processed;
