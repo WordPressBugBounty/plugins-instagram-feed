@@ -2,114 +2,185 @@
 Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
-Tested up to: 6.6
-Stable tag: 6.6.0
+Tested up to: 6.7
+Stable tag: 6.6.1
 Requires PHP: 5.6
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Formerly "Instagram Feed". Display clean, customizable, and responsive Instagram feeds from multiple accounts. Supports Instagram oEmbeds.
 
 == Description ==
 
-Display Instagram posts from your Instagram accounts, either in the same single feed or in multiple different ones. The perfect Instagram gallery plugin for your WordPress site.
+As the most powerful and easiest to use Instagram plugin for WordPress, Smash Balloon Social Photo Feed helps you create, customize and embed Instagram feeds on your website in just a few clicks! Absolutely no coding needed.
 
 https://www.youtube.com/watch?v=517rApIqzbw
 
-= Features =
-* **New:** Now automatically powers your **Instagram oEmbeds**
-* Super **simple to set up**
-* Display photos from **multiple Instagram accounts** in the same feed or in separate feeds
-* Completely **responsive** and mobile ready - layout looks great on any screen size and in any container width
-* **Completely customizable** - Customize the width, height, number of photos, number of columns, image size, background color, image spacing and more!
-* Display **multiple Instagram feeds** on the same page or on different pages throughout your site
-* **GDPR Compliance** - automatically integrates with many of the popular GDPR cookie consent plugins and includes a 1-click easy GDPR setting.
-* Use the drag-and-drop customizer to completely customize each of your Instagram feeds
-* Display thumbnail, medium or **full-size photos** from your Instagram feed
-* **Infinitely load more** of your Instagram photos with the 'Load More' button
-* Includes a **Follow on Instagram button** at the bottom of your feed
-* Display a **beautiful header** at the top of your feed
-* Display your Instagram photos chronologically or in random order
-* Add your own Custom CSS and JavaScript for even deeper customizations
-* Handy block for easily adding your feed to posts and pages using the block editor
-* Integrations with Elementor and Divi page builders. Instagram for Elementor is super simple
+Designed for both WordPress beginners and advanced users, you can use Social Photo Feed to seamlessly integrate your Instagram widgets and keep your site effortlessly updated.
 
-= Benefits =
-* **Increase Social Engagement** - Increase engagement between you and your Instagram followers. Increase your number of followers by displaying your Instagram content directly on your site.
-* **Save Time** - Don't have time to update your photos on your site? Save time and increase efficiency by only posting your photos to Instagram and automatically displaying them on your website
-* **Display Your Content Your Way** - Customize your Instagram feeds to look exactly the way you want, so that they blend seamlessly into your site or pop out at your visitors!
-* **Keep Your Site Looking Fresh** - Automatically push your new Instagram content straight to your site to keep it looking fresh and keeping your audience engaged.
-* **Super simple to set up** - Once installed, you can be displaying your Instagram photos within 30 seconds! No confusing steps or Instagram Developer account needed.
-* **Powers all Instagram oEmbeds on your site** - With WordPress removing support for Instagram oEmbeds, the plugin will now power all Instagram embeds on your site, old and new, to allow them to continue working.
+[Explore the Pro Version](https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=description&utm_medium=explore 'Instagram Feed Pro') | [See Pro in Action](https://smashballoon.com/instagram-feed/demo?utm_campaign=instagram-free-readme&utm_source=description&utm_medium=seeinaction 'Instagram Feed Pro Demo')
 
-= Pro Version =
-In order to maintain the free version of the plugin on an ongoing basis, and to provide quick and effective support for free, we offer a Pro version of the plugin. The Pro version allows you to:
-* Display Hashtag feeds
-* View photos and videos in a popup lightbox directly on your site
-* View post comments for user feeds
-* Display the number of like and comments for each post
-* Create carousels from your posts
-* Use "Masonry" or "Highlight" layouts for your feeds
-* Display captions for photos and videos
-* Filter posts based on hashtag/word
-* Advanced moderation system for hiding/showing certain posts
-* Block posts by specific users
-* Create "shoppable" Instagram feeds, and more.
-* Add custom links to each post like link in bio
-* Quick create templates for easy feed creation
+Over 1 million users worldwide trust Social Photo Feed to easily showcase Instagram content on their websites.
 
-[Find out more about the Pro version](https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=proversion&utm_medium=profindout "Instagram Feed Pro") or [try out the Pro demo](https://smashballoon.com/instagram-feed/demo/?utm_campaign=instagram-free-readme&utm_source=proversion&utm_medium=readmedemo "Instagram Feed Pro Demo").
+= Embed Your Instagram Feed in 3 Steps =
 
-= Featured Reviews =
-"**Simple and concise** - Excellent plugin. Simple and non-bloated. I had a couple small issues with the plugin when I first started using it, but a quick comment on the support forums got a new version pushed out the next day with the fix. Awesome support!" - [Josh Jones](https://wordpress.org/support/topic/simple-and-concise-3 'Simple and concise Instagram plugin')
+Smash Balloon Instagram Feed makes it a breeze to set up your feeds on your site:
 
-"**Great plugin, greater support!** - I've definitely noticed an increase in followers on Instagram since I added this plugin to my sidebar. Thanks for the help in making some adjustments...looks and works great!" - [BNOTP](https://wordpress.org/support/topic/thanks-for-a-great-plugin-6 'Great plugin, greater Support!')
+1. Create your feed and choose an Instagram widget source
+2. Customize your feed in a few clicks
+3. Add your Instagram feed to your site
 
-= Feedback or Support =
-We're dedicated to providing the most customizable, robust and well supported Instagram feed plugin in the world, so if you have an issue or have any feedback on how to improve the plugin then please open a ticket in the [Support forum](http://wordpress.org/support/plugin/instagram-feed 'Instagram Feed Support Forum').
+[Check Out the Pro Version](https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=embedsteps&utm_medium=checkoutpro 'Instagram Feed Pro') | [Try the Pro Demo](https://smashballoon.com/instagram-feed/demo?utm_campaign=instagram-free-readme&utm_source=embedsteps&utm_medium=trydemo 'Instagram Feed Pro Demo')
 
-For a pop-up photo **lightbox**, to display posts by **hashtag**, show photo **captions**, **video** support + more, check out the [Pro version](http://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=feedbacj&utm_medium=support 'Instagram Feed Pro').
+= Free Features =
 
-== Installation ==
+* **NEW!** Supports local WebP image format for faster loading times
+* **oEmbed Support** Automatically powers your Instagram oEmbeds
+* **Setting Up is Simple:** Get started in seconds, no hassle, no fuss
+* **Showcase Multiple Accounts:** Display photos from various Instagram accounts in one unified feed or separate them into individual feeds
+* **Multiple Feeds Anywhere:** Add as many feeds as you want on the same page or spread them across different pages on your site
+* **Responsive & Mobile-Ready:** Your feeds will look stunning on any screen size, on any device and in any container width
+* **Fully Customizable Feeds:** Adjust the width, height, number of photos, number of columns, image size, background color, image spacing and more
+* **Visual Customizer:** Customize your feed layout, color scheme, header style, post settings, lightbox, and much more – in just a few clicks
+* **Photo Display Options:** Choose to display thumbnail, medium, or full-size photos directly from your feed
+* **Beautiful Feed Header:** Add a striking header to top off your feed beautifully
+* **"Follow on Instagram" Button:** Increase followers by adding a "follow on Instagram" button at the bottom of your feed
+* **Flexible Photo Order:** Display your Instagram photos in chronological order or mix it up with a random arrangement
+* **Infinite Scroll:** Keep your visitors engaged by loading more of your Instagram photos with a handy "Load More" button
+* **Built-in Block:** Easily add your feed to posts and pages with our convenient block for the block editor
+* **Instagram Widget:** Embed on your site's widget-ready areas such as sidebar and footer in seconds
+* **GDPR Compliant:** Automatically integrates with many of the popular GDPR cookie consent plugins and includes a 1-click easy GDPR setting
+* **Designed for All Users:** Perfect for beginners and advanced users alike
+* **Advanced Customization:** Add your own custom CSS and JavaScript for advanced customizations
+* **Page Builder Compatible:** Fully compatible with Elementor, Divi, Beaver Builder and other popular page builders
 
-1. Install the Instagram Feed plugin either via the WordPress plugin directory, or by uploading the files to your web server (in the `/wp-content/plugins/` directory).
-2. Activate the Instagram Feed plugin through the 'Plugins' menu in WordPress.
-3. Navigate to the 'Instagram Feed' settings page to connect your Instagram account.
-4. Use the shortcode `[instagram-feed feed=1]` in your page, post or widget to display your Instagram photos.
-5. You can display multiple Instagram feeds by using shortcode options, for example: `[instagram-feed num=6 cols=3]`
+= Get More with Instagram Feed Pro =
 
-For simple step-by-step directions on how to set up the Instagram Feed plugin please refer to our [setup guide](http://smashballoon.com/instagram-feed/free/?utm_campaign=instagram-free-readme&utm_source=installation&utm_medium=setup 'Instagram Feed setup guide').
+Want to truly maximize your Instagram content and make it work harder for your brand?
 
-= Display your Feed =
+While Smash Balloon's Social Photo Feed offers a free way to get started, our Pro version offers advanced features to help you get complete control over the way you show your Instagram photos and videos to your website visitors.
 
-**Single Feed**
+The Pro version, known as Instagram Feed Pro, allows you to:
 
-Copy and paste the following shortcode directly into the page, post or widget where you'd like the Instagram feed to show up: `[instagram-feed]`
+* **Display hashtag feeds** - Curate dynamic content around specific Instagram hashtags
+[Check Out Instagram Hashtag Feed Demo](https://smashballoon.com/instagram-feed/demo/hashtag?utm_campaign=instagram-free-readme&utm_source=profeatures&utm_medium=hashtagdemo 'Instagram Hashtag Feed Demo')
 
-**Multiple Feeds**
+* **Show stunning lightboxes** - View photos, Instagram reels and videos in a popup lightbox directly on your site
 
-If you'd like to display multiple Instagram feeds then you can create multiple feeds and specify which feed you'd like to display using the feed ID like so: `[instagram-feed feed=2]`
+* **Add interactive elements** - Display captions and show the number of likes and comments for each post
 
-If you'd like to display feed from more than one account, connect multiple accounts and then create an additional feed. Embed it with the feed ID in the shortcode: `[instagram-feed feed=3]`
+* **Embed Instagram carousel** - Showcase eye-catching carousels from your posts
+[See Instagram Carousel Feed Demo](https://smashballoon.com/instagram-feed/demo/carousel?utm_campaign=instagram-free-readme&utm_source=profeatures&utm_medium=carouseldemo 'Instagram Carousel Feed Demo')
 
-You can display as many different Instagram feeds as you like, on either the same page or on different pages, by just using the shortcode options and the assigned feed ID below. For example:
-`[instagram-feed feed=1]`
-`[instagram-feed feed=2]`
-`[instagram-feed feed=3]`
+* **Choose from multiple layout options** - Use "Masonry" or "Highlight" layouts
+[View "Highlight" Layout in Action](https://smashballoon.com/instagram-feed/demo/highlight?utm_campaign=instagram-free-readme&utm_source=profeatures&utm_medium=highlightdemo 'Instagram Highlight Layout Demo')
 
-= Setting up the Free Instagram Feed WordPress Plugin =
+* **Use advanced feed moderation** - Hide or show specific posts in just a few clicks
 
-1) Once you've installed the Instagram Feed plugin click on the Instagram Feed item in your WordPress menu
+* **Filter Instagram posts** - Display Instagram content based on hashtags, keywords or specific user posts
 
-2) Follow the onboarding steps to connect an account and create your first feed.
+* **Create shoppable feeds** - Add customized links to each post, like link in bio, so you can direct your site visitors to the page you'd like
 
-3) Customize your feed with tons of settings and options to display it just how you would like.
+* **Use professionally-designed themes** - No need to start from scratch! Design beautiful feeds in minutes with pre-made feed themes to instantly create beautiful and unique feeds
 
-4) Once you've customized your feed, copy the [instagram-feed feed=1] shortcode.
+Plus, enjoy these Pro benefits:
 
-5) Paste it into any page, post or widget where you want the feed to appear. Alternatively, use our handy block to add it to a page.
+* **Priority Support:** Get quick and dedicated help from our support team
+* **Regular Updates:** Benefit from continuous plugin improvements and new features
 
-6) You can use our handy Instagram Feed widget to display a feed in a sidebar or other widget area.
+[Check Out the Pro Version](https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=profeatures&utm_medium=checkoutpro 'Instagram Feed Pro') | [Try the Pro Demo](https://smashballoon.com/instagram-feed/demo?utm_campaign=instagram-free-readme&utm_source=profeatures&utm_medium=trydemo 'Instagram Feed Pro Demo')
+
+= Why Over 1 Million Users Love Smash Balloon =
+
+Trusted by over 1 million websites, Smash Balloon is the leading solution for seamlessly integrating Instagram feeds onto your site.
+
+Our 4.9/5 star average rating from 4,000+ glowing reviews speaks for itself.
+
+= What Our Users Are Saying =
+
+> "Awesome plugin and support – Awesome plugin that just works! Contacted support this week and they've quickly given a custom solution for a specific query I had! Very happy customer!"
+> – @tomteaweb
+
+> "The best Instagram feed plugin – Whenever I need to display the Instagram feed in a WordPress site, I choose this plugin. It is not only easy to set up, but even in the free version you have enough features to have a nice feed. Do not spend more time looking for another Instagram feed plugin: This is the best!"
+> – @yordansoares
+
+> "Simple and concise – Excellent plugin. Simple and non-bloated. I had a couple small issues with the plugin when I first started using it, but a quick comment on the support forums got a new version pushed out the next day with the fix. Awesome support!"
+> – @joshjones
+
+> "Great plugin, greater support! – I've definitely noticed an increase in followers on Instagram since I added this plugin to my sidebar. Thanks for the help in making some adjustments…looks and works great!"
+> – @bnotp
+
+= Fast, Professional and Helpful Support =
+
+At Smash Balloon, we're dedicated to providing the most customizable, robust, and well-supported Instagram plugin available.
+
+Have a question, need help with a feature, or want to request a new feature?
+
+Our dedicated support team is just a quick message away, ready to provide top-notch assistance for both free and premium versions:
+
+* [Documentation](https://smashballoon.com/docs/instagram/?utm_campaign=instagram-free-readme&utm_source=support&utm_medium=docs)
+* [Free Support](https://wordpress.org/support/plugin/instagram-feed/) - Please open a ticket in the Support forum
+* [Premium Support](https://smashballoon.com/support/?utm_campaign=instagram-free-readme&utm_source=support&utm_medium=contact) - Premium users can reach out to us via this Contact Support form
+
+You can instantly unlock priority support when you upgrade to Instagram Feed Pro now.
+
+= 7 Reasons Why You Need Smash Balloon Social Photo Feed =
+
+1. **Boost Social Engagement** – Increase engagement between you and your Instagram followers
+2. **Save Time** – Automatically display your Instagram photos on your website
+3. **Display Your Content Your Way** – Customize your feeds to blend seamlessly with your site
+4. **Keep Your Site Looking Fresh** – Automatically push new Instagram content to your site
+5. **Super Simple Setup** – Get started in 30 seconds with no Developer account needed
+6. **Powers Instagram oEmbeds** – Maintain working Instagram embeds across your site
+7. **Professional Feed Themes** – Use ready-made themes for quick, beautiful displays
+
+= What Can It Do? =
+
+* Display Instagram photos from any account you own
+* Completely responsive and mobile ready
+* Display multiple feeds on the same page
+* Display posts from multiple Instagram User IDs
+* Built-in customization options
+* Infinite scroll with 'Load More' button
+* Plus more features added regularly!
+
+= Completely Customizable Feeds =
+
+* Set number of photos to display
+* Choose number of columns and photo sizes
+* Show/hide feed elements (header, buttons)
+* Control width, height and background color
+* Set spacing between photos
+* Display photos in chronological or random order
+* Customize button text and colors
+* Add custom CSS or JavaScript
+* Style multiple feeds differently
+* Plus more options added regularly!
+
+[Check Out the Pro Version](https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=footer&utm_medium=checkoutpro 'Instagram Feed Pro') | [Try the Pro Demo](https://smashballoon.com/instagram-feed/demo?utm_campaign=instagram-free-readme&utm_source=footer&utm_medium=trydemo 'Instagram Feed Pro Demo')
+
+= What's Next =
+
+If you like our WordPress Instagram plugin, then consider checking out our other projects:
+
+[OptinMonster](https://optinmonster.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Get more email subscribers with the most popular conversion optimization plugin for WordPress.
+[WPForms](https://wpforms.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – #1 drag & drop online form builder for WordPress (trusted by 5 million sites).
+[AIOSEO](https://aioseo.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – The original WordPress SEO plugin to help you rank higher in search results (trusted by over 3 million sites).
+[MonsterInsights](https://monsterinsights.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – See the stats that matter and grow your business with confidence. Best Google Analytics plugin for WordPress.
+[SeedProd](https://seedprod.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Create beautiful landing pages with our powerful drag & drop landing page builder.
+[WP Mail SMTP](https://wpmailsmtp.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Improve email deliverability for your contact form with the most popular SMTP plugin for WordPress.
+[WPCode](https://wpcode.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) - must have WordPress code snippet management plugin to help you future-proof website customization (trusted by 1.5 million sites).
+[Duplicator](https://duplicator.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) - popular WordPress backup and migration plugin used by over 1 million websites.
+[WP Simple Pay](https://wpsimplepay.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – #1 Stripe payments plugin for WordPress. Start accepting one-time or recurring payments without a shopping cart.
+[PushEngage](https://pushengage.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Connect with visitors after they leave your website with the leading web push notification plugin.
+[RafflePress](https://rafflepress.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Best WordPress giveaway and contest plugin to grow traffic and social followers.
+[TrustPulse](https://trustpulse.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Add real-time social proof notifications to boost your store conversions by up to 15%.
+[SearchWP](https://searchwp.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – The most advanced custom WordPress search plugin to improve WordPress search quality.
+[AffiliateWP](https://affiliatewp.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – #1 affiliate management plugin for WordPress. Add a referral program to your online store.
+[Easy Digital Downloads](https://easydigitaldownloads.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – The best WordPress eCommerce plugin to sell digital products (eBooks, software, music, and more).
+[WPCharitable](https://wpcharitable.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) - Top-rated WordPress donation and fundraising plugin for WordPress.
+
+Visit [WPBeginner](https://wpbeginner.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) to learn from our [WordPress Tutorials](https://www.wpbeginner.com/category/wp-tutorials/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) and about the [best WordPress plugins](https://www.wpbeginner.com/category/plugins/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links).
 
 == Frequently Asked Questions ==
 
@@ -138,10 +209,10 @@ We've made it super easy. Just follow the steps outlined when onboarding and you
 There are a few common reasons for this:
 
 * **Your Access Token may not be valid.** Try clicking on the blue Instagram login button on the plugin's Settings page again and copy and paste the Instagram token it gives you into the plugin's Access Token field.
-* **The plugin's JavaScript file isn't included in your page.** This is most likely because your WordPress theme is missing the WordPress [wp_footer](http://codex.wordpress.org/Function_Reference/wp_footer) function which is required for plugins to be able to add their JavaScript files to your page. You can fix this by opening your theme's **footer.php** file and adding the following directly before the closing </body> tag between two php tags: `wp_footer();`
+* **The plugin's JavaScript file isn't included in your page.** This is most likely because your WordPress theme is missing the WordPress [wp_footer](https://codex.wordpress.org/Function_Reference/wp_footer) function which is required for plugins to be able to add their JavaScript files to your page. You can fix this by opening your theme's **footer.php** file and adding the following directly before the closing </body> tag between two php tags: `wp_footer();`
 * **Your website may contain a JavaScript error which is preventing JavaScript from running.** The plugin uses JavaScript to load the Instagram photos into your page and so needs JavaScript to be running in order to work. You would need to remove any existing JavaScript errors on your website for the plugin to be able to load in your feed.
 
-If you're still having an issue displaying your feed then please open a ticket in the [Support forum](http://wordpress.org/support/plugin/instagram-feed 'Instagram Feed Support Forum') with a link to the page where you're trying to display the Instagram feed and, if possible, a link to your Instagram account.
+If you're still having an issue displaying your feed then please open a ticket in the [Support forum](https://wordpress.org/support/plugin/instagram-feed 'Instagram Feed Support Forum') with a link to the page where you're trying to display the Instagram feed and, if possible, a link to your Instagram account.
 
 = Are there any security issues with using an Access Token on my site? =
 
@@ -149,11 +220,11 @@ Nope. The Access Token used in the plugin is a "read only" token, which means th
 
 = Can I view the full-size photos or play Instagram videos directly on my website?  =
 
-This is a feature of the [Pro version](http://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=faqs&utm_medium=fullsize 'Instagram Feed Pro') of the plugin, which allows you to view the photos in a pop-up lightbox, support videos, display captions, display photos by hashtag + more!
+This is a feature of the [Pro version](https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=faqs&utm_medium=fullsize 'Instagram Feed Pro') of the plugin, which allows you to view the photos in a pop-up lightbox, support videos, display captions, display photos by hashtag + more!
 
 = How do I embed my feed directly into a WordPress page template? =
 
-You can embed your feed directly into a template file by using the WordPress [do_shortcode](http://codex.wordpress.org/Function_Reference/do_shortcode) function: `<?php echo do_shortcode('[instagram-feed]'); ?>`.
+You can embed your feed directly into a template file by using the WordPress [do_shortcode](https://codex.wordpress.org/Function_Reference/do_shortcode) function: `<?php echo do_shortcode('[instagram-feed]'); ?>`.
 
 = My Feed Stopped Working – All I see is a Loading Symbol =
 
@@ -222,7 +293,7 @@ There are plenty of options to customize your feed! See the list below:
 * **follow text color** - The text color of the 'Follow on Instagram' button.
 * **follow text** - The text used for the 'Follow on Instagram' button - Example: "Follow me"
 
-For more options, check out the [Pro version](http://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=whatare&utm_medium=proshortcode 'Instagram Feed Pro').
+For more options, check out the [Pro version](https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free-readme&utm_source=whatare&utm_medium=proshortcode 'Instagram Feed Pro').
 
 For more FAQs related to the Instagram Feed plugin please visit the [FAQ section](https://smashballoon.com/instagram-feed/support/faq/?utm_campaign=instagram-free-readme&utm_source=whatare&utm_medium=faqs 'Instagram Feed plugin FAQs') on our website.
 
@@ -235,81 +306,10 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 5. Customize layouts, styles, colors, and more
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
-== Other Notes ==
-
-Add beautifully clean, customizable, and responsive Instagram feeds to your website. Super simple to set up and has tons of customization options to seamlessly match the look and feel of your site.
-
-= Why do I need this? =
-
-**Increase Social Engagement**
-Increase engagement between you and your Instagram followers. Increase your number of Instagram followers by displaying your Instagram content directly on your site.
-
-**Save Time**
-Don't have time to update your photos on your site? Save time and increase efficiency by only posting your photos to Instagram and automatically displaying them on your website.
-
-**Display Your Content Your Way**
-Customize your Instagram feeds to look exactly the way you want, so that they blend seamlessly into your site or pop out at your visitors!
-
-**Keep Your Site Looking Fresh**
-Automatically push your new Instagram content straight to your site to keep it looking fresh and keeping your audience engaged.
-
-**No Coding Required**
-Choose from tons of built-in Instagram Feed customization options to create a truly unique feed of your Instagram content.
-
-**Super simple to set up**
-Once installed, you can be displaying your Instagram photos within 30 seconds! No confusing steps or Instagram Developer account needed.
-
-**Mind-blowing Customer Support**
-We understand that sometimes you need help, have issues or just have questions. We love our users and strive to provide the best support experience in the business. We're experts in the Instagram API and can provide unparalleled service and expertise. If you need support then just let us know and we'll get back to you right away.
-
-= What can it do? =
-
-* Display Instagram photos from any Instagram account you own.
-* Completely responsive and mobile ready –your Instagram feed layout looks great on any screen size and in any container width
-* Display multiple Instagram feeds on the same page or on different pages throughout your site by using our powerful Instagram Feed shortcode options
-* Display posts from multiple Instagram User IDs
-* Use the built-in customization options to completely customize each of your Instagram feeds
-* Infinitely load more of your Instagram photos with the 'Load More' button
-* Plus more features added all the time!
-
-= Completely Customizable =
-
-* By default the Instagram feed will adopt the style of your website, but can be completely customized to look however you like!
-* Set the number of Instagram photos you want to display
-* Choose how many columns to display your Instagram photos in and the size of the Instagram photos
-* Choose to show or hide certain parts of the Instagram feed, such as the header, 'Load More', and 'Follow' buttons
-* Control the width, height and background color of your Instagram feed
-* Set the spacing/padding between the Instagram photos
-* Display Instagram photos in chronological or random order
-* Use your own custom text and colors for the 'Load More' and 'Follow' buttons
-* Enter your own custom CSS or JavaScript for even deeper customization
-* Use the shortcode options to style multiple Instagram feeds in completely different ways
-* Plus more customization options added all the time!
-
-= What's Next =
-
-If you like our WordPress Instagram plugin, then consider checking out our other projects:
-
-[OptinMonster](https://optinmonster.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Get more email subscribers with the most popular conversion optimization plugin for WordPress.
-[WPForms](https://wpforms.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – #1 drag & drop online form builder for WordPress (trusted by 5 million sites).
-[AIOSEO](https://aioseo.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – The original WordPress SEO plugin to help you rank higher in search results (trusted by over 3 million sites).
-[MonsterInsights](https://monsterinsights.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – See the stats that matter and grow your business with confidence. Best Google Analytics plugin for WordPress.
-[SeedProd](https://seedprod.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Create beautiful landing pages with our powerful drag & drop landing page builder.
-[WP Mail SMTP](https://wpmailsmtp.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Improve email deliverability for your contact form with the most popular SMTP plugin for WordPress.
-[WPCode](https://wpcode.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) - must have WordPress code snippet management plugin to help you future-proof website customization (trusted by 1.5 million sites).
-[Duplicator](https://duplicator.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) - popular WordPress backup and migration plugin used by over 1 million websites.
-[WP Simple Pay](https://wpsimplepay.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – #1 Stripe payments plugin for WordPress. Start accepting one-time or recurring payments without a shopping cart.
-[PushEngage](https://pushengage.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Connect with visitors after they leave your website with the leading web push notification plugin.
-[RafflePress](https://rafflepress.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Best WordPress giveaway and contest plugin to grow traffic and social followers.
-[TrustPulse](https://trustpulse.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – Add real-time social proof notifications to boost your store conversions by up to 15%.
-[SearchWP](https://searchwp.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – The most advanced custom WordPress search plugin to improve WordPress search quality.
-[AffiliateWP](https://affiliatewp.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – #1 affiliate management plugin for WordPress. Add a referral program to your online store.
-[Easy Digital Downloads](https://easydigitaldownloads.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) – The best WordPress eCommerce plugin to sell digital products (eBooks, software, music, and more).
-[WPCharitable](https://wpcharitable.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) - Top-rated WordPress donation and fundraising plugin for WordPress.
-
-Visit [WPBeginner](https://wpbeginner.com/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) to learn from our [WordPress Tutorials](https://www.wpbeginner.com/category/wp-tutorials/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links) and about the [best WordPress plugins](https://www.wpbeginner.com/category/plugins/?utm_campaign=instagram-free&utm_source=readme&utm_medium=whats-next-links).
-
 == Changelog ==
+= 6.6.1 =
+* Tweak: Added support for our new [Feed Analytics](https://smashballoon.com/?utm_campaign=instagram-free-readme&utm_source=changelog&utm_medium=feedanalyticsannouncement) product. Get insights as to how your feeds are being used by site visitors.
+
 = 6.6.0 =
 * Important: For users with a personal account connection, you will need to reconnect your account before December 2024 after updating to version 6.6 or higher. [Learn more](https://smashballoon.com/doc/instagram-business-basic/?utm_campaign=instagram-free-readme&utm_source=changelog&utm_medium=basicdisplayapichange "Learn more")
 * New: Added support for GDPR Cookie Compliance by Moove Agency and Real Cookie Banner GDPR plugins.

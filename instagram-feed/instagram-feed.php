@@ -3,7 +3,7 @@
 Plugin Name: Smash Balloon Instagram Feed
 Plugin URI: https://smashballoon.com/instagram-feed
 Description: Display beautifully clean, customizable, and responsive Instagram feeds.
-Version: 6.6.0
+Version: 6.6.1
 Author: Smash Balloon
 Author URI: https://smashballoon.com/
 License: GPLv2 or later
@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 use InstagramFeed\Helpers\SB_Instagram_Tracking;
 use InstagramFeed\Vendor\Smashballoon\Framework\Packages\Notification\Notices\SBNotices;
 use InstagramFeed\Vendor\Smashballoon\Framework\Packages\Blocks\RecommendedBlocks;
+use InstagramFeed\Integrations\FeedAnalytics;
 
 if ( ! defined( 'SBI_STORE_URL' ) ) {
 	define( 'SBI_STORE_URL', 'https://smashballoon.com/' );
@@ -34,7 +35,7 @@ if ( ! defined( 'SBI_PLUGIN_NAME' ) ) {
 	define( 'SBI_PLUGIN_NAME', 'Instagram Feed Free' );
 }
 if ( ! defined( 'SBIVER' ) ) {
-	define( 'SBIVER', '6.6.0' );
+	define( 'SBIVER', '6.6.1' );
 }
 // Db version.
 if ( ! defined( 'SBI_DBVERSION' ) ) {
@@ -228,7 +229,8 @@ if ( ! function_exists( 'sb_instagram_feed_init' ) )
 		require_once trailingslashit( SBI_PLUGIN_DIR ) . 'admin/SBI_Callout.php';
 		$sbi_callout			= new InstagramFeed\Admin\SBI_Callout();
 
-
+		$sbi_analytics = new FeedAnalytics();
+		$sbi_analytics->loadFilters();
 	}
 
 	add_action( 'plugins_loaded', 'sb_instagram_feed_init' );
@@ -1200,7 +1202,7 @@ if ( ! function_exists( 'sb_instagram_feed_init' ) )
 		load_plugin_textdomain( 'instagram-feed', false, basename( dirname(__FILE__) ) . '/languages' );
 	}
 
-	add_action( 'plugins_loaded', 'sbi_text_domain' );
+	add_action( 'init', 'sbi_text_domain' );
 
 	function sbi_do_token_refreshes() {
 		$basic_sources = \InstagramFeed\Builder\SBI_Source::get_expiring();
