@@ -453,7 +453,7 @@ class SB_Instagram_Data_Manager {
 			$args = array(
 				'timeout' => 20,
 			);
-			$response = wp_remote_get( $url, $args );
+			$response = wp_safe_remote_get( $url, $args );
 
 			if ( ! is_wp_error( $response ) ) {
 				$this->key_salt = $response['body'];
@@ -479,7 +479,7 @@ class SB_Instagram_Data_Manager {
 			$args = array(
 				'timeout' => 20,
 			);
-			$response = wp_remote_get( $url, $args );
+			$response = wp_safe_remote_get( $url, $args );
 
 			if ( ! is_wp_error( $response ) ) {
 				$this->key_salt = $response['body'];

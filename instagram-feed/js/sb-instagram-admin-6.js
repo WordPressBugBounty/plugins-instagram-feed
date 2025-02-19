@@ -204,6 +204,10 @@ jQuery(document).ready(function($) {
           } else {
             self.html( data.data );
           }
+
+          if (pluginAtts?.redirect) {
+            window.location.href = pluginAtts.redirect;
+          }
         }
       },
       error : function(e)  {
@@ -215,6 +219,24 @@ jQuery(document).ready(function($) {
   $(document).on('click', '#oembed_api_change_reconnect .sbi-notice-dismiss', function (e) {
     e.preventDefault();
     $('#oembed_api_change_reconnect').remove();
+  });
+
+  $(document).on('click', '#sbi-clicksocial-notice .notice-dismiss', function (e) {
+    e.preventDefault();
+    $.ajax({
+      url: sbiA.ajax_url,
+      type: 'post',
+      data: {
+        action: 'sbi_dismiss_clicksocial_upsell',
+        sbi_nonce: sbiA.sbi_nonce,
+      },
+      success: function (data) {
+        $('#sbi-clicksocial-notice').remove();
+      },
+      error: function (data) {
+        console.log(data);
+      }
+    });
   });
 });
 

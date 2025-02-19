@@ -1,11 +1,11 @@
 <div class="sbi-fb-full-wrapper sbi-fb-fs">
     <?php
-        /**
-         * SBI Admin Notices
-         * 
-         * @since 4.0
-         */
-        do_action('sbi_admin_notices'); 
+    /**
+     * SBI Admin Notices
+     * 
+     * @since 4.0
+     */
+    do_action('sbi_admin_notices');
     ?>
     <div class="sbi-sb-container">
         <div class="sbi-section-header">
@@ -29,10 +29,10 @@
 
         <div class="sbi-section-second-header">
             <h3>{{genericText.title2}}</h3>
-            <p>{{genericText.description2}}</p>
+            <p v-html="genericText.description2" />
         </div>
 
-        <div class="sbi-plugins-boxes-container">
+        <div class="sbi-plugins-boxes-container sbi-feed-plugins">
             <div class="sb-plugins-box" v-for="(plugin, name, index) in plugins">
                 <div class="icon"><img :src="plugin.icon" :alt="plugin.title"></div>
                 <div class="plugin-box-content">
@@ -41,47 +41,32 @@
                     <div class="sb-action-buttons">
                         <button class="sbi-btn sb-btn-add" v-if="!plugin.installed" @click="installPlugin(plugin.download_plugin, name, index, 'plugin')">
                             <span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
+                            <span v-html="icons.installIcon" v-if="!btnClicked || btnName != name"></span>
                             {{buttons.install}}
                         </button>
                         <button class="sbi-btn sb-btn-installed" v-if="plugin.installed">
                             <span v-html="icons.checkmarkSVG"></span>
                             {{buttons.installed}}
                         </button>
-                        <button class="sbi-btn sb-btn-activate" v-if="plugin.installed && ! plugin.activated" @click="activatePlugin(plugin.plugin, name, index, 'plugin')" :class="btnStatus">
-                            <span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
-                            {{buttons.activate}}
-                        </button>
-                        <button class="sbi-btn sb-btn-deactivate" v-if="plugin.installed && plugin.activated && name != 'facebook'" @click="deactivatePlugin(plugin.plugin, name, index, 'plugin')" :class="btnStatus">
-                            <span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
-                            {{buttons.deactivate}}
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="sb-plugins-box sbi-social-wall-plugin-box">
-                <span class="sb-box-bg-image">
-                    <img :src="social_wall.graphic">
-                </span>
+            <div class="sb-plugins-box sbi-social-wall-plugin-box" v-for="(plugin, name, index) in proPlugins">
+                <div class="icon">
+                    <img :src="plugin.icon" :alt="plugin.title">
+                </div>
                 <div class="plugin-box-content">
-                    <h4 class="sb-box-title">{{social_wall.title}}</h4>
-                    <p class="sb-box-description">{{social_wall.description}}</p>
+                    <h4 class="sb-box-title">{{plugin.title}}</h4>
+                    <p class="sb-box-description">{{plugin.description}}</p>
                     <div class="sb-action-buttons">
-                        <a class="sbi-btn sb-btn-add" v-if="!social_wall.installed" :href="social_wall.permalink" target="_blank">
+                        <a class="sbi-btn sb-btn-add" v-if="!plugin.installed" :href="plugin.permalink" target="_blank">
                             {{buttons.viewDemo}}
                             <span v-html="icons.link"></span>
                         </a>
-                        <button class="sbi-btn sb-btn-installed" v-if="social_wall.installed">
+                        <button class="sbi-btn sb-btn-installed" v-if="plugin.installed">
                             <span v-html="icons.checkmarkSVG"></span>
                             {{buttons.installed}}
-                        </button>
-                        <button class="sbi-btn sb-btn-activate" v-if="social_wall.installed && ! social_wall.activated" @click="activatePlugin(social_wall.plugin, 'social_wall', 1, 'plugin')" :class="btnStatus">
-                            <span v-html="buttonIcon()" v-if="btnClicked == 2 && btnName == 'social_wall'"></span>
-                            {{buttons.activate}}
-                        </button>
-                        <button class="sbi-btn sb-btn-deactivate" v-if="social_wall.installed && social_wall.activated" @click="deactivatePlugin(social_wall.plugin, 'social_wall', 1, 'plugin')" :class="btnStatus">
-                            <span v-html="buttonIcon()" v-if="btnClicked == 2 && btnName == 'social_wall'"></span>
-                            {{buttons.deactivate}}
                         </button>
                     </div>
                 </div>
@@ -101,19 +86,12 @@
                     <div class="sb-action-buttons">
                         <button class="sbi-btn sb-btn-add" v-if="!plugin.installed" @click="installPlugin(plugin.download_plugin, name, index, 'recommended_plugin')">
                             <span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
+                            <span v-html="icons.installIcon" v-if="!btnClicked || btnName != name"></span>
                             {{buttons.install}}
                         </button>
                         <button class="sbi-btn sb-btn-installed" v-if="plugin.installed">
                             <span v-html="icons.checkmarkSVG"></span>
                             {{buttons.installed}}
-                        </button>
-                        <button class="sbi-btn sb-btn-activate" v-if="plugin.installed && ! plugin.activated" @click="activatePlugin(plugin.plugin, name, index, 'recommended_plugin')" :class="btnStatus">
-                            <span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
-                            {{buttons.activate}}
-                        </button>
-                        <button class="sbi-btn sb-btn-deactivate" v-if="plugin.installed && plugin.activated && name != 'facebook'" @click="deactivatePlugin(plugin.plugin, name, index, 'recommended_plugin')" :class="btnStatus">
-                            <span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
-                            {{buttons.deactivate}}
                         </button>
                     </div>
                 </div>

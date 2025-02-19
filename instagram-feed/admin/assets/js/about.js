@@ -4,6 +4,7 @@ var extensions_data = {
     extentions_bundle: sbi_about.extentions_bundle,
     supportPageUrl: sbi_about.supportPageUrl,
     plugins: sbi_about.pluginsInfo,
+    proPlugins: sbi_about.proPluginsInfo,
     stickyWidget: false,
     socialWallActivated: sbi_about.socialWallActivated,
     socialWallLinks: sbi_about.socialWallLinks,

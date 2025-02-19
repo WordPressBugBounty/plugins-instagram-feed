@@ -2,6 +2,7 @@
 
 namespace InstagramFeed\Vendor\Smashballoon\Framework\Utilities\PlatformTracking\Platforms;
 
+/** @internal */
 interface PlatformInterface
 {
     /**

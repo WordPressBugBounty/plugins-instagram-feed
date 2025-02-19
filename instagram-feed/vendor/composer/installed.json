@@ -1,6 +1,49 @@
 {
     "packages": [
         {
+            "name": "brumann\/polyfill-unserialize",
+            "version": "v2.0.0",
+            "version_normalized": "2.0.0.0",
+            "source": {
+                "type": "git",
+                "url": "https:\/\/github.com\/dbrumann\/polyfill-unserialize.git",
+                "reference": "46e5c18ee87d8a9b5765ef95468c1ac27bd107bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https:\/\/api.github.com\/repos\/dbrumann\/polyfill-unserialize\/zipball\/46e5c18ee87d8a9b5765ef95468c1ac27bd107bf",
+                "reference": "46e5c18ee87d8a9b5765ef95468c1ac27bd107bf",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3|^7.0"
+            },
+            "time": "2020-07-24T10:16:53+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "InstagramFeed\\Vendor\\Brumann\\Polyfill\\": "src\/"
+                }
+            },
+            "notification-url": "https:\/\/packagist.org\/downloads\/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Denis Brumann",
+                    "email": "denis.brumann@sensiolabs.de"
+                }
+            ],
+            "description": "Backports unserialize options introduced in PHP 7.0 to older PHP versions.",
+            "support": {
+                "issues": "https:\/\/github.com\/dbrumann\/polyfill-unserialize\/issues",
+                "source": "https:\/\/github.com\/dbrumann\/polyfill-unserialize\/tree\/v2.0.0"
+            },
+            "install-path": "..\/brumann\/polyfill-unserialize"
+        },
+        {
             "name": "smashballoon\/framework",
             "version": "dev-master",
             "version_normalized": "dev-master",

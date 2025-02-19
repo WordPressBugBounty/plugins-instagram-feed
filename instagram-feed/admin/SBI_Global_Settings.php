@@ -598,6 +598,7 @@ class SBI_Global_Settings {
 
 		global $sbi_notices;
 		$sbi_notices->remove_notice( 'critical_error' );
+		$sbi_notices->remove_notice( 'database_error' );
 
 		$user_id = get_current_user_id();
 		update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
@@ -629,9 +630,9 @@ class SBI_Global_Settings {
 		if ( ! sbi_current_user_can( 'manage_instagram_feed_options' ) ) {
 			wp_send_json_error();
 		}
-		sbi_create_database_table( false );
+		sbi_create_database_table();
 		\SB_Instagram_Feed_Locator::create_table();
-		\InstagramFeed\Builder\SBI_Db::create_tables( false );
+		\InstagramFeed\Builder\SBI_Db::create_tables();
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . SBI_INSTAGRAM_POSTS_TYPE;
@@ -641,7 +642,12 @@ class SBI_Global_Settings {
 		}
 
 		global $sbi_notices;
+		global $sb_instagram_posts_manager;
+
 		$sbi_notices->remove_notice( 'database_create' );
+		$sbi_notices->remove_notice('database_error');
+		$sb_instagram_posts_manager->remove_error('database_error');
+
 		wp_send_json_success( array( 'message' => '<div style="margin-top: 10px;">' . esc_html__( 'Success! Try creating a feed and connecting a source.', 'instagram-feed' ) . '</div>' ) );
 	}
 
@@ -800,7 +806,7 @@ class SBI_Global_Settings {
 		$sbi_status  = 'inactive';
 		
 		global $wp_version;
-		$can_install_automator_plugin = ( version_compare($wp_version,'5.3') >= 0 ) ? true : false;
+		$is_clicksocial_supported = (version_compare($wp_version, '6.0') >= 0);
 
 		$model = $this->get_settings_data();
 		$exported_feeds = \InstagramFeed\Builder\SBI_Db::feeds_query();
@@ -832,7 +838,7 @@ class SBI_Global_Settings {
 
 		$current_user_id = get_current_user_id();
 		$get_sb_active_plugins_info = Util::get_sb_active_plugins_info();
-		$should_hide_automtor_notice = ( get_user_meta( $current_user_id, 'sbi_dismiss_automator_notice' ) ) ? true : false;
+		$hide_clicksocial_notice = get_user_meta($current_user_id, 'sbi_hide_clicksocial_notice', true);
 
 		wp_enqueue_style(
 			'settings-style',
@@ -882,7 +888,7 @@ class SBI_Global_Settings {
 			'supportPageUrl'    => admin_url( 'admin.php?page=sbi-support' ),
 			'builderUrl'		=> admin_url( 'admin.php?page=sbi-feed-builder' ),
 			'links'				=> $this->get_links_with_utm(),
-			'uoActive'			=>  is_plugin_active( 'uncanny-automator/uncanny-automator.php' ),
+			'clickSocialActive'	=> is_plugin_active('click-social/click-social.php'),
 			'pluginItemName'	=> SBI_PLUGIN_NAME,
 			'licenseType'		=> 'free',
 			'licenseKey'		=> $license_key,
@@ -897,18 +903,15 @@ class SBI_Global_Settings {
 			'model'				=> $model,
 			'feeds'				=> $feeds,
 			'sources'			=> $sources_list,
-			//'locales'			=> SBI_Settings::locales(),
-			//'timezones'			=> SBI_Settings::timezones(),
-			//'socialWallLinks'   => \InstagramFeed\Builder\SBI_Feed_Builder::get_social_wall_links(),
 			'socialWallLinks'   => \InstagramFeed\Builder\SBI_Feed_Builder::get_social_wall_links(),
 			'socialWallActivated' => is_plugin_active( 'social-wall/social-wall.php' ),
 			'genericText'       => \InstagramFeed\Builder\SBI_Feed_Builder::get_generic_text(),
 			'legacyCSSSettings' => Util::sbi_show_legacy_css_settings(),
 			'generalTab'		=> array(
-				'uoInstallNotice' => array(
-					'notice' => __( 'Post to Instagram right from WordPress with Uncanny Automator', 'instagram-feed' ),
-					'learnMore' => __( 'Learn More', 'instagram feed' ),
-					'logo' => '<svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 13.5C9.5 13.87 9.4 14.2 9.22 14.5C8.88 13.91 8.24 13.5 7.5 13.5C6.76 13.5 6.12 13.91 5.78 14.5C5.61 14.2 5.5 13.87 5.5 13.5C5.5 12.4 6.4 11.5 7.5 11.5C8.6 11.5 9.5 12.4 9.5 13.5ZM22 13V16C22 16.55 21.55 17 21 17H20V18C20 19.11 19.11 20 18 20H4C3.46957 20 2.96086 19.7893 2.58579 19.4142C2.21071 19.0391 2 18.5304 2 18V17H1C0.45 17 0 16.55 0 16V13C0 12.45 0.45 12 1 12H2C2 8.13 5.13 5 9 5H10V3.73C9.4 3.39 9 2.74 9 2C9 0.9 9.9 0 11 0C12.1 0 13 0.9 13 2C13 2.74 12.6 3.39 12 3.73V5H13C16.87 5 20 8.13 20 12H21C21.55 12 22 12.45 22 13ZM18 15V12C18 9.24 15.76 7 13 7H9C6.24 7 4 9.24 4 12V15V18H18V15ZM14.5 11.5C13.4 11.5 12.5 12.4 12.5 13.5C12.5 13.87 12.61 14.2 12.78 14.5C13.12 13.91 13.76 13.5 14.5 13.5C15.24 13.5 15.88 13.91 16.22 14.5C16.4 14.2 16.5 13.87 16.5 13.5C16.5 12.9696 16.2893 12.4609 15.9142 12.0858C15.5391 11.7107 15.0304 11.5 14.5 11.5Z" fill="#663D00"/></svg>',
+				'clickSocialInstallNotice' => array(
+					'notice' => __('Post to Instagram right from WordPress with ClickSocial by Smash Balloon', 'instagram-feed'),
+					'learnMore' => __('Learn More', 'instagram feed'),
+					'logo' => '<svg width="23" height="25" viewBox="0 0 23 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.86377 6.92969L5.07657 8.29316C2.61293 12.5603 4.07496 18.0167 8.34211 20.4803V20.4803C12.6092 22.9439 18.0656 21.4819 20.5293 17.2148L21.3165 15.8513" stroke="#663D00" stroke-width="3.1488"/><line x1="14.5656" y1="1.10629" x2="8.53041" y2="11.5596" stroke="#663D00" stroke-width="3.1488"/><path d="M16.1455 6.8667L12.2095 13.6841" stroke="#663D00" stroke-width="3.1488"/><path d="M18.8931 10.8765L16.0067 15.8759" stroke="#663D00" stroke-width="3.1488"/></svg>',
 					'closeIcon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="#663D00"/></svg>'
 				),
 				'licenseBox'	=> array(
@@ -1111,29 +1114,29 @@ class SBI_Global_Settings {
 			),
 
 			'selectSourceScreen' => \InstagramFeed\Builder\SBI_Feed_Builder::select_source_screen_text(),
-			'uncannyAutomatorScreen' => array(
-				'heading' => __( 'Automatically post from WordPress to Instagram with the #1 automation plugin', 'instagram-feed' ),
-				'description' => __( 'Uncanny Automator lets you easily automate your WordPress site.  Automatically push new blog posts to your Instagram Business account (and Facebook and Twitter too).', 'instagram-feed' ),
-				'integrationLogo' => SBI_PLUGIN_URL . '/admin/assets/img/instagram-with-uncanny-automator.png',
+			'clickSocialScreen' => array(
+				'heading' => __('Promote your blog and post from WordPress to Instagram with ClickSocial', 'instagram-feed'),
+				'description' => __('ClickSocial by Smash Balloon lets you easily promote your blog and schedule social media posts.  Automatically post to your Instagram Business account (and Facebook and Twitter too).', 'instagram-feed'),
+				'integrationLogo' => SBI_PLUGIN_URL . '/admin/assets/img/instagram-clicksocial.png',
 				'installStep' => array(
-					'title' => __( 'Install and activate Uncanny Automator', 'instagram-feed' ),
-					'description' => __( 'The plugin is installed from the Wordpress.org repository', 'instagram-feed' ),
-					'icon' => SBI_PLUGIN_URL . '/admin/assets/img/uncanny-automator-logo.png',
+					'title' => __('Install and activate ClickSocial', 'instagram-feed'),
+					'description' => __('The plugin is installed from the Wordpress.org repository', 'instagram-feed'),
+					'icon' => \InstagramFeed\Builder\SBI_Feed_Builder::builder_svg_icons('clickSocialInstall'),
 				),
 				'setupStep' => array(
-					'title' => __( 'Set up Uncanny Automator', 'instagram-feed' ),
-					'description' => __( 'Connect Uncanny Automator to your Instagram account', 'instagram-feed' ),
-					'icon' => SBI_PLUGIN_URL . '/admin/assets/img/setup-uncanny-automator.png',
+					'title' => __('Set up ClickSocial', 'instagram-feed'),
+					'description' => __('Connect ClickSocial to your Instagram Account', 'instagram-feed'),
+					'icon' => \InstagramFeed\Builder\SBI_Feed_Builder::builder_svg_icons('clickSocialSetup'),
 				),
-				'shouldHideAutomatorNotice' => $should_hide_automtor_notice,
-				'canInstallAutomatorPlugin' => $can_install_automator_plugin,
-				'isPluginInstalled' => $get_sb_active_plugins_info['is_uncanny_automator_installed'],
-				'isPluginActive' => is_plugin_active($get_sb_active_plugins_info['uncanny_automator_plugin']),
-				'pluginDownloadPath' => $get_sb_active_plugins_info['uncanny_automator_download_plugin'],
-				'automatorPlugin' => $get_sb_active_plugins_info['uncanny_automator_plugin'],
-				'installSVG' => '<svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.213 3.34015C11.2019 2.51003 9.96799 1.99743 8.66634 1.86682V3.21349C9.63967 3.33349 10.5263 3.72015 11.2663 4.29349L12.213 3.34015ZM13.2863 7.83349H14.633C14.4997 6.49349 13.9663 5.27349 13.1597 4.28682L12.2063 5.23349C12.7944 5.98679 13.1676 6.88523 13.2863 7.83349ZM12.2063 11.7668L13.1597 12.7202C13.9887 11.7084 14.5012 10.4748 14.633 9.17349H13.2863C13.1663 10.1194 12.7932 11.0153 12.2063 11.7668ZM8.66634 13.7868V15.1335C10.0063 15.0002 11.2263 14.4668 12.213 13.6602L11.2597 12.7068C10.5263 13.2802 9.63967 13.6668 8.66634 13.7868ZM10.393 7.56015L8.66634 9.28015V5.16682H7.33301V9.28015L5.60634 7.55349L4.66634 8.50015L7.99967 11.8335L11.333 8.50015L10.393 7.56015ZM7.33301 13.7868V15.1335C3.96634 14.8002 1.33301 11.9602 1.33301 8.50015C1.33301 5.04015 3.96634 2.20015 7.33301 1.86682V3.21349C4.69967 3.54015 2.66634 5.78015 2.66634 8.50015C2.66634 11.2202 4.69967 13.4602 7.33301 13.7868Z" fill="white"/></svg>',
-				'enableSetupStep' => is_plugin_active($get_sb_active_plugins_info['uncanny_automator_plugin']),
-				'setupPage' => '/edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=instagram'
+				'shouldHideClickSocialNotice' => $hide_clicksocial_notice,
+				'isClickSocialSupported' => $is_clicksocial_supported,
+				'isPluginInstalled' => $get_sb_active_plugins_info['is_clicksocial_installed'],
+				'isPluginActive' => is_plugin_active($get_sb_active_plugins_info['clicksocial_plugin']),
+				'pluginDownloadPath' => $get_sb_active_plugins_info['clicksocial_path'],
+				'clickSocialPlugin' => $get_sb_active_plugins_info['clicksocial_plugin'],
+				'installSVG' => \InstagramFeed\Builder\SBI_Feed_Builder::builder_svg_icons('installPlugin'),
+				'enableSetupStep' => is_plugin_active($get_sb_active_plugins_info['clicksocial_plugin']),
+				'setupPage' => 'admin.php?page=click-social'
 			),
 			'nextCheck'	=> $this->get_cron_next_check(),
 			'loaderSVG' => '<svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve"><path fill="#fff" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h6.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"/></path></svg>',
@@ -1323,7 +1326,7 @@ class SBI_Global_Settings {
 	 * @since 6.0
 	 */
 	public function global_settings(){
-		\InstagramFeed\SBI_View::render( 'settings.index' );
+		\InstagramFeed\SBI_View::render( 'settings.page' );
 	}
 
 }

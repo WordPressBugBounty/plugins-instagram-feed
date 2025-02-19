@@ -829,6 +829,6 @@ class SBI_Support {
 	 * @since 6.0
 	 */
 	public function support_page() {
-		SBI_View::render( 'support.index' );
+		SBI_View::render( 'support.page' );
 	}
 }

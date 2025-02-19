@@ -41,49 +41,67 @@ class Util {
 		}
 		$installed_plugins = get_plugins();
 
+		$is_tiktok_installed = false;
+		$tiktok_plugin       = 'feeds-for-tiktok/feeds-for-tiktok.php';
+		if (isset($installed_plugins['tiktok-feeds-pro/tiktok-feeds-pro.php'])) {
+			$is_tiktok_installed = true;
+			$tiktok_plugin       = 'tiktok-feeds-pro/tiktok-feeds-pro.php';
+		} elseif (isset($installed_plugins['feeds-for-tiktok/feeds-for-tiktok.php'])) {
+			$is_tiktok_installed = true;
+		}
+
+		$is_reviews_installed = false;
+		$reviews_plugin       = 'reviews-feed/sb-reviews.php';
+		if (isset($installed_plugins['reviews-feed-pro/sb-reviews-pro.php'])) {
+			$is_reviews_installed = true;
+			$reviews_plugin       = 'reviews-feed-pro/sb-reviews-pro.php';
+		} elseif (isset($installed_plugins['reviews-feed/sb-reviews.php'])) {
+			$is_reviews_installed = true;
+		}
+
 		$is_facebook_installed = false;
 		$facebook_plugin = 'custom-facebook-feed/custom-facebook-feed.php';
-		if ( isset( $installed_plugins['custom-facebook-feed-pro/custom-facebook-feed.php'] ) ) {
+		if (isset($installed_plugins['custom-facebook-feed-pro/custom-facebook-feed.php'])) {
 			$is_facebook_installed = true;
 			$facebook_plugin = 'custom-facebook-feed-pro/custom-facebook-feed.php';
-		} else if ( isset( $installed_plugins['custom-facebook-feed/custom-facebook-feed.php'] ) ) {
+		} else if (isset($installed_plugins['custom-facebook-feed/custom-facebook-feed.php'])) {
 			$is_facebook_installed = true;
 		}
 
 		$is_instagram_installed = false;
 		$instagram_plugin = 'instagram-feed/instagram-feed.php';
-		if ( isset( $installed_plugins['instagram-feed-pro/instagram-feed.php'] ) ) {
+		if (isset($installed_plugins['instagram-feed-pro/instagram-feed.php'])) {
 			$is_instagram_installed = true;
 			$instagram_plugin = 'instagram-feed-pro/instagram-feed.php';
-		} else if ( isset( $installed_plugins['instagram-feed/instagram-feed.php'] ) ) {
+		} else if (isset($installed_plugins['instagram-feed/instagram-feed.php'])) {
 			$is_instagram_installed = true;
 		}
 
 		$is_twitter_installed = false;
 		$twitter_plugin = 'custom-twitter-feeds/custom-twitter-feed.php';
-		if ( isset( $installed_plugins['custom-twitter-feeds-pro/custom-twitter-feed.php'] ) ) {
+		if (isset($installed_plugins['custom-twitter-feeds-pro/custom-twitter-feed.php'])) {
 			$is_twitter_installed = true;
 			$twitter_plugin = 'custom-twitter-feeds-pro/custom-twitter-feed.php';
-		} else if ( isset( $installed_plugins['custom-twitter-feeds/custom-twitter-feed.php'] ) ) {
+		} else if (isset($installed_plugins['custom-twitter-feeds/custom-twitter-feed.php'])) {
 			$is_twitter_installed = true;
 		}
 
 		$is_youtube_installed = false;
 		$youtube_plugin       = 'feeds-for-youtube/youtube-feed.php';
-		if ( isset( $installed_plugins['youtube-feed-pro/youtube-feed-pro.php'] ) ) {
+		if (isset($installed_plugins['youtube-feed-pro/youtube-feed-pro.php'])) {
 			$is_youtube_installed = true;
 			$youtube_plugin       = 'youtube-feed-pro/youtube-feed-pro.php';
-		} elseif ( isset( $installed_plugins['feeds-for-youtube/youtube-feed.php'] ) ) {
+		} elseif (isset($installed_plugins['feeds-for-youtube/youtube-feed.php'])) {
 			$is_youtube_installed = true;
 		}
 
-		$is_social_wall_installed = isset( $installed_plugins['social-wall/social-wall.php'] ) ? true : false;
+		$is_social_wall_installed = isset($installed_plugins['social-wall/social-wall.php']) ? true : false;
 		$social_wall_plugin = 'social-wall/social-wall.php';
 
-		// Uncanny Automator plugin
-		$is_uncanny_automator_installed = isset( $installed_plugins['uncanny-automator/uncanny-automator.php'] ) ? true : false;
-		$uncanny_automator_plugin = 'uncanny-automator/uncanny-automator.php';
-		$uncanny_automator_download_plugin = 'https://downloads.wordpress.org/plugin/uncanny-automator.zip';
+		// ClickSocial plugin
+		$is_clicksocial_installed = isset($installed_plugins['click-social/click-social.php']) ? true : false;
+		$clicksocial_plugin = 'click-social/click-social.php';
+		$clicksocial_path = 'https://downloads.wordpress.org/plugin/click-social.zip';
 
 		return array(
 			'is_facebook_installed' => $is_facebook_installed,
@@ -91,14 +109,18 @@ class Util {
 			'is_twitter_installed' => $is_twitter_installed,
 			'is_youtube_installed' => $is_youtube_installed,
 			'is_social_wall_installed' => $is_social_wall_installed,
-			'is_uncanny_automator_installed' => $is_uncanny_automator_installed,
+			'is_clicksocial_installed' => $is_clicksocial_installed,
+			'is_tiktok_installed' => $is_tiktok_installed,
+			'is_reviews_installed' => $is_reviews_installed,
+			'tiktok_plugin' => $tiktok_plugin,
+			'reviews_plugin' => $reviews_plugin,
 			'facebook_plugin' => $facebook_plugin,
 			'instagram_plugin' => $instagram_plugin,
 			'twitter_plugin' => $twitter_plugin,
 			'youtube_plugin' => $youtube_plugin,
 			'social_wall_plugin' => $social_wall_plugin,
-			'uncanny_automator_plugin' => $uncanny_automator_plugin,
-			'uncanny_automator_download_plugin' => $uncanny_automator_download_plugin,
+			'clicksocial_plugin' => $clicksocial_plugin,
+			'clicksocial_path' => $clicksocial_path,
 			'installed_plugins' => $installed_plugins,
 		);
 	}
@@ -220,7 +242,7 @@ class Util {
 		$errors = $sb_instagram_posts_manager->get_errors();
 		if( ! empty( $errors ) ) {
 			foreach ( $errors as $type => $error ) {
-				if ( in_array( $type, array( 'database_create', 'upload_dir', 'unused_feed', 'platform_data_deleted' ) ) 
+				if ( in_array( $type, array( 'database_create', 'upload_dir', 'unused_feed', 'platform_data_deleted', 'database_error' ) )
 					&& ! empty( $error ) ) {
 					return true;
 				}

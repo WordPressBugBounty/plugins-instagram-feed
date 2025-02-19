@@ -36,19 +36,19 @@ class SBI_HTTP_Request {
 		$args = array_merge( $args, $data );
 
 		if ( 'GET' === $method ) {
-			$request      = wp_remote_get( $url, $args );
+			$request      = wp_safe_remote_get( $url, $args );
 		} elseif ( 'DELETE' === $method ) {
 			$args['method'] = 'DELETE';
-			$request        = wp_remote_request( $url, $args );
+			$request        = wp_safe_remote_request( $url, $args );
 		} elseif ( 'PATCH' === $method ) {
 			$args['method'] = 'PATCH';
-			$request        = wp_remote_request( $url, $args );
+			$request        = wp_safe_remote_request( $url, $args );
 		} elseif ( 'PUT' === $method ) {
 			$args['method'] = 'PUT';
-			$request        = wp_remote_request( $url, $args );
+			$request        = wp_safe_remote_request( $url, $args );
 		} else {
 			$args['method'] = 'POST';
-			$request        = wp_remote_post( $url, $args );
+			$request        = wp_safe_remote_post( $url, $args );
 		}
 
 		return $request;

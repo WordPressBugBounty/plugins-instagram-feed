@@ -59,11 +59,9 @@ class SBI_Divi_Handler
 		}
 
 		$allow_themes = [ 'Divi' ];
-		$theme        = wp_get_theme();
-		$theme_name   = $theme->get_template();
-		$theme_parent = $theme->parent();
+		$theme_name   = get_template();
 
-		return (bool) array_intersect([ $theme_name, $theme_parent ], $allow_themes);
+		return in_array($theme_name, $allow_themes, true);
 	}
 
 	/**

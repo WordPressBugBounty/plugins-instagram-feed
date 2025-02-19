@@ -645,15 +645,16 @@ class SB_Instagram_Display_Elements {
 		return $atts;
 	}
 
-	/**
-	 * Global header classes
-	 *
-	 * @param $settings
-	 *
-	 * @return string
-	 *
-	 * @since 5.0
-	 */
+    /**
+     * Global header classes
+     *
+     * @param $settings
+     * @param $avatar
+     * @param string $type
+     * @return string
+     *
+     * @since 5.0
+     */
 	public static function get_header_class( $settings, $avatar, $type = 'normal' ) {
 
 		$customizer = sbi_doing_customizer( $settings );

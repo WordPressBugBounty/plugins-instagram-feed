@@ -95,7 +95,7 @@ class SBI_Theme_CSS {
 		$args = array(
 			'timeout' => 60,
 		);
-		$response = wp_remote_get( esc_url_raw( $url ), $args );
+		$response = wp_safe_remote_get( esc_url_raw( $url ), $args );
 
 		if ( ! is_wp_error( $response ) ) {
 			// certain ways of representing the html for double quotes causes errors so replaced here.

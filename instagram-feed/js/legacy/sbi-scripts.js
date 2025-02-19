@@ -480,7 +480,7 @@ if(!sbi_js_exists) {
             locator_nonce: locatorNonce
           };
           var onSuccess = function(data) {
-            var response = data;
+            var response = data?.data;
 
             if (typeof data !== 'object' && data.trim().indexOf('{') === 0) {
               response = JSON.parse(data.trim());
@@ -555,7 +555,7 @@ if(!sbi_js_exists) {
             locator_nonce: locatorNonce
           };
         var onSuccess = function (data) {
-          var response = data;
+          var response = data?.data;
 
           if (typeof data !== 'object' && data.trim().indexOf('{') === 0) {
             response = JSON.parse(data.trim());

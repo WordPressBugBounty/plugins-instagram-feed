@@ -278,7 +278,7 @@ class SB_Instagram_Tracking {
 			return false;
 		}
 
-		$request = wp_remote_post(
+		$request = wp_safe_remote_post(
 			'https://usage.smashballoon.com/v1/checkin/',
 			array(
 				'method'      => 'POST',

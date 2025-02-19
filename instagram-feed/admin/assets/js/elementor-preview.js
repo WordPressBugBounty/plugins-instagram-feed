@@ -43,7 +43,9 @@ var InstagramFeedElementor = window.InstagramFeedElementor || ( function( docume
 
 		registerWidgetEvents: function( $scope ) {
 			$scope
-				.on( 'change', '.sb-elementor-cta-feedselector', app.selectFeedInPreview );
+				.on( 'change', '.sbi-feed-block-cta-feedselector', app.selectFeedInPreview );
+			$scope
+				.on('click', '.sbi-feed-block-cta-btn,.sbi-feed-block-link', app.anchorTrigger);
 
 		},
 
@@ -79,7 +81,10 @@ var InstagramFeedElementor = window.InstagramFeedElementor || ( function( docume
 			});
 		},
 
-
+		anchorTrigger: function (event) {
+			vars.href = $(this).attr('href');
+			window.open(vars.href, '_blank');
+		},
 
 	};
 

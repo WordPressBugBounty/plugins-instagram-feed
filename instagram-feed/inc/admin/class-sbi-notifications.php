@@ -138,7 +138,7 @@ class SBI_Notifications {
 	 * @return array
 	 */
 	public function fetch_feed() {
-		$res = wp_remote_get( $this->source_url() );
+		$res = wp_safe_remote_get( $this->source_url() );
 
 		if ( is_wp_error( $res ) ) {
 			return array();

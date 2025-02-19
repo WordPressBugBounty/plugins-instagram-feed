@@ -149,7 +149,7 @@ class SB_Instagram_Connected_Account {
 
 				$saved_image = $image_editor->save( $full_file_name, $mime_type );
 
-				if ( ! $saved_image ) {
+				if (is_wp_error($saved_image)) {
 					global $sb_instagram_posts_manager;
 
 					$sb_instagram_posts_manager->add_error( 'image_editor', __( 'Error saving edited image.', 'instagram-feed' ) . ' ' . $full_file_name );
@@ -191,7 +191,7 @@ class SB_Instagram_Connected_Account {
 
 					$saved_image = $image_editor->save( $full_file_name );
 
-					if ( ! $saved_image ) {
+					if (is_wp_error($saved_image)) {
 						global $sb_instagram_posts_manager;
 						$details = __( 'Error saving edited image.', 'instagram-feed' ) . ' ' . $full_file_name;
 						$sb_instagram_posts_manager->add_error( 'image_editor', $details );

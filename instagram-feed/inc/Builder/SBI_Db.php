@@ -27,23 +27,6 @@ class SBI_Db {
 		$sources_table_name = $wpdb->prefix . 'sbi_sources';
 		$feeds_table_name   = $wpdb->prefix . 'sbi_feeds';
 
-		$sbi_statuses = get_option('sbi_statuses', array());
-		if (empty($sbi_statuses['database']['connect_type_column'])) {
-			$column_exists = $wpdb->get_results("SHOW COLUMNS FROM $sources_table_name LIKE 'connect_type'");
-			if (empty($column_exists)) {
-				$wpdb->query("ALTER TABLE $sources_table_name ADD COLUMN connect_type VARCHAR(100) DEFAULT '' NOT NULL");
-				$wpdb->query("
-					UPDATE $sources_table_name 
-					SET connect_type = CASE 
-						WHEN account_type = 'business' THEN 'business_advanced' 
-						ELSE 'personal' 
-					END
-				");
-			}
-			$sbi_statuses['database']['connect_type_column'] = true;
-			update_option('sbi_statuses', $sbi_statuses);
-		}
-
 		$page = 0;
 		if ( isset( $args['page'] ) ) {
 			$page = (int) $args['page'] - 1;
@@ -234,6 +217,8 @@ class SBI_Db {
 	 */
 	public static function source_update( $to_update, $where_data ) {
 		global $wpdb;
+		global $sb_instagram_posts_manager;
+
 		$sources_table_name = $wpdb->prefix . 'sbi_sources';
 		$encryption         = new \SB_Instagram_Data_Encryption();
 
@@ -312,6 +297,13 @@ class SBI_Db {
 		}
 		$affected = $wpdb->update( $sources_table_name, $data, $where, $format, $where_format );
 
+		if ( $affected === false ) {
+			$sb_instagram_posts_manager->add_error(
+				'database_error',
+				'<strong>' . __('There was an error when trying to update the part of the database that stores connected accounts:', 'instagram-feed') . '</strong><br><br><code>' . $wpdb->last_error . '</code><br>'
+			);
+		}
+
 		return $affected;
 	}
 
@@ -327,6 +319,8 @@ class SBI_Db {
 	 */
 	public static function source_insert( $to_insert ) {
 		global $wpdb;
+		global $sb_instagram_posts_manager;
+
 		$sources_table_name = $wpdb->prefix . 'sbi_sources';
 		$encryption         = new \SB_Instagram_Data_Encryption();
 
@@ -384,7 +378,16 @@ class SBI_Db {
 			$format[]        = '%s';
 		}
 
-		return $wpdb->insert( $sources_table_name, $data, $format );
+		$affected = $wpdb->insert( $sources_table_name, $data, $format );
+
+		if ($affected === false) {
+			$sb_instagram_posts_manager->add_error(
+				'database_error',
+				'<strong>' . __('There was an error when trying to update the part of the database that stores connected accounts:', 'instagram-feed') . '</strong><br><br><code>' . $wpdb->last_error . '</code><br>'
+			);
+		}
+
+		return $affected;
 	}
 
 	/**

@@ -613,7 +613,7 @@ class SBI_Support_Tool {
 			$me_endpoint_url = self::$graph_api . $user_id . '?fields=biography,id,username,website,followers_count,media_count,profile_picture_url,name&access_token=' . $access_token;
 		}
 
-		return wp_remote_get($me_endpoint_url);
+		return wp_safe_remote_get($me_endpoint_url);
 	}
 
 	/**
@@ -647,6 +647,6 @@ class SBI_Support_Tool {
 			$api_url = self::$graph_api . $user_id . '/media?fields=' . $media_fields . '&limit=' . $post_limit . '&access_token=' . $access_token;
 		}
 
-		return wp_remote_get($api_url, array( 'timeout' => 120 ));
+		return wp_safe_remote_get($api_url, array( 'timeout' => 120 ));
 	}
 }

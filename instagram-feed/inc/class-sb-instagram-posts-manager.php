@@ -98,145 +98,168 @@ class SB_Instagram_Posts_Manager {
 	 * in messages as well as temporarily disable certain features
 	 *
 	 * @param string $type
-	 * @param array $details
+	 * @param array|string $details
 	 * @param mixed/bool/array $connected_account_term
 	 *
 	 * @since 2.7/5.10
 	 */
 	public function add_error( $type, $details, $connected_account_term = false ) {
 		$connected_account = false;
+		$log_item = date('m-d H:i:s') . ' - ';
 
-		$log_item = date( 'm-d H:i:s' ) . ' - ';
-		if ( $connected_account_term ) {
-			if ( ! is_array( $connected_account_term ) ) {
-				$connected_account = SB_Instagram_Connected_Account::lookup( $connected_account_term );
-			} else {
-				$connected_account = $connected_account_term;
-			}
-
-			$this->add_connected_account_error( $connected_account, $type, $details );
+		if ($connected_account_term) {
+			$connected_account = is_array($connected_account_term) ? $connected_account_term : SB_Instagram_Connected_Account::lookup($connected_account_term);
+			$this->add_connected_account_error($connected_account, $type, $details);
 		}
 
-		// is it connection? or what type?
-		if ( $type === 'api'
-		     || $type === 'wp_remote_get' ) {
-			$connection_details = array(
-				'error_id' => '',
-			);
+		// $details is an array for 'api', 'wp_remote_get', and 'hashtag' types, while it's a string for the rest.
+		switch ($type) {
+			case 'api':
+			case 'wp_remote_get':
+				$this->handleConnectionError($details, $connected_account, $log_item);
+				break;
+			case 'hashtag':
+				$this->handleHashtagError($details, $connected_account, $log_item);
+				break;
+			case 'image_editor':
+			case 'storage':
+				$this->errors['resizing'] = $details;
+				$log_item .= $details;
+				break;
+			case 'database_create':
+			case 'upload_dir':
+			case 'unused_feed':
+			case 'platform_data_deleted':
+			case 'database_error':
+				$this->errors[$type] = $details;
+				$log_item .= $details;
+				break;
+			default:
+				$log_item .= $details;
+				break;
+		}
 
-			$connection_details['critical'] = false;
-			if ( isset( $details['error']['code'] ) ) {
-				$connection_details['error_id'] = $details['error']['code'];
+		$this->updateErrorLog($log_item);
+	}
 
-				if ( $this->is_critical_error( $details ) ) {
-					$connection_details['critical'] = true;
+	/**
+	 * Handles connection errors for Instagram feed.
+	 *
+	 * @param array $details Details of the connection error.
+	 * @param object $connected_account The connected Instagram account object.
+	 * @param array &$log_item Reference to the log item array to store error details.
+	 *
+	 * @return void
+	 */
+	private function handleConnectionError($details, $connected_account, &$log_item)
+	{
+		$connection_details = array('error_id' => '', 'critical' => false);
+
+		if (isset($details['error']['code'])) {
+			$connection_details['error_id'] = $details['error']['code'];
+			$connection_details['critical'] = $this->is_critical_error($details);
+
+			if ($this->is_app_permission_related($details)) {
+				if (!in_array($connected_account['user_id'], $this->errors['revoked'], true)) {
+					$this->errors['revoked'][] = $connected_account['user_id'];
 				}
 
-				if ( $this->is_app_permission_related( $details ) ) {
-					if ( ! in_array( $connected_account['user_id'], $this->errors['revoked'], true ) ) {
-						$this->errors['revoked'][] = $connected_account['user_id'];
-					}
+				/**
+				 * Fires when an app permission related error is encountered
+				 *
+				 * @param array $connected_account The connected account that encountered the error
+				 *
+				 * @since 6.0.6
+				 */
+				do_action('sbi_app_permission_revoked', $connected_account);
+			}
+		} elseif (isset($details['response']) && is_wp_error($details['response'])) {
+			foreach ($details['response']->errors as $key => $item) {
+				$connection_details['error_id'] = $key;
+			}
+			$connection_details['critical'] = true;
+		}
 
-					/**
-					 * Fires when an app permission related error is encountered
-					 *
-					 * @param array $connected_account The connected account that encountered the error
-					 *
-					 * @since 6.0.6
-					 */
-					do_action( 'sbi_app_permission_revoked', $connected_account );
+		if (get_the_ID() !== 0) {
+			$connection_details['post_id'] = get_the_ID();
+		}
+
+		$connection_details['error_message'] = $this->generate_error_message($details, $connected_account);
+		$log_item .= $connection_details['error_message']['admin_only'];
+		$this->maybe_set_display_error('connection', $connection_details);
+		$this->errors['connection'] = $connection_details;
+	}
+
+	/**
+	 * Handles errors related to hashtags.
+	 *
+	 * @param array $details Details of the error.
+	 * @param object $connected_account The connected Instagram account object.
+	 * @param array &$log_item Reference to the log item array to store error details.
+	 *
+	 * @return void
+	 */
+	private function handleHashtagError($details, $connected_account, &$log_item)
+	{
+		$hashtag_details = array(
+			'error_id' => '',
+			'hashtag' => isset($details['hashtag']) ? $details['hashtag'] : '',
+		);
+
+		if (isset($details['error']['code']) && (int)$details['error']['code'] === 24) {
+			$hashtag_details['clear_time'] = time() + 60 * 5;
+		}
+
+		if (isset($details['error']['code'])) {
+			$hashtag_details['error_id'] = $details['error']['code'];
+		} elseif (isset($details['response']) && is_wp_error($details['response'])) {
+			foreach ($details['response']->errors as $key => $item) {
+				$hashtag_details['error_id'] = $key;
+			}
+		}
+
+		if (get_the_ID() !== 0) {
+			$hashtag_details['post_id'] = get_the_ID();
+		}
+
+		$hashtag_details['error_message'] = $this->generate_error_message($details, $connected_account);
+		$log_item .= $hashtag_details['error_message']['admin_only'];
+		$this->maybe_set_display_error('hashtag', $hashtag_details);
+
+		$found = false;
+		if (isset($details['hashtag'])) {
+			foreach ($this->errors['hashtag'] as $hashtag_error_item) {
+				if (
+					isset($hashtag_error_item['hashtag']) &&
+					strtolower($hashtag_error_item['hashtag']) === strtolower($details['hashtag']) &&
+					$hashtag_error_item['error_id'] === $details['error_id']
+				) {
+					$found = true;
+					break;
 				}
-			} elseif ( isset( $details['response'] ) && is_wp_error( $details['response'] ) ) {
-				foreach ( $details['response']->errors as $key => $item ) {
-					$connection_details['error_id'] = $key;
-				}
-				$connection_details['critical'] = true;
-			}
-			if ( get_the_ID() !== 0 ) {
-				$connection_details['post_id'] = get_the_ID();
-			}
-			$connection_details['error_message'] = $this->generate_error_message( $details, $connected_account );
-			$log_item                           .= $connection_details['error_message']['admin_only'];
-			$this->maybe_set_display_error( 'connection', $connection_details );
-			$this->errors['connection'] = $connection_details;
-		}
-
-		if ( $type === 'hashtag' ) {
-			$hashtag_details = array(
-				'error_id' => '',
-				'hashtag'  => isset( $details['hashtag'] ) ? $details['hashtag'] : '',
-			);
-			if ( isset( $details['error']['code'] ) ) {
-				if ( (int) $details['error']['code'] === 24 ) {
-					$hashtag_details['clear_time'] = time() + 60 * 5;
-				}
-			}
-
-			if ( isset( $details['error']['code'] ) ) {
-				$hashtag_details['error_id'] = $details['error']['code'];
-			} elseif ( isset( $details['response'] ) && is_wp_error( $details['response'] ) ) {
-				foreach ( $details['response']->errors as $key => $item ) {
-					$hashtag_details['error_id'] = $key;
-				}
-			}
-			if ( get_the_ID() !== 0 ) {
-				$hashtag_details['post_id'] = get_the_ID();
-			}
-			$hashtag_details['error_message'] = $this->generate_error_message( $details, $connected_account );
-			$log_item                        .= $hashtag_details['error_message']['admin_only'];
-			$this->maybe_set_display_error( 'hashtag', $hashtag_details );
-
-			$found = false;
-			if ( isset( $details['hashtag'] ) ) {
-				foreach ( $this->errors['hashtag'] as $hashtag_error_item ) {
-					if ( isset( $hashtag_error_item['hashtag'] )
-					     && strtolower( $hashtag_error_item['hashtag'] ) === strtolower( $details['hashtag'] )
-					     && $hashtag_error_item['error_id'] === $details['error_id'] ) {
-						$found = true;
-					}
-				}
-			}
-
-			if ( ! $found ) {
-				$this->errors['hashtag'][] = $hashtag_details;
 			}
 		}
 
-		if ( $type === 'image_editor'
-		     || $type === 'storage' ) {
-
-			$this->errors['resizing'] = $details;
-			$log_item                .= $details;
+		if (!$found) {
+			$this->errors['hashtag'][] = $hashtag_details;
 		}
+	}
 
-		if ( $type === 'database_create' ) {
-			$this->errors['database_create'] = $details;
-			$log_item                       .= $details;
-		}
-
-		if ( $type === 'upload_dir' ) {
-			$this->errors['upload_dir'] = $details;
-			$log_item                  .= $details;
-		}
-
-		if ( $type === 'unused_feed' ) {
-			$this->errors['unused_feed'] = $details;
-			$log_item                    .= $details;
-		}
-
-		if ( $type === 'platform_data_deleted' ) {
-			$this->errors['platform_data_deleted'] = $details;
-			$log_item                              .= $details;
-		}
-
+	/**
+	 * Updates the error log with a new log item.
+	 *
+	 * @param mixed $log_item The item to be added to the error log.
+	 */
+	private function updateErrorLog($log_item)
+	{
 		$current_log = $this->errors['error_log'];
-		if ( is_array( $current_log ) && count( $current_log ) >= 10 ) {
-			reset( $current_log );
-			unset( $current_log[ key( $current_log ) ] );
+		if (is_array($current_log) && count($current_log) >= 10) {
+			reset($current_log);
+			unset($current_log[key($current_log)]);
 		}
-		$current_log[]             = $log_item;
+		$current_log[] = $log_item;
 		$this->errors['error_log'] = $current_log;
-		update_option( 'sb_instagram_errors', $this->errors, false );
+		update_option('sb_instagram_errors', $this->errors, false);
 	}
 
 	/**

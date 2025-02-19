@@ -3046,7 +3046,8 @@
   text-decoration: none;
 }
 .sbi-admin-notices .license-action-btns .sbi-notice-btn:not(:last-child),
-#database_create .sbi-notice-btn:not(:last-child) {
+#database_create .sbi-notice-btn:not(:last-child),
+#database_error .sbi-notice-btn:not(:last-child) {
   margin-right: 8px;
 }
 .sbi-admin-notices .license-action-btns .sbi-notice-btn {
@@ -3688,6 +3689,15 @@ body .sbi_review_step1_notice .sbi-btn-link:not(:last-child) {
   overflow-y: auto;
   max-height: 80vh;
 }
+
+.clicksocial-popup-modal .sbi-fb-popup-inside {
+	box-shadow: none;
+	max-width: 100%;
+	width: 100%;
+	max-height: 100%;
+	position: static;
+}
+
 @media all and (max-width: 960px) {
   .sbi-fb-popup-inside {
     left: 20px;
@@ -3901,4 +3911,15 @@ body .sbi_review_step1_notice .sbi-btn-link:not(:last-child) {
 
 .sbi-notice-body {
 	flex: 1;
+}
+
+#sbi-clicksocial-notice .sbi-notice-btns {
+	display: flex;
+	gap: 8px;
+}
+
+.sbi-notice-btns #sbi_install_op_btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

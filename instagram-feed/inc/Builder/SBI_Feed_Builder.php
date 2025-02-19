@@ -6,6 +6,7 @@
  */
 namespace InstagramFeed\Builder;
 
+use InstagramFeed\Vendor\Brumann\Polyfill\Unserialize;
 use InstagramFeed\Admin\SBI_Callout;
 use InstagramFeed\Builder\Tabs\SBI_Styling_Tab;
 use InstagramFeed\Builder\SBI_Feed_Saver;
@@ -781,6 +782,7 @@ class SBI_Feed_Builder {
 			'error'                             => __( 'Error:', 'instagram-feed' ),
 			'errorNotice'                       => __( 'There was an error when trying to connect to Instagram.', 'instagram-feed' ),
 			'errorDirections'                   => '<a href="https://smashballoon.com/instagram-feed/docs/errors/" target="_blank" rel="noopener">' . __( 'Directions on How to Resolve This Issue', 'instagram-feed' ) . '</a>',
+			'dbErrorNotice'                     => __('There was an error when trying to update the database.', 'instagram-feed'),
 			'errorSource'                       => __( 'Source Invalid', 'instagram-feed' ),
 			'errorEncryption'                   => __( 'Encryption Error', 'instagram-feed' ),
 			'invalid'                           => __( 'Invalid', 'instagram-feed' ),
@@ -1882,7 +1884,7 @@ class SBI_Feed_Builder {
 		$onboarding_statuses = get_user_meta( get_current_user_id(), 'sbi_onboarding', true );
 		$status              = false;
 		if ( ! empty( $onboarding_statuses ) ) {
-			$statuses = maybe_unserialize( $onboarding_statuses );
+			$statuses = Unserialize::unserialize( $onboarding_statuses, ['allowed_classes' => false] );
 			$status   = isset( $statuses[ $type ] ) ? $statuses[ $type ] : false;
 		}
 
@@ -1899,7 +1901,7 @@ class SBI_Feed_Builder {
 	public static function update_onboarding_meta( $value, $type = 'newuser' ) {
 		$onboarding_statuses = get_user_meta( get_current_user_id(), 'sbi_onboarding', true );
 		if ( ! empty( $onboarding_statuses ) ) {
-			$statuses          = maybe_unserialize( $onboarding_statuses );
+			$statuses          = Unserialize::unserialize( $onboarding_statuses, ['allowed_classes' => false] );
 			$statuses[ $type ] = $value;
 		} else {
 			$statuses = array(
@@ -2065,6 +2067,8 @@ class SBI_Feed_Builder {
                 'icon' => self::builder_svg_icons('install-plugins-popup.facebook'),
                 'description' => __('Custom Facebook Feeds is a highly customizable way to display tweets from your Facebook account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
 				'download_plugin' => 'https://downloads.wordpress.org/plugin/custom-facebook-feed.zip',
+				'dashboard_link' => admin_url('admin.php?page=cff-feed-builder'),
+				'active' => is_plugin_active($active_sb_plugins['facebook_plugin'])
             ],
             'instagram' => [
                 'installed' => $active_sb_plugins['is_instagram_installed'],
@@ -2073,6 +2077,8 @@ class SBI_Feed_Builder {
                 'icon' => self::builder_svg_icons('install-plugins-popup.instagram'),
                 'description' => __('Instagram Feeds is a highly customizable way to display tweets from your Instagram account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
 				'download_plugin' => 'https://downloads.wordpress.org/plugin/instagram-feed.zip',
+				'dashboard_link' => admin_url('admin.php?page=sbi-feed-builder'),
+				'active' => is_plugin_active($active_sb_plugins['instagram_plugin'])
             ],
             'twitter' => [
                 'installed' => $active_sb_plugins['is_twitter_installed'],
@@ -2081,6 +2087,8 @@ class SBI_Feed_Builder {
                 'icon' => self::builder_svg_icons('install-plugins-popup.twitter'),
                 'description' => __('Custom Twitter Feeds is a highly customizable way to display tweets from your Twitter account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
 				'download_plugin' => 'https://downloads.wordpress.org/plugin/custom-twitter-feeds.zip',
+				'dashboard_link' => admin_url('admin.php?page=ctf-feed-builder'),
+				'active' => is_plugin_active($active_sb_plugins['twitter_plugin'])
             ],
             'youtube' => [
                 'installed' => $active_sb_plugins['is_youtube_installed'],
@@ -2089,6 +2097,8 @@ class SBI_Feed_Builder {
                 'icon' => self::builder_svg_icons('install-plugins-popup.youtube'),
                 'description' => __('YouTube Feeds is a highly customizable way to display tweets from your YouTube account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
 				'download_plugin' => 'https://downloads.wordpress.org/plugin/feeds-for-youtube.zip',
+				'dashboard_link' => admin_url('admin.php?page=sby-feed-builder'),
+				'active' => is_plugin_active($active_sb_plugins['youtube_plugin'])
             ]
         ];
 	}

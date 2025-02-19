@@ -3,13 +3,13 @@
 Plugin Name: Smash Balloon Instagram Feed
 Plugin URI: https://smashballoon.com/instagram-feed
 Description: Display beautifully clean, customizable, and responsive Instagram feeds.
-Version: 6.6.1
+Version: 6.7.0
 Author: Smash Balloon
 Author URI: https://smashballoon.com/
 License: GPLv2 or later
 Text Domain: instagram-feed
 
-Copyright 2024  Smash Balloon LLC (email : hey@smashballoon.com)
+Copyright 2025  Smash Balloon LLC (email : hey@smashballoon.com)
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -35,7 +35,7 @@ if ( ! defined( 'SBI_PLUGIN_NAME' ) ) {
 	define( 'SBI_PLUGIN_NAME', 'Instagram Feed Free' );
 }
 if ( ! defined( 'SBIVER' ) ) {
-	define( 'SBIVER', '6.6.1' );
+	define( 'SBIVER', '6.7.0' );
 }
 // Db version.
 if ( ! defined( 'SBI_DBVERSION' ) ) {
@@ -233,7 +233,7 @@ if ( ! function_exists( 'sb_instagram_feed_init' ) )
 		$sbi_analytics->loadFilters();
 	}
 
-	add_action( 'plugins_loaded', 'sb_instagram_feed_init' );
+	add_action( 'init', 'sb_instagram_feed_init' );
 
 	/**
 	 * Add the custom interval of 30 minutes for cron caching
@@ -422,9 +422,7 @@ if ( ! function_exists( 'sb_instagram_feed_init' ) )
 			$charset_collate = $wpdb->get_charset_collate();
 		}
 
-		global $wpdb;
 		global $sb_instagram_posts_manager;
-
 		$had_error = false;
 
 		if ( ! isset( $sb_instagram_posts_manager ) ) {
@@ -488,6 +486,54 @@ if ( ! function_exists( 'sb_instagram_feed_init' ) )
 
 		if ( ! $had_error ) {
 			$sb_instagram_posts_manager->remove_error( 'database_create' );
+		}
+
+		$sources_table_name = esc_sql($wpdb->prefix . 'sbi_sources');
+
+		// Safely check if the table exists.
+		$table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $sources_table_name));
+		if ($table_exists === $sources_table_name) {
+			// Get the list of columns in the table.
+			$columns = $wpdb->get_col("DESC $sources_table_name", 0);
+			// If the 'connect_type' column does not exist, add it.
+			if (! in_array('connect_type', $columns, true)) {
+				$alter_result = $wpdb->query(
+					"ALTER TABLE $sources_table_name
+					ADD COLUMN connect_type VARCHAR(100) DEFAULT '' NOT NULL"
+				);
+				// If the ALTER query was successful, update existing rows with appropriate values.
+				if (false !== $alter_result) {
+					$update_result = $wpdb->query(
+						"UPDATE $sources_table_name
+						SET connect_type = CASE
+							WHEN account_type = 'business' THEN 'business_advanced'
+							ELSE 'personal'
+						END"
+					);
+					// If updating rows fails, log an error; otherwise, clear notices and errors.
+					if (false === $update_result) {
+						$sb_instagram_posts_manager->add_error(
+							'database_error',
+							sprintf(
+								__('<strong>There was an error when trying to update the database for connected accounts:</strong><br><br><code>%s</code><br>', 'instagram-feed'),
+								$wpdb->last_error
+							)
+						);
+					} else {
+						delete_option('sb_instagram_feed_notices');
+						$sb_instagram_posts_manager->remove_error('database_error');
+					}
+				} else {
+					// If ALTER TABLE failed, log the error.
+					$sb_instagram_posts_manager->add_error(
+						'database_error',
+						sprintf(
+							__('<strong>There was an error when trying to update the database for connected accounts:</strong><br><br><code>%s</code><br>', 'instagram-feed'),
+							$wpdb->last_error
+						)
+					);
+				}
+			}
 		}
 	}
 

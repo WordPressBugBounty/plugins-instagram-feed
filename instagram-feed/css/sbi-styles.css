@@ -1477,7 +1477,7 @@ body:after {
 /*
 Elementor / DIVI / Widgets CTA
 */
-.sb-elementor-cta {
+.sbi-feed-block-cta {
   width: 100% !important;
   border: 1px solid #E8E8EB !important;
   border-radius: 2px !important;
@@ -1485,7 +1485,7 @@ Elementor / DIVI / Widgets CTA
   text-align: center !important;
 }
 
-.sb-elementor-cta-img-ctn {
+.sbi-feed-block-cta-img-ctn {
   width: 100% !important;
   position: relative !important;
   float: left !important;
@@ -1496,7 +1496,7 @@ Elementor / DIVI / Widgets CTA
   margin-bottom: 35px !important;
 }
 
-.sb-elementor-cta-img {
+.sbi-feed-block-cta-img {
   width: 65px !important;
   height: 65px !important;
   position: relative !important;
@@ -1509,23 +1509,23 @@ Elementor / DIVI / Widgets CTA
   align-items: center !important;
 }
 
-.sb-elementor-cta-img span svg {
+.sbi-feed-block-cta-img span svg {
   float: left !important;
 }
 
-.sb-elementor-cta-img>* {
+.sbi-feed-block-cta-img>* {
   -webkit-transform: rotate(3deg) !important;
   transform: rotate(3deg) !important;
 }
 
-.sb-elementor-cta-logo {
+.sbi-feed-block-cta-logo {
   position: absolute !important;
   right: -15px !important;
   bottom: -19px !important;
   z-index: 1 !important;
 }
 
-.sb-elementor-cta-heading {
+.sbi-feed-block-cta-heading {
   font-size: 19px !important;
   padding: 0px !important;
   margin: 0px !important;
@@ -1536,7 +1536,7 @@ Elementor / DIVI / Widgets CTA
   margin-bottom: 30px !important;
 }
 
-.sb-elementor-cta-btn {
+.sbi-feed-block-cta-btn {
   background: #0068A0 !important;
   border-radius: 2px !important;
   padding: 8px 20px 8px 38px !important;
@@ -1546,8 +1546,8 @@ Elementor / DIVI / Widgets CTA
   margin-bottom: 30px !important;
 }
 
-.sb-elementor-cta-btn:before,
-.sb-elementor-cta-btn:after {
+.sbi-feed-block-cta-btn:before,
+.sbi-feed-block-cta-btn:after {
   content: '' !important;
   position: absolute !important;
   width: 2px !important;
@@ -1557,12 +1557,12 @@ Elementor / DIVI / Widgets CTA
   top: 14px !important;
 }
 
-.sb-elementor-cta-btn:after {
+.sbi-feed-block-cta-btn:after {
   -webkit-transform: rotate(90deg) !important;
   transform: rotate(90deg) !important;
 }
 
-.sb-elementor-cta-desc {
+.sbi-feed-block-cta-desc {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
@@ -1573,21 +1573,27 @@ Elementor / DIVI / Widgets CTA
   flex-direction: column !important;
 }
 
-.sb-elementor-cta-desc strong {
+.sbi-feed-block-cta-desc strong {
   color: #141B38 !important;
   font-size: 16px !important;
   font-weight: 600 !important;
   margin-bottom: 8px !important;
 }
 
-.sb-elementor-cta-desc span {
+.sbi-feed-block-cta-desc span {
   color: #434960 !important;
   font-size: 14px !important;
   line-height: 1.5em !important;
   padding: 0 20% !important;
 }
 
-.sb-elementor-cta-selector {
+.sbi-feed-block-cta-desc span a {
+  text-transform: capitalize !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+}
+
+.sbi-feed-block-cta-selector {
   width: 100% !important;
   padding: 0 20% !important;
   display: flex !important;
@@ -1597,7 +1603,7 @@ Elementor / DIVI / Widgets CTA
   margin-bottom: 45px !important;
 }
 
-.sb-elementor-cta-feedselector {
+.sbi-feed-block-cta-feedselector {
   border: 1px solid #D0D1D7 !important;
   padding: 8px 16px 8px 16px !important;
   margin-bottom: 15px !important;
@@ -1605,32 +1611,32 @@ Elementor / DIVI / Widgets CTA
   min-width: 400px !important;
 }
 
-.sb-elementor-cta-selector span {
+.sbi-feed-block-cta-selector span {
   color: #2C324C !important;
 }
 
-.sb-elementor-cta-selector span a {
+.sbi-feed-block-cta-selector span a {
   text-transform: capitalize !important;
   text-decoration: underline !important;
   font-weight: 600 !important;
 }
 
-.sb-elementor-cta-selector span a:after {
+.sbi-feed-block-cta-selector span a:after {
   color: #2C324C !important;
   margin-left: 2px !important;
   font-weight: 400 !important;
   text-decoration-color: #fff !important;
 }
 
-.sb-elementor-cta-selector span a:first-of-type:after {
+.sbi-feed-block-cta-selector span a:first-of-type:after {
   content: ',' !important;
 }
 
-.sb-elementor-cta-selector span a:nth-of-type(2):after {
+.sbi-feed-block-cta-selector span a:nth-of-type(2):after {
   content: 'or' !important;
 }
 
-.sb-elementor-cta-selector span a:nth-of-type(2):after {
+.sbi-feed-block-cta-selector span a:nth-of-type(2):after {
   margin-left: 5px !important;
   margin-right: 2px !important;
 }
@@ -1659,4 +1665,29 @@ Elementor / DIVI / Widgets CTA
 
 .et-db #et-boc .et-l .et-fb-modules-list ul>li.sb_youtube_feed::before {
   background-image: url("data:image/svg+xml,%3Csvg width='27' height='20' viewBox='0 0 27 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 13.3267C11 13.4037 11.0834 13.4518 11.15 13.4133L17.3377 9.83658C17.4043 9.79808 17.4043 9.70192 17.3377 9.66342L11.15 6.08673C11.0834 6.0482 11 6.0963 11 6.17331V13.3267ZM25.45 3.7125C25.6125 4.3 25.725 5.0875 25.8 6.0875C25.8875 7.0875 25.925 7.95 25.925 8.7L26 9.75C26 12.4875 25.8 14.5 25.45 15.7875C25.1375 16.9125 24.4125 17.6375 23.2875 17.95C22.7 18.1125 21.625 18.225 19.975 18.3C18.35 18.3875 16.8625 18.425 15.4875 18.425L13.5 18.5C8.2625 18.5 5 18.3 3.7125 17.95C2.5875 17.6375 1.8625 16.9125 1.55 15.7875C1.3875 15.2 1.275 14.4125 1.2 13.4125C1.1125 12.4125 1.075 11.55 1.075 10.8L1 9.75C1 7.0125 1.2 5 1.55 3.7125C1.8625 2.5875 2.5875 1.8625 3.7125 1.55C4.3 1.3875 5.375 1.275 7.025 1.2C8.65 1.1125 10.1375 1.075 11.5125 1.075L13.5 1C18.7375 1 22 1.2 23.2875 1.55C24.4125 1.8625 25.1375 2.5875 25.45 3.7125Z' stroke='%232b87da' stroke-width='1.25' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+}
+
+.et-db #et-boc .et-l .et_pb_module .sbi_follow_btn a {
+  display: inline-block;
+  vertical-align: top;
+  zoom: 1;
+  padding: 7px 14px;
+  margin: 5px auto 0 auto;
+  background: #333;
+  border: none;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.5;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.et-db #et-boc .et-l .et_pb_module .sbi-feed-block-cta-btn:before,
+.et-db #et-boc .et-l .et_pb_module .sbi-feed-block-cta-btn:after {
+  top: 10px !important;
 }

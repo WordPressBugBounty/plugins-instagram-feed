@@ -8,5 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'Smashballoon\\Stubs\\' => array($vendorDir . '/smashballoon/stubs/src'),
     'InstagramFeed\\Vendor\\Smashballoon\\Framework\\' => array($vendorDir . '/smashballoon/framework'),
+    'InstagramFeed\\Vendor\\Brumann\\Polyfill\\' => array($vendorDir . '/brumann/polyfill-unserialize/src'),
     'InstagramFeed\\' => array($baseDir . '/inc'),
 );
