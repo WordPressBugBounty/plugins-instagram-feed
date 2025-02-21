@@ -13,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( '-1' );
 }
 
-use InstagramFeed\Vendor\Brumann\Polyfill\Unserialize;
 use InstagramFeed\Helpers\Util;
 
 class SB_Instagram_Feed
@@ -491,7 +490,7 @@ class SB_Instagram_Feed
 				if ( !empty( $results ) && is_array( $results ) ) {
 
 					foreach ( $results as $result ) {
-						$sizes = Unserialize::unserialize( $result['sizes'], ['allowed_classes' => false] );
+						$sizes = Util::safe_unserialize( $result['sizes'] );
 						if ( ! is_array( $sizes ) ) {
 							$sizes = array( 'full' => 640 );
 						}
@@ -523,7 +522,7 @@ class SB_Instagram_Feed
 				if ( !empty( $results ) && is_array( $results ) ) {
 
 					foreach ( $results as $result ) {
-						$sizes = Unserialize::unserialize( $result['sizes'], ['allowed_classes' => false] );
+						$sizes = Util::safe_unserialize( $result['sizes'] );
 						if ( ! is_array( $sizes ) ) {
 							$sizes = array( 'full' => 640 );
 						}

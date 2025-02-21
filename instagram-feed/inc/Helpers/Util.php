@@ -2,6 +2,8 @@
 
 namespace InstagramFeed\Helpers;
 
+use InstagramFeed\Vendor\Brumann\Polyfill\Unserialize;
+
 /**
  * @since 6.1.2
  */
@@ -250,5 +252,20 @@ class Util {
 		}
 
 		return false;
-	}
+  }
+
+  /**
+	 * Safely unserialize data
+	 *
+	 * @param $data
+	 * @return mixed
+	 */
+  public static function safe_unserialize($data) {
+    if(!is_string($data)) {
+        return $data;
+    }
+
+    $data = Unserialize::unserialize($data, ['allowed_classes' => false]);
+    return $data;
+  }
 }

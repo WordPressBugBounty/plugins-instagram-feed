@@ -9,7 +9,7 @@
 namespace InstagramFeed\Admin;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-use InstagramFeed\Vendor\Brumann\Polyfill\Unserialize;
+use InstagramFeed\Helpers\Util;
 use InstagramFeed\SBI_View;
 use InstagramFeed\SBI_Response;
 
@@ -303,7 +303,7 @@ class SBI_oEmbeds {
 			$post_id    = $value->post_id;
 			$meta_key   = $value->meta_key;
 			$meta_value = $value->meta_value;
-			$meta_value = Unserialize::unserialize( $meta_value, ['allowed_classes' => false] );
+			$meta_value = Util::safe_unserialize( $meta_value );
 
 			delete_post_meta( $post_id, $meta_key );
 

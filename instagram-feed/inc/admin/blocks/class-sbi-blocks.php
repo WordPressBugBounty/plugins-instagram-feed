@@ -113,7 +113,8 @@ class SB_Instagram_Blocks {
 		);
 
 		global $wp_version;
-		$is_clicksocial_supported = (version_compare($wp_version, '6.0') >= 0);
+		//$is_clicksocial_supported = (version_compare($wp_version, '6.0') >= 0);
+		$is_clicksocial_supported = false;
 		$active_plugins_info = Util::get_sb_active_plugins_info();
 
 		if (!$is_clicksocial_supported || is_plugin_active($active_plugins_info['clicksocial_plugin'])) {

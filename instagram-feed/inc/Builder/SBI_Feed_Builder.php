@@ -6,7 +6,6 @@
  */
 namespace InstagramFeed\Builder;
 
-use InstagramFeed\Vendor\Brumann\Polyfill\Unserialize;
 use InstagramFeed\Admin\SBI_Callout;
 use InstagramFeed\Builder\Tabs\SBI_Styling_Tab;
 use InstagramFeed\Builder\SBI_Feed_Saver;
@@ -1884,7 +1883,7 @@ class SBI_Feed_Builder {
 		$onboarding_statuses = get_user_meta( get_current_user_id(), 'sbi_onboarding', true );
 		$status              = false;
 		if ( ! empty( $onboarding_statuses ) ) {
-			$statuses = Unserialize::unserialize( $onboarding_statuses, ['allowed_classes' => false] );
+			$statuses = Util::safe_unserialize( $onboarding_statuses );
 			$status   = isset( $statuses[ $type ] ) ? $statuses[ $type ] : false;
 		}
 
@@ -1901,7 +1900,7 @@ class SBI_Feed_Builder {
 	public static function update_onboarding_meta( $value, $type = 'newuser' ) {
 		$onboarding_statuses = get_user_meta( get_current_user_id(), 'sbi_onboarding', true );
 		if ( ! empty( $onboarding_statuses ) ) {
-			$statuses          = Unserialize::unserialize( $onboarding_statuses, ['allowed_classes' => false] );
+			$statuses          = Util::safe_unserialize( $onboarding_statuses );
 			$statuses[ $type ] = $value;
 		} else {
 			$statuses = array(
