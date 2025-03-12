@@ -192,6 +192,17 @@ class SBI_Notifications {
 				continue;
 			}
 
+
+			// Ignore if PHP version requirement not met
+			if ( ! empty( $notification['minphpver'] ) && version_compare( PHP_VERSION, $notification['minphpver'], '<' ) ) {
+				continue;
+			}
+
+			// Ignore if PHP version is too high
+			if ( ! empty( $notification['maxphpver'] ) && version_compare( PHP_VERSION, $notification['maxphpver'], '>' ) ) {
+				continue;
+			}
+
 			// Ignore if a specific sbi_status is empty or false
 			if ( ! empty( $notification['statuscheck'] ) ) {
 				$status_key          = sanitize_key( $notification['statuscheck'] );

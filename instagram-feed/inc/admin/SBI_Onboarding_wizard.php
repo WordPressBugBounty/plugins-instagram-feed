@@ -102,6 +102,8 @@ class SBI_Onboarding_wizard extends SBI_Feed_Builder
 	 */
 	public static function get_onboarding_wizard_content()
 	{
+		$active_gdpr_plugin = \SB_Instagram_GDPR_Integrations::gdpr_plugins_active();
+		$show_wpconsent = !$active_gdpr_plugin;
 
 		$data =  [
 			'heading' => __( 'Smash Balloon', 'instagram-feed' ),
@@ -199,9 +201,44 @@ class SBI_Onboarding_wizard extends SBI_Feed_Builder
 				[
 					'id' 		=> 'install-plugins',
 					'template'	=> SBI_BUILDER_DIR . 'templates/onboarding/install-plugins.php',
-					'heading' => __( 'You might also be interested in...', 'instagram-feed' ),
-					'description' => __( 'Instagram Feed users also install these plugins', 'instagram-feed' ),
-					'pluginsList' => self::get_awesomemotive_plugins(),
+					'heading' => $show_wpconsent ? __( 'Install a GDPR plugin', 'instagram-feed' ) : __( 'You might also be interested in...', 'instagram-feed' ),
+					'description' => $show_wpconsent ? __( 'Ensure your social media feeds comply with privacy regulations by installing a plugin today.', 'instagram-feed' ) : __( 'Instagram Feed users also install these plugins', 'instagram-feed' ),
+					'showGDPRInfo' => $show_wpconsent,
+					'gdprInfo' => [
+						'heading' => __('Why should I install a GDPR plugin?', 'instagram-feed'),
+						'columns' => [
+							[
+								'title' => __('Legal Compliance', 'instagram-feed'),
+								'description' => __('Ensure your website complies with GDPR and other privacy regulations.', 'instagram-feed'),
+								'icon' => SBI_BUILDER_URL . 'assets/img/svg/legal.svg',
+							],
+							[
+								'title' => __('Build Trust', 'instagram-feed'),
+								'description' => __('Show visitors you respect their privacy with transparent cookie consent.', 'instagram-feed'),
+								'icon' => SBI_BUILDER_URL . 'assets/img/svg/trust.svg',
+							],
+							[
+								'title' => __('Easy Management', 'instagram-feed'),
+								'description' => __('Simplify cookie consent and privacy compliance with automated tools.', 'instagram-feed'),
+								'icon' => SBI_BUILDER_URL . 'assets/img/svg/management.svg',
+							]
+						]
+					],
+					'pluginsList' => $show_wpconsent ? [
+						[
+							'plugin' => 'wpconsent',
+							'data' => [
+								'type' => 'install_plugins',
+								'id' => 'wpconsent',
+								'pluginName' => __('WPConsent', 'instagram-feed')
+							],
+							'heading' => __('WPConsent', 'instagram-feed'),
+							'description' => __('Detect all the plugins that use cookies and sets a consent banner in just a few clicks. Works well with Smash Balloon plugins.', 'instagram-feed'),
+							'icon' => SBI_BUILDER_URL . 'assets/img/wpconsent-icon.png',
+							'color' => 'blue',
+							'active' => true
+						]
+					] : self::get_awesomemotive_plugins(),
 					'star_icons' => SBI_PLUGIN_URL . 'admin/assets/img/stars.svg'
 				],
 				[
@@ -510,7 +547,7 @@ class SBI_Onboarding_wizard extends SBI_Feed_Builder
 					'pluginName' => __('MonsterInsights', 'instagram-feed' ),
 				],
 				'heading' => __( 'Analytics by MonsterInsights', 'instagram-feed' ),
-				'description' => __( 'Make it “effortless” to connect your WordPress site with Google Analytics, so you can start making data-driven decisions to grow your business.', 'instagram-feed' ),
+				'description' => __( 'Make it "effortless" to connect your WordPress site with Google Analytics, so you can start making data-driven decisions to grow your business.', 'instagram-feed' ),
 				'color'	=> 'blue',
 				'active'	=> true,
 				'icon' => SBI_BUILDER_URL . 'assets/img/monsterinsight.png',
@@ -650,6 +687,9 @@ class SBI_Onboarding_wizard extends SBI_Feed_Builder
 	public static function get_plugin_download_link( $plugin_name ){
 		$plugin_download = false;
 		switch ( strtolower($plugin_name) ) {
+			case 'wpconsent':
+				$plugin_download = 'https://downloads.wordpress.org/plugin/wpconsent-cookies-banner-privacy-suite.zip';
+				break;
 			case 'facebook':
 				$plugin_download = 'https://downloads.wordpress.org/plugin/custom-facebook-feed.zip';
 				break;

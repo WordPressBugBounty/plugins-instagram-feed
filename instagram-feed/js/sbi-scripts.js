@@ -76,6 +76,7 @@ if(!sbi_js_exists) {
               imgRes : $self.attr('data-res'),
               feedID : $self.attr('data-feedid'),
               postID : typeof $self.attr( 'data-postid' ) !== 'undefined' ? $self.attr( 'data-postid' ) : 'unknown',
+              imageaspectratio : typeof $self.attr( 'data-imageaspectratio' ) !== 'undefined' ? $self.attr( 'data-imageaspectratio' ) : '1:1',
               shortCodeAtts : $self.attr('data-shortcode-atts'),
               resizingEnabled : (flags.indexOf('resizeDisable') === -1),
               imageLoadEnabled : (flags.indexOf('imageLoadDisable') === -1),
@@ -125,7 +126,7 @@ if(!sbi_js_exists) {
         }
         // replace greater than and less than symbols with html entity to disallow html in comments
         var encoded = raw.replace(/(>)/g,'&gt;'),
-          encoded = encoded.replace(/(<)/g,'&lt;');
+        encoded = encoded.replace(/(<)/g,'&lt;');
         encoded = encoded.replace(/(&lt;br\/&gt;)/g,'<br>');
         encoded = encoded.replace(/(&lt;br&gt;)/g,'<br>');
 
@@ -484,7 +485,23 @@ if(!sbi_js_exists) {
         //If the width is less than it should be then set it manually
         //if( sbi_photo_width <= (sbi_photo_width_manual) ) sbi_photo_width = sbi_photo_width_manual;
 
-        $self.find('.sbi_photo').css('height', sbi_photo_width);
+        // Get the selected aspect ratio from settings
+        var aspectRatio = '1:1'; // Default to square
+        if (typeof this.settings.imageaspectratio !== 'undefined') {
+          aspectRatio = this.settings.imageaspectratio;
+        }
+
+        // Calculate height based on aspect ratio
+        var height;
+        if (aspectRatio === '4:5') {
+          height = sbi_photo_width * 1.25; // 4:5 ratio (1.25)
+        } else if(aspectRatio === '3:4') {
+          height = sbi_photo_width * 1.33; // 3:4 ratio (1.33)
+        } else {
+          height = sbi_photo_width; // 1:1 ratio (square)
+        }
+
+        $self.find('.sbi_photo').css('height', height);
 
         //Set the position of the carousel arrows
         if ($self.find('.sbi-owl-nav').length) {
@@ -866,7 +883,19 @@ if(!sbi_js_exists) {
         if (this.settings.consentGiven || !this.settings.gdpr) {
           return true;
         }
-        if (typeof window.cookieyes !== "undefined") { // CookieYes | GDPR Cookie Consent by CookieYes
+        if (typeof window.WPConsent !== 'undefined') {
+          if (window.WPConsent.hasConsent('marketing')) {
+            try {
+              this.settings.consentGiven = true;
+            } catch(e) {
+              // Fallback to window object if cookie parsing fails
+              this.settings.consentGiven = false;
+            }
+          } else {
+            // Fallback to window object if cookie not found
+            this.settings.consentGiven = false;
+          }
+        } else if (typeof window.cookieyes !== "undefined") { // CookieYes | GDPR Cookie Consent by CookieYes
           if (typeof window.cookieyes._ckyConsentStore.get !== 'undefined') {
             this.settings.consentGiven = window.cookieyes._ckyConsentStore.get('functional') === 'yes';
           }
@@ -1074,4 +1103,19 @@ if(!sbi_js_exists) {
       },1000);
     });
   });
+
+  // WPConsent
+  window.addEventListener('wpconsent_consent_saved', function(event) {
+    $.each(window.sbi.feeds, function (index) {
+      window.sbi.feeds[index].afterConsentToggled();
+    });
+  });
+
+  window.addEventListener('wpconsent_consent_updated', function(event) {
+    $.each(window.sbi.feeds, function (index) {
+      window.sbi.feeds[index].afterConsentToggled();
+    });
+  });
+
+
 } // if sbi_js_exists

@@ -27,9 +27,24 @@
 			<div class="sb-onboarding-wizard-elem-toggle">
 				<div  :data-color="plugin?.color" :data-active="switcherOnboardingWizardCheckActive(plugin)" :data-uncheck="plugin?.uncheck"  @click.prevent.default="switcherOnboardingWizardClick(plugin)"></div>
 			</div>
+            <div class="sb-onboarding-wizard-gdpr-info sb-fs" v-if="onboardingWizardStepContent['install-plugins'].showGDPRInfo">
+                <h4>{{onboardingWizardStepContent['install-plugins'].gdprInfo.heading}}</h4>
+                <div class="sb-onboarding-wizard-gdpr-columns">
+                    <div class="sb-gdpr-box" v-for="column in onboardingWizardStepContent['install-plugins'].gdprInfo.columns">
+                        <div class="sb-gdpr-box-icon"><img :src="column.icon"></div>
+                        <div class="sb-gdpr-box-text">
+                            <h5>{{column.title}}</h5>
+                            <p>{{column.description}}</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 		</div>
 
 	</div>
+
+
 
 	<div class="sb-onboarding-wizard-clicking">
 		<span v-html="svgIcons['info']"></span>
@@ -38,8 +53,6 @@
 			<span v-for="(plugin, ind) in onboardingWizardStepContent['install-plugins']?.pluginsList" v-html="plugin?.data?.pluginName + (ind !== onboardingWizardStepContent['install-plugins']?.pluginsList.length - 1 ? ', ' : '.')"></span>
 		</span>
 	</div>
-
-
 
 </div>
 

@@ -13,6 +13,7 @@ var settings_data = {
     dialogBoxPopupScreen: sbi_settings.dialogBoxPopupScreen,
     selectSourceScreen: sbi_settings.selectSourceScreen,
     clickSocialScreen: sbi_settings.clickSocialScreen,
+    wpconsentScreen: sbi_settings.wpconsentScreen,
     clickSocialBtnStatus: 'normal',
     enableClickSocialSetup: sbi_settings.clickSocialScreen.enableSetupStep,
     clickSocialActive: sbi_settings.clickSocialActive,
@@ -118,7 +119,9 @@ var settings_data = {
     fullScreenLoader: false,
     appLoaded: false,
     previewLoaded: false,
-    loadingBar: true
+    loadingBar: true,
+    wpconsentBtnStatus: 'normal',
+    disableWPConsentBtn: false,
 };
 
 // The tab component
@@ -1189,6 +1192,49 @@ var sbiSettings = new Vue({
             sbiSettings.$forceUpdate();
         },
 
+        handleWPConsentAction: function() {
+            let self = this;
+            self.wpconsentBtnStatus = 'loading';
+            self.disableWPConsentBtn = true;
+            
+            let action = self.model.wpconsentScreen.isPluginInstalled ? 'sbi_activate_addon' : 'sbi_install_addon';
+            let plugin = self.model.wpconsentScreen.isPluginInstalled ? 
+                        'wpconsent-cookies-banner-privacy-suite/wpconsent.php' : 
+                        'https://downloads.wordpress.org/plugin/wpconsent-cookies-banner-privacy-suite.latest-stable.zip';
+            
+            let data = new FormData();
+            data.append('action', action);
+            data.append('nonce', self.nonce);
+            data.append('plugin', plugin);
+            data.append('type', 'plugin');
+            
+            fetch(self.ajaxHandler, {
+                method: "POST",
+                credentials: 'same-origin',
+                body: data
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === true) {
+                    self.wpconsentBtnStatus = 'success';
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    self.wpconsentBtnStatus = 'normal';
+                    self.disableWPConsentBtn = false;
+                }
+            });
+        },
+
+        wpconsentInstallBtnIcon: function() {
+            if (this.wpconsentBtnStatus === 'loading') {
+                return this.loaderSVG;
+            } else if (this.wpconsentBtnStatus === 'success') {
+                return this.checkmarCircleSVG;
+            }
+            return this.clickSocialScreen.installSVG;
+        }
     }
 });
 

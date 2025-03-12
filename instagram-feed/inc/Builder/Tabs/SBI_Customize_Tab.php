@@ -314,6 +314,19 @@ class SBI_Customize_Tab{
 				'style'				=> ['#sb_instagram' => 'height:{{value}}px!important;overflow-y:auto;'],
 			],
 			[
+				'type'          => 'select',
+				'id'            => 'imageaspectratio',
+				'strongHeading' => 'true',
+				'heading'       => __( 'Aspect Ratio', 'instagram-feed' ),
+				'separator'     => 'bottom',
+				'ajaxAction'    => 'feedFlyPreview',
+				'options'       => [
+					'1:1' => __( 'Square (1:1)', 'instagram-feed' ),
+					'3:4' => __( 'Insta Official (3:4)', 'instagram-feed' ),
+					'4:5' => __( 'Portrait (4:5)', 'instagram-feed' ),
+				],
+			],
+			[
 				'type' 				=> 'number',
 				'id' 				=> 'imagepadding',
 				'fieldSuffix' 		=> 'px',

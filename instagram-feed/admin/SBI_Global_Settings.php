@@ -978,6 +978,16 @@ class SBI_Global_Settings {
 				),
 				'gdprBox' => array(
 					'title'	=> __( 'GDPR', 'instagram-feed' ),
+					'gdprTooltipFeatureInfo' => array(
+						'headline' => __('Features that would be disabled or limited include: ', 'instagram-feed'),
+						'features' => array(
+							__( 'Only local images (not from Instagram\'s CDN) will be displayed in the feed.', 'instagram-feed'),
+							__( 'Placeholder blank images will be displayed until images are available.', 'instagram-feed'),
+							__( 'Video posts will link to the post on Instagram.com for visitors to watch.', 'instagram-feed'),
+							__( 'Carousel posts will only show the first image in the lightbox.', 'instagram-feed'),
+							__( 'The maximum image resolution will be 640 pixels wide in the lightbox.', 'instagram-feed'),
+						)
+					),
 					'automatic'	=> __( 'Automatic', 'instagram-feed' ),
 					'yes'	=> __( 'Yes', 'instagram-feed' ),
 					'no'	=> __( 'No', 'instagram-feed' ),
@@ -990,16 +1000,13 @@ class SBI_Global_Settings {
                     <p><b>If set to “No”,</b> the plugin will still make some requests to load and display images and videos directly from Instagram.</p>
                     <p><b>If set to “Automatic”,</b> it will only load images and videos directly from Instagram if consent has been given by one of these integrated GDPR cookie Plugins.</p>
                     <p><a href="https://smashballoon.com/doc/instagram-feed-gdpr-compliance/?instagram" target="_blank" rel="noopener">Learn More</a></p>',
-					'gdprTooltipFeatureInfo' => array(
-						'headline' => __( 'Features that would be disabled or limited include: ', 'instagram-feed'),
-						'features' => array(
-							__( 'Only local images (not from Instagram\'s CDN) will be displayed in the feed.', 'instagram-feed'),
-							__( 'Placeholder blank images will be displayed until images are available.', 'instagram-feed'),
-							__( 'Video posts will link to the post on Instagram.com for visitors to watch.', 'instagram-feed'),
-							__( 'Carousel posts will only show the first image in the lightbox.', 'instagram-feed'),
-							__( 'The maximum image resolution will be 640 pixels wide in the lightbox.', 'instagram-feed'),
-						)
-					)
+				),
+				'wpconsentBox' => array(
+					'title' => __('Install WPConsent for GDPR', 'instagram-feed'),
+					'description' => __('Manage cookie and privacy preference features from a single place.', 'instagram-feed'),
+					'description2' => __('Smash Balloon plugins work great with WPConsent.', 'instagram-feed'),
+					'buttonText' => __('Install WPConsent', 'instagram-feed'),
+					'installUrl' => 'https://wordpress.org/plugins/wpconsent-cookies-banner-privacy-suite/'
 				),
 				'customCSSBox' => array(
 					'title'	=> __( 'Custom CSS', 'instagram-feed' ),
@@ -1116,7 +1123,7 @@ class SBI_Global_Settings {
 			'selectSourceScreen' => \InstagramFeed\Builder\SBI_Feed_Builder::select_source_screen_text(),
 			'clickSocialScreen' => array(
 				'heading' => __('Promote your blog and post from WordPress to Instagram with ClickSocial', 'instagram-feed'),
-				'description' => __('ClickSocial by Smash Balloon lets you easily promote your blog and schedule social media posts.  Automatically post to your Instagram Business account (and Facebook and Twitter too).', 'instagram-feed'),
+				'description' => __('ClickSocial by Smash Balloon lets you easily promote your blog and schedule social media posts. Automatically post to your Instagram Business account (and Facebook and Twitter too).', 'instagram-feed'),
 				'integrationLogo' => SBI_PLUGIN_URL . '/admin/assets/img/instagram-clicksocial.png',
 				'installStep' => array(
 					'title' => __('Install and activate ClickSocial', 'instagram-feed'),
@@ -1214,34 +1221,43 @@ class SBI_Global_Settings {
 	 */
 	public function get_settings_data() {
 		$sbi_settings = wp_parse_args( get_option( 'sb_instagram_settings' ), $this->default_settings_options() );
-    	$sbi_cache_cron_interval = $sbi_settings['sbi_cache_cron_interval'] ;
-    	$sbi_cache_cron_time = $sbi_settings['sbi_cache_cron_time'];
-    	$sbi_cache_cron_am_pm = $sbi_settings['sbi_cache_cron_am_pm'];
+		$sbi_cache_cron_interval = $sbi_settings['sbi_cache_cron_interval'];
+		$sbi_cache_cron_time = $sbi_settings['sbi_cache_cron_time'];
+		$sbi_cache_cron_am_pm = $sbi_settings['sbi_cache_cron_am_pm'];
 		$usage_tracking = get_option( 'sbi_usage_tracking', array( 'last_send' => 0, 'enabled' => \sbi_is_pro_version() ) );
 		$sbi_ajax = $sbi_settings['sb_instagram_ajax_theme'];
 		$active_gdpr_plugin = \SB_Instagram_GDPR_Integrations::gdpr_plugins_active();
-		$sbi_preserve_setitngs = $sbi_settings['sb_instagram_preserve_settings'];
-		$custom_css = '';
-		$custom_js = '';
+		        $sbi_preserve_setitngs = $sbi_settings['sb_instagram_preserve_settings'];
+        $custom_css = '';
+        $custom_js = '';
 
-		if ( current_user_can( 'unfiltered_html' ) ) {
-			$custom_css = isset( $sbi_settings['sb_instagram_custom_css'] ) ? wp_strip_all_tags( stripslashes( $sbi_settings['sb_instagram_custom_css'] ) ) : '';
-			$custom_js = isset( $sbi_settings['sb_instagram_custom_js'] ) ? stripslashes( $sbi_settings['sb_instagram_custom_js'] ) : '';
-		}
+        if ( current_user_can( 'unfiltered_html' ) ) {
+            $custom_css = isset( $sbi_settings['sb_instagram_custom_css'] ) ? wp_strip_all_tags( stripslashes( $sbi_settings['sb_instagram_custom_css'] ) ) : '';
+            $custom_js = isset( $sbi_settings['sb_instagram_custom_js'] ) ? stripslashes( $sbi_settings['sb_instagram_custom_js'] ) : '';
+        }
+		// Check WPConsent plugin status
+		$wpconsent_file = 'wpconsent-cookies-banner-privacy-suite/wpconsent.php';
+		$is_wpconsent_installed = file_exists(WP_PLUGIN_DIR . '/' . $wpconsent_file);
+		$is_wpconsent_active = is_plugin_active($wpconsent_file);
 
 		return array(
 			'general' => array(
 				'preserveSettings' => $sbi_preserve_setitngs
 			),
-			'feeds'	=> array(
-				'cachingType'		=> 'background',
-				'cronInterval'		=> $sbi_cache_cron_interval,
-				'cronTime'			=> $sbi_cache_cron_time,
-				'cronAmPm'			=> $sbi_cache_cron_am_pm,
-				'gdpr'				=> $sbi_settings['gdpr'],
-				'gdprPlugin'		=> $active_gdpr_plugin,
-				'customCSS'			=> $custom_css,
-				'customJS'			=> $custom_js,
+			'feeds' => array(
+				'cachingType'     => 'background',
+				'cronInterval'    => $sbi_cache_cron_interval,
+				'cronTime'        => $sbi_cache_cron_time,
+				'cronAmPm'        => $sbi_cache_cron_am_pm,
+				'gdpr'            => $sbi_settings['gdpr'],
+				'gdprPlugin'      => $active_gdpr_plugin,
+				'customCSS'       => $custom_css,
+				'customJS'        => $custom_js,
+			),
+			'wpconsentScreen' => array(
+				'isPluginInstalled' => $is_wpconsent_installed,
+				'isPluginActive' => $is_wpconsent_active,
+				'installSVG' => \InstagramFeed\Builder\SBI_Feed_Builder::builder_svg_icons('installPlugin'),
 			),
 			'advanced' => array(
 				'sbi_enable_resize' => !$sbi_settings['sb_instagram_disable_resize'],

@@ -1980,6 +1980,9 @@ Sources Instance Popup
     border-radius: 8px;
     padding: 12px 12px 12px 34px;
 }
+.sb-tab-content .sb-tab-box.sbi-uo-install-notice.sb-wpconsent-box {
+    border-radius: 0;
+}
 .sb-tab-content .sbi-uo-install-notice .sbi-tab-notice {
     display: flex;
     justify-content: space-between;
@@ -2012,5 +2015,22 @@ Sources Instance Popup
 .sb-tab-content .sbi-uo-install-notice .sbi-tab-notice .sbi-notice-right .sbi-uo-notice-dismiss {
     border: none;
     background-color: transparent;
-    padding: 0px;
+    padding: 0;
+}
+.sb-tab-content .sbi-uo-install-notice .sbi-notice-text-stacked p{
+    font-weight: 400;
+    font-size: 13px;
+}
+.sb-tab-content .sbi-uo-install-notice .sbi-notice-text-stacked p strong{
+    display: block;
+    font-size: 14px;
+}
+.sb-tab-content .sbi-uo-install-notice.sb-wpconsent-box .sbi-notice-right {
+    margin-right: 40px;
+}
+.sb-tab-content .sb-tab-box.sbi-uo-install-notice.sb-wpconsent-box .sbi-notice-learn-more svg path{
+    fill: currentColor;
+}
+.sb-tab-content .sbi-uo-install-notice.sb-wpconsent-box .sbi-notice-left {
+    align-items: start
 }

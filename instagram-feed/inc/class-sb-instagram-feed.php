@@ -1206,7 +1206,9 @@ class SB_Instagram_Feed
 
 		$other_atts .= ' data-postid="' . esc_attr( get_the_ID() ) . '"';
 		$other_atts .= ' data-locatornonce="' . esc_attr( wp_create_nonce( 'sbi-locator-nonce-' . get_the_ID() . '-' . $this->regular_feed_transient_name ) ) . '"';
-
+		if ( ! empty( $settings['imageaspectratio'] ) ) {
+			$other_atts .= ' data-imageaspectratio="' . esc_attr( $settings['imageaspectratio'] ) . '"';
+		}
 		$other_atts = $this->add_other_atts( $other_atts, $settings );
 
 		$flags = array();

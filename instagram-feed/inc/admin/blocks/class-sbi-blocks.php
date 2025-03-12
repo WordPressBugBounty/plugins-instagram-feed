@@ -111,46 +111,6 @@ class SB_Instagram_Blocks {
 				'i18n'     => $i18n,
 			)
 		);
-
-		global $wp_version;
-		//$is_clicksocial_supported = (version_compare($wp_version, '6.0') >= 0);
-		$is_clicksocial_supported = false;
-		$active_plugins_info = Util::get_sb_active_plugins_info();
-
-		if (!$is_clicksocial_supported || is_plugin_active($active_plugins_info['clicksocial_plugin'])) {
-			return;
-		}
-
-		$block_deps = include_once trailingslashit(SBI_PLUGIN_DIR) . 'js/dist/sidebar.asset.php';
-		wp_enqueue_script(
-			'sbi-gb-sidebar-script',
-			trailingslashit(SBI_PLUGIN_URL) . 'js/dist/sidebar.js',
-			$block_deps['dependencies'],
-			$block_deps['version'],
-			true
-		);
-
-		wp_localize_script(
-			'sbi-gb-sidebar-script',
-			'sbiPluginData',
-			array(
-				'ajaxHandler' => admin_url('admin-ajax.php'),
-				'nonce'       => wp_create_nonce('sbi-admin'),
-				'adminUrl'    => admin_url(),
-				'isPluginInstalled' => $active_plugins_info['is_clicksocial_installed'],
-				'isPluginActive' => is_plugin_active($active_plugins_info['clicksocial_plugin']),
-				'pluginDownloadPath' => $active_plugins_info['clicksocial_path'],
-				'clickSocialPlugin' => $active_plugins_info['clicksocial_plugin'],
-				'setupPage' => 'admin.php?page=click-social'
-			)
-		);
-
-		wp_enqueue_style(
-			'sbi-gb-sidebar-style',
-			trailingslashit(SBI_PLUGIN_URL) . 'js/dist/sidebar.css',
-			array(),
-			SBIVER
-		);	
 	}
 
 	/**
