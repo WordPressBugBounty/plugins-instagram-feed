@@ -1,18 +1,12 @@
 <?php
 
-/**
- * Base class for Elementor widgets.
- *
- * @since 6.2.9
- */
-
 namespace InstagramFeed\Integrations\Elementor;
 
 use InstagramFeed\Builder\SBI_Feed_Builder;
 use InstagramFeed\Helpers\Util;
 
 // Exit if accessed directly.
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -52,7 +46,15 @@ class SBI_Elementor_Base
 	 * @var string Minimum PHP version required to run the plugin.
 	 */
 	const MINIMUM_PHP_VERSION = '5.6';
-
+	/**
+	 * Name Space.
+	 *
+	 * @since 6.2.9
+	 * @access public
+	 *
+	 * @var string The name space of the plugin.
+	 */
+	const NAME_SPACE = 'InstagramFeed.Integrations.Elementor.';
 	/**
 	 * Instance.
 	 *
@@ -64,24 +66,13 @@ class SBI_Elementor_Base
 	private static $instance = null;
 
 	/**
-	 * Name Space.
-	 *
-	 * @since 6.2.9
-	 * @access public
-	 *
-	 * @var string The name space of the plugin.
-	 */
-	const NAME_SPACE = 'InstagramFeed.Integrations.Elementor.';
-
-	/**
 	 * Instance.
 	 *
 	 * Ensures only one instance of the class is loaded or can be loaded.
 	 *
+	 * @return SBI_Elementor_Base An instance of the class.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return SBI_Elementor_Base An instance of the class.
 	 */
 	public static function instance()
 	{
@@ -101,9 +92,8 @@ class SBI_Elementor_Base
 	 *
 	 * Check if the current environment is compatible with the plugin.
 	 *
-	 * @since 6.2.9
-	 *
 	 * @return bool True if the plugin can run, false otherwise.
+	 * @since 6.2.9
 	 */
 	public static function is_compatible()
 	{
@@ -133,13 +123,13 @@ class SBI_Elementor_Base
 	 */
 	private function apply_hooks()
 	{
-		add_action('elementor/frontend/after_register_scripts', array( $this, 'register_frontend_scripts' ));
-		add_action('elementor/frontend/after_register_styles', array( $this, 'register_frontend_styles' ), 10);
-		add_action('elementor/frontend/after_enqueue_styles', array( $this, 'enqueue_frontend_styles' ), 10);
+		add_action('elementor/frontend/after_register_scripts', array($this, 'register_frontend_scripts'));
+		add_action('elementor/frontend/after_register_styles', array($this, 'register_frontend_styles'), 10);
+		add_action('elementor/frontend/after_enqueue_styles', array($this, 'enqueue_frontend_styles'), 10);
 
-		add_action('elementor/controls/register', array( $this, 'register_controls' ));
-		add_action('elementor/widgets/register', array( $this, 'register_widgets' ));
-		add_action('elementor/elements/categories_registered', array( $this, 'add_smashballon_categories' ));
+		add_action('elementor/controls/register', array($this, 'register_controls'));
+		add_action('elementor/widgets/register', array($this, 'register_widgets'));
+		add_action('elementor/elements/categories_registered', array($this, 'add_smashballon_categories'));
 	}
 
 	/**
@@ -147,10 +137,9 @@ class SBI_Elementor_Base
 	 *
 	 * Add the Smash Balloon category to the Elementor widget categories.
 	 *
+	 * @param object $elements_manager The Elementor elements manager.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @param object $elements_manager The Elementor elements manager.
 	 */
 	public function add_smashballon_categories($elements_manager)
 	{
@@ -218,11 +207,11 @@ class SBI_Elementor_Base
 			'font_method' => 'svg',
 			'placeholder' => trailingslashit(SBI_PLUGIN_URL) . 'img/placeholder.png',
 			'resized_url' => $resized_url,
-			'ajax_url'  => admin_url('admin-ajax.php'),
+			'ajax_url' => admin_url('admin-ajax.php'),
 		);
 
 		// legacy settings.
-        $path = Util::sbi_legacy_css_enabled() ? 'js/legacy/' : 'js/';
+		$path = Util::sbi_legacy_css_enabled() ? 'js/legacy/' : 'js/';
 
 		wp_register_script(
 			'sbiscripts',
@@ -235,8 +224,8 @@ class SBI_Elementor_Base
 
 		$data_handler = array(
 			'smashPlugins' => SBI_Feed_Builder::get_smashballoon_plugins_info(),
-			'nonce'        => wp_create_nonce('sbi-admin'),
-			'ajax_handler' =>  admin_url('admin-ajax.php'),
+			'nonce' => wp_create_nonce('sbi-admin'),
+			'ajax_handler' => admin_url('admin-ajax.php'),
 		);
 
 		wp_register_script(
@@ -270,7 +259,7 @@ class SBI_Elementor_Base
 	public function register_frontend_styles()
 	{
 		// legacy settings
-        $path = Util::sbi_legacy_css_enabled() ? 'css/legacy/' : 'css/';
+		$path = Util::sbi_legacy_css_enabled() ? 'css/legacy/' : 'css/';
 
 		wp_register_style(
 			'sbistyles',

@@ -382,7 +382,7 @@
     text-align: left;
 }
 
-.sb-team-info>div {
+.sb-team-info > div {
     min-width: 50%;
 }
 
@@ -449,7 +449,7 @@
     box-sizing: border-box;
 }
 
-.sbi-plugins-boxes-container.sbi-feed-plugins .sb-plugins-box .icon{
+.sbi-plugins-boxes-container.sbi-feed-plugins .sb-plugins-box .icon {
     margin-bottom: 16px;
 }
 

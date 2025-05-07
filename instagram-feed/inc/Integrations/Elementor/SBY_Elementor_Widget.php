@@ -1,19 +1,11 @@
 <?php
 
-/**
- * Elementor Youtube Feed Widget.
- *
- * Elementor widget that displays Youtube feed upsell if not installed.
- *
- * @since 6.2.9
- */
-
 namespace InstagramFeed\Integrations\Elementor;
 
 use Elementor\Widget_Base;
 
 // Exit if accessed directly.
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -29,10 +21,9 @@ class SBY_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve Youtube Feed widget name.
 	 *
+	 * @return string Widget name.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return string Widget name.
 	 */
 	public function get_name()
 	{
@@ -44,10 +35,9 @@ class SBY_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve Youtube Feed widget title.
 	 *
+	 * @return string Widget title.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return string Widget title.
 	 */
 	public function get_title()
 	{
@@ -59,10 +49,9 @@ class SBY_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve Youtube Feed widget icon.
 	 *
+	 * @return string Widget icon.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return string Widget icon.
 	 */
 	public function get_icon()
 	{
@@ -74,10 +63,9 @@ class SBY_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve the list of categories the Youtube Feed widget belongs to.
 	 *
+	 * @return array Widget categories.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return array Widget categories.
 	 */
 	public function get_categories()
 	{
@@ -89,10 +77,9 @@ class SBY_Elementor_Widget extends Widget_Base
 	 *
 	 * Load the widget scripts.
 	 *
+	 * @return array Widget scripts dependencies.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return array Widget scripts dependencies.
 	 */
 	public function get_script_depends()
 	{

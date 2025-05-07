@@ -8,12 +8,13 @@
 namespace InstagramFeed\Vendor\Smashballoon\Framework\Packages\Notification\Notices;
 
 use function InstagramFeed\Vendor\Smashballoon\Framework\sb_get_template;
-if (!defined('ABSPATH')) {
+if (!\defined('ABSPATH')) {
     exit;
     // Exit if accessed directly.
 }
 /**
  * Admin notice class.
+ * @internal
  */
 class AdminNotice extends Notice
 {
@@ -90,10 +91,10 @@ class AdminNotice extends Notice
      */
     public function print_notice($notice)
     {
-        ob_start();
+        \ob_start();
         sb_get_template('Notification/templates/' . $this->type . '.php', ['notice' => $notice, 'type' => $this->type, 'id' => $this->id]);
-        $notice_html = ob_get_clean();
-        $notice_html = apply_filters('sb_' . $this->type . '_notice_markup', $notice_html);
+        $notice_html = \ob_get_clean();
+        $notice_html = \apply_filters('sb_' . $this->type . '_notice_markup', $notice_html);
         echo $notice_html;
     }
 }

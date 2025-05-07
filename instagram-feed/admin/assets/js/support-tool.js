@@ -66,7 +66,7 @@ jQuery(document).ready(function ($) {
         let responseDiv = $('.sbi-response[data-id="' + user_id + '"]');
         responseDiv.html('<div class="sbi-response-message"><p>Loading...</p></div>');
 
-        handleAjaxRequest(nonce, { user_id, account_type, connect_type, ajax_action }, function (response) {
+        handleAjaxRequest(nonce, {user_id, account_type, connect_type, ajax_action}, function (response) {
             handleResponse(response, responseDiv);
         });
     });
@@ -113,7 +113,7 @@ jQuery(document).ready(function ($) {
         let responseDiv = $('.sbi-response[data-id="' + user_id + '"]');
         responseDiv.html('<div class="sbi-response-message"><p>Loading...</p></div>');
 
-        handleAjaxRequest(nonce, { user_id, account_type, media_fields, post_limit, ajax_action }, function (response) {
+        handleAjaxRequest(nonce, {user_id, account_type, media_fields, post_limit, ajax_action}, function (response) {
             handleResponse(response, responseDiv);
         });
     });

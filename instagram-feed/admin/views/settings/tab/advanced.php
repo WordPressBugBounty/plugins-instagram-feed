@@ -14,7 +14,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="enable-resize" class="sbi-checkbox">
-                    <input type="checkbox" name="enable-resize" id="enable-resize" v-model="model.advanced.sbi_enable_resize">
+                    <input type="checkbox" name="enable-resize" id="enable-resize"
+                           v-model="model.advanced.sbi_enable_resize">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -75,7 +76,8 @@
         </div>
         <div class="sbi-tab-form-field">
             <button type="button" class="sbi-btn" @click="resetErrorLog()">
-                <span v-html="resetErrorLogIcon()" :class="clearErrorLogStatus" v-if="clearErrorLogStatus !== null"></span>
+                <span v-html="resetErrorLogIcon()" :class="clearErrorLogStatus"
+                      v-if="clearErrorLogStatus !== null"></span>
                 {{advancedTab.resetErrorBox.reset}}
             </button>
             <span class="help-text">
@@ -91,7 +93,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="usage-tracking" class="sbi-checkbox">
-                    <input type="checkbox" name="usage-tracking" id="usage-tracking" v-model="model.advanced.usage_tracking">
+                    <input type="checkbox" name="usage-tracking" id="usage-tracking"
+                           v-model="model.advanced.usage_tracking">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -102,8 +105,6 @@
     </div>
 
 
-
-
     <div class="sb-tab-box sb-load-ajax-box sb-reset-box-style clearfix">
         <div class="tab-label">
             <h3>{{advancedTab.ajaxInitial.title}}</h3>
@@ -112,7 +113,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="sb_ajax_initial" class="sbi-checkbox">
-                    <input type="checkbox" name="sb_ajax_initial" id="sb_ajax_initial" v-model="model.advanced.sb_ajax_initial">
+                    <input type="checkbox" name="sb_ajax_initial" id="sb_ajax_initial"
+                           v-model="model.advanced.sb_ajax_initial">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -131,7 +133,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="enqueue_js_in_head" class="sbi-checkbox">
-                    <input type="checkbox" name="enqueue_js_in_head" id="enqueue_js_in_head" v-model="model.advanced.sbi_enqueue_js_in_head">
+                    <input type="checkbox" name="enqueue_js_in_head" id="enqueue_js_in_head"
+                           v-model="model.advanced.sbi_enqueue_js_in_head">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -150,7 +153,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="enqueue_css_in_shortcode" class="sbi-checkbox">
-                    <input type="checkbox" name="enqueue_css_in_shortcode" id="enqueue_css_in_shortcode" v-model="model.advanced.sbi_enqueue_css_in_shortcode">
+                    <input type="checkbox" name="enqueue_css_in_shortcode" id="enqueue_css_in_shortcode"
+                           v-model="model.advanced.sbi_enqueue_css_in_shortcode">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -169,7 +173,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="enable_js_image_loading" class="sbi-checkbox">
-                    <input type="checkbox" name="enable_js_image_loading" id="enable_js_image_loading" v-model="model.advanced.sbi_enable_js_image_loading">
+                    <input type="checkbox" name="enable_js_image_loading" id="enable_js_image_loading"
+                           v-model="model.advanced.sbi_enable_js_image_loading">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -189,7 +194,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="disable-admin-error" class="sbi-checkbox">
-                    <input type="checkbox" name="disable-admin-error" id="disable-admin-error" v-model="model.advanced.enable_admin_notice">
+                    <input type="checkbox" name="disable-admin-error" id="disable-admin-error"
+                           v-model="model.advanced.enable_admin_notice">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -208,7 +214,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="enable-email-report" class="sbi-checkbox">
-                    <input type="checkbox" name="enable-email-report" id="enable-email-report" v-model="model.advanced.enable_email_report">
+                    <input type="checkbox" name="enable-email-report" id="enable-email-report"
+                           v-model="model.advanced.enable_email_report">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -217,13 +224,18 @@
                     <span class="help-text">
                         {{advancedTab.feedIssueBox.sendReport}}
                     </span>
-                    <select id="sbi-send-report" class="sbi-select size-sm mr-3" v-model="model.advanced.email_notification">
-                        <option v-for="(name, key) in advancedTab.feedIssueBox.weekDays" :value="name.val">{{name.label}}</option>
+                    <select id="sbi-send-report" class="sbi-select size-sm mr-3"
+                            v-model="model.advanced.email_notification">
+                        <option v-for="(name, key) in advancedTab.feedIssueBox.weekDays" :value="name.val">
+                            {{name.label}}
+                        </option>
                     </select>
                     <span class="help-text">
                         {{advancedTab.feedIssueBox.to}}
                     </span>
-                    <input type="text" name="report-emails" id="report-emails" class="sbi-form-field" :placeholder="advancedTab.feedIssueBox.placeholder" v-model="model.advanced.email_notification_addresses">
+                    <input type="text" name="report-emails" id="report-emails" class="sbi-form-field"
+                           :placeholder="advancedTab.feedIssueBox.placeholder"
+                           v-model="model.advanced.email_notification_addresses">
                 </div>
                 <div class="help-text">
                     <span v-html="advancedTab.feedIssueBox.helpText"></span>

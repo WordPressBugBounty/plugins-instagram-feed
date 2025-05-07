@@ -1,6 +1,6 @@
 <?php
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
 	die('-1');
 }
 
@@ -30,12 +30,12 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 			if (self::can_check_for_old_oembeds()) {
 				add_action('init', array('SB_Instagram_Oembed', 'clear_checks'));
 			}
-			add_filter('oembed_providers', array( 'SB_Instagram_Oembed', 'oembed_providers' ), 10, 1);
-			add_filter('oembed_fetch_url', array( 'SB_Instagram_Oembed', 'oembed_set_fetch_url' ), 10, 3);
-			add_filter('oembed_result', array( 'SB_Instagram_Oembed', 'oembed_result' ), 10, 3);
+			add_filter('oembed_providers', array('SB_Instagram_Oembed', 'oembed_providers'), 10, 1);
+			add_filter('oembed_fetch_url', array('SB_Instagram_Oembed', 'oembed_set_fetch_url'), 10, 3);
+			add_filter('oembed_result', array('SB_Instagram_Oembed', 'oembed_result'), 10, 3);
 		}
 		if (self::should_extend_ttl()) {
-			add_filter('oembed_ttl', array( 'SB_Instagram_Oembed', 'oembed_ttl' ), 10, 4);
+			add_filter('oembed_ttl', array('SB_Instagram_Oembed', 'oembed_ttl'), 10, 4);
 		}
 	}
 
@@ -56,11 +56,87 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 		}
 
 		$access_token = self::last_access_token();
-		if (! $access_token) {
+		if (!$access_token) {
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Any access token will work for oembeds so the most recently connected account's
+	 * access token is returned
+	 *
+	 * @return bool|string
+	 *
+	 * @since 2.5/5.8
+	 */
+	public static function last_access_token()
+	{
+		$oembed_token_settings = get_option('sbi_oembed_token', array());
+		$will_expire = self::oembed_access_token_will_expire();
+		if (
+			!empty($oembed_token_settings['access_token'])
+			&& (!$will_expire || $will_expire > time())
+		) {
+			return sbi_maybe_clean($oembed_token_settings['access_token']);
+		} else {
+			$if_database_settings = sbi_get_database_settings();
+
+			if (isset($if_database_settings['connected_accounts'])) {
+				$connected_accounts = $if_database_settings['connected_accounts'];
+				foreach ($connected_accounts as $connected_account) {
+					if (empty($oembed_token_settings['access_token']) && isset($connected_account['type']) && $connected_account['type'] === 'business') {
+						$oembed_token_settings['access_token'] = $connected_account['access_token'];
+					}
+				}
+			}
+
+			if (!empty($oembed_token_settings['access_token'])) {
+				return sbi_maybe_clean($oembed_token_settings['access_token']);
+			}
+
+			if (class_exists('CFF_Oembed')) {
+				$cff_oembed_token_settings = get_option('cff_oembed_token', array());
+				if (!empty($cff_oembed_token_settings['access_token'])) {
+					return $cff_oembed_token_settings['access_token'];
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Access tokens created from FB accounts not connected to an
+	 * FB page expire after 60 days.
+	 *
+	 * @return bool|int
+	 */
+	public static function oembed_access_token_will_expire()
+	{
+		$oembed_token_settings = get_option('sbi_oembed_token', array());
+
+		$will_expire = false;
+		if (isset($oembed_token_settings['expiration_date']) && (int)$oembed_token_settings['expiration_date'] > 0) {
+			$will_expire = (int)$oembed_token_settings['expiration_date'];
+		}
+
+		return $will_expire;
+	}
+
+	/**
+	 * Checking for old oembeds makes permanent changes to posts
+	 * so we want the user to turn it off and on
+	 *
+	 * @return bool
+	 *
+	 * @since 2.5/5.8
+	 */
+	public static function can_check_for_old_oembeds()
+	{
+		$sbi_statuses = get_option('sbi_statuses', array());
+		return !isset($sbi_statuses['clear_old_oembed_checks']);
 	}
 
 	/**
@@ -89,20 +165,6 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	}
 
 	/**
-	 * Checking for old oembeds makes permanent changes to posts
-	 * so we want the user to turn it off and on
-	 *
-	 * @return bool
-	 *
-	 * @since 2.5/5.8
-	 */
-	public static function can_check_for_old_oembeds()
-	{
-		$sbi_statuses = get_option('sbi_statuses', array());
-		return !isset($sbi_statuses['clear_old_oembed_checks']);
-	}
-
-	/**
 	 * Filters the WordPress list of oembed providers to
 	 * change what url is used for remote requests for the
 	 * oembed data
@@ -117,12 +179,25 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	{
 		$oembed_url = self::oembed_url();
 		if ($oembed_url) {
-			$providers['#https?://(www\.)?instagr(\.am|am\.com)/(p|tv|reel)/.*#i'] = array( $oembed_url, true );
+			$providers['#https?://(www\.)?instagr(\.am|am\.com)/(p|tv|reel)/.*#i'] = array($oembed_url, true);
 			// for WP 4.9.
-			$providers['#https?://(www\.)?instagr(\.am|am\.com)/p/.*#i'] = array( $oembed_url, true );
+			$providers['#https?://(www\.)?instagr(\.am|am\.com)/p/.*#i'] = array($oembed_url, true);
 		}
 
 		return $providers;
+	}
+
+	/**
+	 * Depending on whether a business or personal account is connected,
+	 * a different oembed endpoint is used
+	 *
+	 * @return string
+	 *
+	 * @since 2.5/5.8
+	 */
+	public static function oembed_url()
+	{
+		return 'https://graph.facebook.com/instagram_oembed';
 	}
 
 	/**
@@ -140,7 +215,7 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	public static function oembed_set_fetch_url($provider, $url, $args)
 	{
 		$access_token = self::last_access_token();
-		if (! $access_token) {
+		if (!$access_token) {
 			return $provider;
 		}
 
@@ -203,81 +278,6 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	}
 
 	/**
-	 * Depending on whether a business or personal account is connected,
-	 * a different oembed endpoint is used
-	 *
-	 * @return string
-	 *
-	 * @since 2.5/5.8
-	 */
-	public static function oembed_url()
-	{
-		return 'https://graph.facebook.com/instagram_oembed';
-	}
-
-	/**
-	 * Any access token will work for oembeds so the most recently connected account's
-	 * access token is returned
-	 *
-	 * @return bool|string
-	 *
-	 * @since 2.5/5.8
-	 */
-	public static function last_access_token()
-	{
-		$oembed_token_settings = get_option('sbi_oembed_token', array());
-		$will_expire           = self::oembed_access_token_will_expire();
-		if (
-			! empty($oembed_token_settings['access_token'])
-			&& ( ! $will_expire || $will_expire > time() )
-		) {
-			return sbi_maybe_clean($oembed_token_settings['access_token']);
-		} else {
-			$if_database_settings = sbi_get_database_settings();
-
-			if (isset($if_database_settings['connected_accounts'])) {
-				$connected_accounts = $if_database_settings['connected_accounts'];
-				foreach ($connected_accounts as $connected_account) {
-					if (empty($oembed_token_settings['access_token']) && isset($connected_account['type']) && $connected_account['type'] === 'business') {
-						$oembed_token_settings['access_token'] = $connected_account['access_token'];
-					}
-				}
-			}
-
-			if (! empty($oembed_token_settings['access_token'])) {
-				return sbi_maybe_clean($oembed_token_settings['access_token']);
-			}
-
-			if (class_exists('CFF_Oembed')) {
-				$cff_oembed_token_settings = get_option('cff_oembed_token', array());
-				if (! empty($cff_oembed_token_settings['access_token'])) {
-					return $cff_oembed_token_settings['access_token'];
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Access tokens created from FB accounts not connected to an
-	 * FB page expire after 60 days.
-	 *
-	 * @return bool|int
-	 */
-	public static function oembed_access_token_will_expire()
-	{
-		$oembed_token_settings = get_option('sbi_oembed_token', array());
-
-		$will_expire = false;
-		if (isset($oembed_token_settings['expiration_date']) && (int) $oembed_token_settings['expiration_date'] > 0) {
-			$will_expire = (int) $oembed_token_settings['expiration_date'];
-		}
-
-		return $will_expire;
-	}
-
-	/**
 	 * Loop through post meta data and if it's an oembed and has content
 	 * that looks like an Instagram oembed, delete it
 	 *
@@ -296,16 +296,15 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 
 		$total_found = 0;
 		foreach ($post_metas as $post_meta_key => $post_meta_value) {
-			if ('_oembed_' === substr($post_meta_key, 0, 8)) {
-				if (
-					strpos($post_meta_value[0], 'class="instagram-media"') !== false
-					&& strpos($post_meta_value[0], 'sbi-embed-wrap') === false
-				) {
+			if (
+				'_oembed_' === substr($post_meta_key, 0, 8)
+				&& strpos($post_meta_value[0], 'class="instagram-media"') !== false
+				&& strpos($post_meta_value[0], 'sbi-embed-wrap') === false
+			) {
 					++$total_found;
 					delete_post_meta($post_ID, $post_meta_key);
-					if ('_oembed_time_' !== substr($post_meta_key, 0, 13)) {
-						delete_post_meta($post_ID, str_replace('_oembed_', '_oembed_time_', $post_meta_key));
-					}
+				if ('_oembed_time_' !== substr($post_meta_key, 0, 13)) {
+					delete_post_meta($post_ID, str_replace('_oembed_', '_oembed_time_', $post_meta_key));
 				}
 			}
 		}
@@ -324,10 +323,9 @@ class SB_Instagram_Oembed // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 		$table_name = esc_sql($wpdb->prefix . 'postmeta');
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$wpdb->query(
-			"
-		    DELETE
-		    FROM $table_name
-		    WHERE meta_key = '_sbi_oembed_done_checking';"
+			"DELETE
+			FROM $table_name
+			WHERE meta_key = '_sbi_oembed_done_checking';"
 		);
 
 		$sbi_statuses = get_option('sbi_statuses', array());
@@ -345,4 +343,5 @@ function sbiOembedInit()
 {
 	return new SB_Instagram_Oembed();
 }
+
 sbiOembedInit();

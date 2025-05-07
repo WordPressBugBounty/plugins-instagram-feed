@@ -10,8 +10,8 @@ namespace InstagramFeed\Vendor\Brumann\Polyfill;
  */
 final class DisallowedClassesSubstitutor
 {
-    const PATTERN_STRING = '#s:(\d+):(")#';
-    const PATTERN_OBJECT = '#(^|;)O:\d+:"([^"]*)":(\d+):\{#';
+    const PATTERN_STRING = '#s:(\\d+):(")#';
+    const PATTERN_OBJECT = '#(^|;)O:\\d+:"([^"]*)":(\\d+):\\{#';
     /**
      * @var string
      */
@@ -51,7 +51,7 @@ final class DisallowedClassesSubstitutor
     private function buildIgnoreItems()
     {
         $offset = 0;
-        while (preg_match(self::PATTERN_STRING, $this->serialized, $matches, \PREG_OFFSET_CAPTURE, $offset)) {
+        while (\preg_match(self::PATTERN_STRING, $this->serialized, $matches, \PREG_OFFSET_CAPTURE, $offset)) {
             $length = (int) $matches[1][0];
             // given length in serialized data (e.g. `s:123:"` --> 123)
             $start = $matches[2][1];
@@ -71,9 +71,9 @@ final class DisallowedClassesSubstitutor
     private function substituteObjects()
     {
         $offset = 0;
-        while (preg_match(self::PATTERN_OBJECT, $this->serialized, $matches, \PREG_OFFSET_CAPTURE, $offset)) {
+        while (\preg_match(self::PATTERN_OBJECT, $this->serialized, $matches, \PREG_OFFSET_CAPTURE, $offset)) {
             $completeMatch = (string) $matches[0][0];
-            $completeLength = strlen($completeMatch);
+            $completeLength = \strlen($completeMatch);
             $start = $matches[0][1];
             $end = $start + $completeLength;
             $leftBorder = (string) $matches[1][0];
@@ -81,7 +81,7 @@ final class DisallowedClassesSubstitutor
             $objectSize = (int) $matches[3][0];
             $offset = $end + 1;
             // class name is actually allowed - skip this item
-            if (in_array($className, $this->allowedClasses, \true)) {
+            if (\in_array($className, $this->allowedClasses, \true)) {
                 continue;
             }
             // serialized object nested in outer serialized string
@@ -89,7 +89,7 @@ final class DisallowedClassesSubstitutor
                 continue;
             }
             $incompleteItem = $this->sanitizeItem($className, $leftBorder, $objectSize);
-            $incompleteItemLength = strlen($incompleteItem);
+            $incompleteItemLength = \strlen($incompleteItem);
             $offset = $start + $incompleteItemLength + 1;
             $this->replace($incompleteItem, $start, $end);
             $this->shift($end, $incompleteItemLength - $completeLength);
@@ -104,7 +104,7 @@ final class DisallowedClassesSubstitutor
      */
     private function replace($replacement, $start, $end)
     {
-        $this->serialized = substr($this->serialized, 0, $start) . $replacement . substr($this->serialized, $end);
+        $this->serialized = \substr($this->serialized, 0, $start) . $replacement . \substr($this->serialized, $end);
     }
     /**
      * Whether given offset positions should be ignored.
@@ -151,7 +151,7 @@ final class DisallowedClassesSubstitutor
      */
     private function sanitizeItem($className, $leftBorder, $objectSize)
     {
-        return sprintf(
+        return \sprintf(
             '%sO:22:"__PHP_Incomplete_Class":%d:{s:27:"__PHP_Incomplete_Class_Name";%s',
             $leftBorder,
             $objectSize + 1,

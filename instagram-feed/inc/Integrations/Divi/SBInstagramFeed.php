@@ -1,18 +1,12 @@
 <?php
 
-/**
- * Smash Balloon Instagram Feed Divi Integration
- *
- * @since 6.2.9
- */
-
 namespace InstagramFeed\Integrations\Divi;
 
 use ET_Builder_Module;
 use InstagramFeed\Builder\SBI_Db;
 
 // Exit if accessed directly.
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -54,21 +48,20 @@ class SBInstagramFeed extends ET_Builder_Module
 	/**
 	 * Module's specific fields.
 	 *
-	 * @since 6.2.9
-	 *
 	 * @return array
+	 * @since 6.2.9
 	 */
 	public function get_fields()
 	{
 		$feeds_list = SBI_Db::elementor_feeds_query($default = true);
 
 		return [
-			'feed_id'    => [
-				'label'           => esc_html__('Feed', 'instagram-feed'),
-				'type'            => 'select',
+			'feed_id' => [
+				'label' => esc_html__('Feed', 'instagram-feed'),
+				'type' => 'select',
 				'option_category' => 'basic_option',
-				'toggle_slug'     => 'main_content',
-				'options'         => $feeds_list,
+				'toggle_slug' => 'main_content',
+				'options' => $feeds_list,
 			]
 		];
 	}
@@ -76,34 +69,32 @@ class SBInstagramFeed extends ET_Builder_Module
 	/**
 	 * Module's advanced fields.
 	 *
-	 * @since 6.2.9
-	 *
 	 * @return array
+	 * @since 6.2.9
 	 */
 	public function get_advanced_fields_config()
 	{
 		return [
 			'link_options' => false,
-			'text'         => false,
-			'background'   => false,
-			'borders'      => false,
-			'box_shadow'   => false,
-			'button'       => false,
-			'filters'      => false,
-			'fonts'        => false,
+			'text' => false,
+			'background' => false,
+			'borders' => false,
+			'box_shadow' => false,
+			'button' => false,
+			'filters' => false,
+			'fonts' => false,
 		];
 	}
 
 	/**
 	 * Render module.
 	 *
-	 * @since 6.2.9
-	 *
 	 * @param array  $attrs Module attributes.
 	 * @param string $content Module content.
 	 * @param string $render_slug Module slug.
 	 *
 	 * @return string
+	 * @since 6.2.9
 	 */
 	public function render($attrs, $content, $render_slug)
 	{

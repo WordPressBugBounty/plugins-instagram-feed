@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Instagram Feed Cache
  *
@@ -7,101 +8,89 @@
  * @since 6.0
  */
 
-class SB_Instagram_Cache {
-
+class SB_Instagram_Cache
+{
+	/**
+	 * @var object|SB_Instagram_Data_Encryption
+	 */
+	protected $encryption;
 	/**
 	 * @var int
 	 */
 	private $feed_id;
-
 	/**
 	 * @var int
 	 */
 	private $page;
-
 	/**
 	 * @var string
 	 */
 	private $suffix;
-
 	/**
 	 * @var bool
 	 */
 	private $is_legacy;
-
 	/**
 	 * @var int
 	 */
 	private $cache_time;
-
 	/**
 	 * @var array
 	 */
 	private $posts;
-
 	/**
 	 * @var array
 	 */
 	private $posts_page;
-
 	/**
 	 * @var bool
 	 */
 	private $is_expired;
-
 	/**
 	 * @var array
 	 */
 	private $header;
-
 	/**
 	 * @var array
 	 */
 	private $resized_images;
-
 	/**
 	 * @var array
 	 */
 	private $meta;
-
 	/**
 	 * @var array
 	 */
 	private $posts_backup;
-
 	/**
 	 * @var array
 	 */
 	private $header_backup;
 
 	/**
-	 * @var object|SB_Instagram_Data_Encryption
-	 */
-	protected $encryption;
-
-	/**
 	 * SBI_Cache constructor. Set the feed id, cache key, legacy
 	 *
 	 * @param string $feed_id
-	 * @param int $page
-	 * @param int $cache_time
+	 * @param int    $page
+	 * @param int    $cache_time
 	 *
 	 * @since 6.0
 	 */
-	public function __construct( $feed_id, $page = 1, $cache_time = 0 ) {
-		$this->cache_time = (int) $cache_time;
-		$this->is_legacy  = strpos( $feed_id, '*' ) !== 0;
-		$this->page       = $page;
+	public function __construct($feed_id, $page = 1, $cache_time = 0)
+	{
+		$this->cache_time = (int)$cache_time;
+		$this->is_legacy = strpos($feed_id, '*') !== 0;
+		$this->page = $page;
 
-		if ( $this->page === 1 ) {
+		if ($this->page === 1) {
 			$this->suffix = '';
 		} else {
 			$this->suffix = '_' . $this->page;
 		}
 
-		$this->feed_id = str_replace( '*', '', $feed_id );
+		$this->feed_id = str_replace('*', '', $feed_id);
 
-		if ( is_admin() ) {
+		if (is_admin()) {
 			$this->feed_id .= $this->maybe_customizer_suffix();
 		}
 
@@ -109,24 +98,80 @@ class SB_Instagram_Cache {
 	}
 
 	/**
+	 * Add suffix to cache keys used in the customizer
+	 *
+	 * @return string
+	 *
+	 * @since 6.0
+	 */
+	private function maybe_customizer_suffix()
+	{
+		$additional_suffix = '';
+		$in_customizer = !empty($_POST['previewSettings']) || (isset($_GET['page']) && $_GET['page'] === 'sbi-feed-builder');
+		if ($in_customizer) {
+			$additional_suffix .= '_CUSTOMIZER';
+
+			if (!empty($_POST['moderationShoppableMode'])) {
+				$additional_suffix .= '_MODMODE';
+				$offset = !empty($_POST['moderationShoppableModeOffset']) ? intval($_POST['moderationShoppableModeOffset']) : '';
+				$additional_suffix .= $offset;
+			}
+		}
+
+		return $additional_suffix;
+	}
+
+	/**
+	 * Clears caches in the WP Options table used mostly by legacy feeds.
+	 * Also resets caches created by common page caching plugins
+	 *
+	 * @param false $hard_clear
+	 * @since 6.0
+	 */
+	public static function clear_legacy($hard_clear = false)
+	{
+		global $wpdb;
+		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
+
+		if ($hard_clear) {
+			$wpdb->query(
+				"DELETE FROM $cache_table_name
+				WHERE feed_id LIKE ('sbi\_%')
+				AND cache_key NOT IN ( 'posts_backup', 'header_backup' );"
+			);
+		} else {
+			$wpdb->query(
+				"UPDATE $cache_table_name
+				SET cache_value = ''
+				WHERE feed_id LIKE ('sbi\_%')
+				AND cache_key NOT IN ( 'posts_backup', 'header_backup' );"
+			);
+		}
+
+
+		sb_instagram_clear_page_caches();
+	}
+
+	/**
 	 * Set all caches based on available data.
 	 *
 	 * @since 6.0
 	 */
-	public function retrieve_and_set() {
+	public function retrieve_and_set()
+	{
 
-		$expired         = true;
+		$expired = true;
 		$existing_caches = $this->query_sbi_feed_caches();
 
-		foreach ( $existing_caches as $cache ) {
-			switch ( $cache['cache_key'] ) {
+		foreach ($existing_caches as $cache) {
+			switch ($cache['cache_key']) {
 				case 'posts':
 					$this->posts = $cache['cache_value'];
-					if ( strtotime( $cache['last_updated'] ) > time() - $this->cache_time ) {
+					if (strtotime($cache['last_updated']) > time() - $this->cache_time) {
 						$expired = false;
 					}
 
-					if ( empty( $cache['cache_value'] ) ) {
+					if (empty($cache['cache_value'])) {
 						$expired = true;
 					}
 					break;
@@ -153,10 +198,61 @@ class SB_Instagram_Cache {
 
 		$this->is_expired = $expired;
 
-		if ( $this->cache_time < 1 ) {
+		if ($this->cache_time < 1) {
 			$this->is_expired = true;
 		}
+	}
 
+	/**
+	 * Get all available caches from the sbi_cache table.
+	 *
+	 * @return array
+	 *
+	 * @since 6.0
+	 */
+	private function query_sbi_feed_caches()
+	{
+		$feed_cache = wp_cache_get($this->get_wp_cache_key());
+		if (false === $feed_cache) {
+			global $wpdb;
+			$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
+
+			if ($this->page === 1) {
+				$sql = $wpdb->prepare(
+					"SELECT * FROM $cache_table_name
+					WHERE feed_id = %s",
+					$this->feed_id
+				);
+			} else {
+				$sql = $wpdb->prepare(
+					"SELECT * FROM $cache_table_name
+					WHERE feed_id = %s
+					AND cache_key IN ( 'posts', %s, %s, %s )",
+					$this->feed_id,
+					'posts_' . $this->page,
+					'resized_images_' . $this->page,
+					'meta_' . $this->page
+				);
+			}
+
+			$feed_cache = $wpdb->get_results($sql, ARRAY_A);
+
+			wp_cache_set($this->get_wp_cache_key(), $feed_cache);
+		}
+
+		return $feed_cache;
+	}
+
+	/**
+	 * Key used to get the wp cache key
+	 *
+	 * @return string
+	 *
+	 * @since 6.0
+	 */
+	private function get_wp_cache_key()
+	{
+		return 'sbi_feed_' . $this->feed_id . '_' . $this->page;
 	}
 
 	/**
@@ -168,22 +264,22 @@ class SB_Instagram_Cache {
 	 *
 	 * @since 6.0
 	 */
-	public function is_expired( $cache_type = 'posts' ) {
+	public function is_expired($cache_type = 'posts')
+	{
+		if ($cache_type !== 'posts') {
+			$cache = $this->get($cache_type);
 
-		if ( $cache_type !== 'posts' ) {
-			$cache = $this->get( $cache_type );
-
-			return ( empty( $cache ) || $this->is_expired );
+			return empty($cache) || $this->is_expired;
 		}
-		if ( $this->page === 1 ) {
+		if ($this->page === 1) {
 			return $this->is_expired;
-		} else {
-			if ( $this->is_expired ) {
-				return true;
-			}
-			if ( empty( $this->posts_page ) ) {
-				return true;
-			}
+		}
+
+		if ($this->is_expired) {
+			return true;
+		}
+		if (empty($this->posts_page)) {
+			return true;
 		}
 		return false;
 	}
@@ -197,9 +293,10 @@ class SB_Instagram_Cache {
 	 *
 	 * @since 6.0
 	 */
-	public function get( $type ) {
+	public function get($type)
+	{
 		$return = array();
-		switch ( $type ) {
+		switch ($type) {
 			case 'posts':
 				$return = $this->posts;
 				break;
@@ -223,17 +320,135 @@ class SB_Instagram_Cache {
 				break;
 		}
 
-		return $this->maybe_decrypt( $return );
+		return $this->maybe_decrypt($return);
+	}
+
+	/**
+	 * Uses a raw value and attempts to decrypt it
+	 *
+	 * @param $value
+	 *
+	 * @return bool|string
+	 *
+	 * @since 6.0
+	 */
+	private function maybe_decrypt($value)
+	{
+		if (!is_string($value)) {
+			return $value;
+		}
+		if (strpos($value, '{') === 0) {
+			return $value;
+		}
+
+		$decrypted = $this->encryption->decrypt($value);
+
+		if (!$decrypted) {
+			return $value;
+		}
+
+		return $decrypted;
+	}
+
+	/**
+	 * Update a single cache with new data. Try to accept any data and convert it
+	 * to JSON if needed
+	 *
+	 * @param string              $cache_type
+	 * @param array|object|string $cache_value
+	 * @param bool                $include_backup
+	 * @param bool                $cron_update
+	 *
+	 * @return int
+	 *
+	 * @since 6.0
+	 */
+	public function update_or_insert($cache_type, $cache_value, $include_backup = true, $cron_update = true)
+	{
+		$this->clear_wp_cache();
+
+		if ($this->page > 1 || ($cache_type !== 'posts' && $cache_type !== 'header')) {
+			$cron_update = false;
+		}
+
+		if (strpos($this->feed_id, '_CUSTOMIZER') !== false) {
+			$cron_update = false;
+		}
+
+		$cache_key = $cache_type . $this->suffix;
+
+		$this->set($cache_key, $cache_value);
+
+		if (is_array($cache_value) || is_object($cache_value)) {
+			$cache_value = sbi_json_encode($cache_value);
+		}
+
+		global $wpdb;
+		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
+
+		$sql = $wpdb->prepare(
+			"
+			SELECT * FROM $cache_table_name
+			WHERE feed_id = %s
+			AND cache_key = %s",
+			$this->feed_id,
+			$cache_key
+		);
+
+		$existing = $wpdb->get_results($sql, ARRAY_A);
+		$data = array();
+		$where = array();
+		$format = array();
+
+		$data['cache_value'] = $this->maybe_encrypt($cache_value);
+		$format[] = '%s';
+
+		$data['last_updated'] = date('Y-m-d H:i:s');
+		$format[] = '%s';
+
+		if (!empty($existing[0])) {
+			$where['feed_id'] = $this->feed_id;
+			$where_format[] = '%s';
+
+			$where['cache_key'] = $cache_key;
+			$where_format[] = '%s';
+
+			$affected = $wpdb->update($cache_table_name, $data, $where, $format, $where_format);
+		} else {
+			$data['cache_key'] = $cache_key;
+			$format[] = '%s';
+
+			$data['cron_update'] = $cron_update === true ? 'yes' : '';
+			$format[] = '%s';
+
+			$data['feed_id'] = $this->feed_id;
+			$format[] = '%s';
+
+			$affected = $wpdb->insert($cache_table_name, $data, $format);
+		}
+
+		return $affected;
+	}
+
+	/**
+	 * Delete the wp_cache
+	 *
+	 * @since 6.0
+	 */
+	private function clear_wp_cache()
+	{
+		wp_cache_delete($this->get_wp_cache_key());
 	}
 
 	/**
 	 * @param string $type
-	 * @param array $cache_value
+	 * @param array  $cache_value
 	 *
 	 * @since 6.0
 	 */
-	public function set( $type, $cache_value ) {
-		switch ( $type ) {
+	public function set($type, $cache_value)
+	{
+		switch ($type) {
 			case 'posts':
 				$this->posts = $cache_value;
 				break;
@@ -259,82 +474,24 @@ class SB_Instagram_Cache {
 	}
 
 	/**
-	 * Update a single cache with new data. Try to accept any data and convert it
-	 * to JSON if needed
+	 * Uses a raw value and attempts to encrypt it
 	 *
-	 * @param string $cache_type
-	 * @param array|object|string $cache_value
-	 * @param bool $include_backup
-	 * @param bool $cron_update
+	 * @param $value
 	 *
-	 * @return int
+	 * @return bool|string
 	 *
 	 * @since 6.0
 	 */
-	public function update_or_insert( $cache_type, $cache_value, $include_backup = true, $cron_update = true ) {
-		$this->clear_wp_cache();
-
-		if ( $this->page > 1 || ( $cache_type !== 'posts' && $cache_type !== 'header' ) ) {
-			$cron_update = false;
+	private function maybe_encrypt($value)
+	{
+		if (!empty($value) && !is_string($value)) {
+			$value = sbi_json_encode($value);
+		}
+		if (empty($value)) {
+			return $value;
 		}
 
-		if ( strpos( $this->feed_id, '_CUSTOMIZER' ) !== false ) {
-			$cron_update = false;
-		}
-
-		$cache_key = $cache_type . $this->suffix;
-
-		$this->set( $cache_key, $cache_value );
-
-		if ( is_array( $cache_value ) || is_object( $cache_value ) ) {
-			$cache_value = sbi_json_encode( $cache_value );
-		}
-
-		global $wpdb;
-		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
-
-		$sql = $wpdb->prepare(
-			"
-			SELECT * FROM $cache_table_name
-			WHERE feed_id = %s
-			AND cache_key = %s",
-			$this->feed_id,
-			$cache_key
-		);
-
-		$existing = $wpdb->get_results( $sql, ARRAY_A );
-		$data     = array();
-		$where    = array();
-		$format   = array();
-
-		$data['cache_value'] = $this->maybe_encrypt( $cache_value );
-		$format[]            = '%s';
-
-		$data['last_updated'] = date( 'Y-m-d H:i:s' );
-		$format[]             = '%s';
-
-		if ( ! empty( $existing[0] ) ) {
-			$where['feed_id'] = $this->feed_id;
-			$where_format[]   = '%s';
-
-			$where['cache_key'] = $cache_key;
-			$where_format[]     = '%s';
-
-			$affected = $wpdb->update( $cache_table_name, $data, $where, $format, $where_format );
-		} else {
-			$data['cache_key'] = $cache_key;
-			$format[]          = '%s';
-
-			$data['cron_update'] = $cron_update === true ? 'yes' : '';
-			$format[]            = '%s';
-
-			$data['feed_id'] = $this->feed_id;
-			$format[]        = '%s';
-
-			$affected = $wpdb->insert( $cache_table_name, $data, $format );
-		}
-
-		return $affected;
+		return $this->encryption->encrypt($value);
 	}
 
 	/**
@@ -342,9 +499,10 @@ class SB_Instagram_Cache {
 	 *
 	 * @since 6.0
 	 */
-	public function after_new_posts_retrieved() {
-		if ( $this->page === 1 ) {
-			$this->clear( 'all' );
+	public function after_new_posts_retrieved()
+	{
+		if ($this->page === 1) {
+			$this->clear('all');
 		}
 	}
 
@@ -357,16 +515,17 @@ class SB_Instagram_Cache {
 	 *
 	 * @since 6.0
 	 */
-	public function clear( $type ) {
+	public function clear($type)
+	{
 		$this->clear_wp_cache();
 
 		global $wpdb;
 		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
 
-		$feed_id = str_replace( array( '_CUSTOMIZER', '_CUSTOMIZER_MODMODE' ), '', $this->feed_id );
+		$feed_id = str_replace(array('_CUSTOMIZER', '_CUSTOMIZER_MODMODE'), '', $this->feed_id);
 
-		if ( $type === 'all' ) {
-			$affected = $wpdb->query(
+		if ($type === 'all') {
+			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE $cache_table_name
 				SET cache_value = ''
@@ -376,7 +535,7 @@ class SB_Instagram_Cache {
 				)
 			);
 
-			$affected = $wpdb->query(
+			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE $cache_table_name
 				SET cache_value = ''
@@ -385,8 +544,8 @@ class SB_Instagram_Cache {
 				)
 			);
 
-			$mod_mode_where = esc_sql( $feed_id ) . '_CUSTOMIZER_MODMODE%';
-			$affected       = $wpdb->query(
+			$mod_mode_where = esc_sql($feed_id) . '_CUSTOMIZER_MODMODE%';
+			$affected = $wpdb->query(
 				$wpdb->prepare(
 					"UPDATE $cache_table_name
 				SET cache_value = ''
@@ -395,32 +554,32 @@ class SB_Instagram_Cache {
 				)
 			);
 		} else {
-
-			$data   = array( 'cache_value' => '' );
-			$format = array( '%s' );
+			$data = array('cache_value' => '');
+			$format = array('%s');
 
 			$where['feed_id'] = $feed_id;
-			$where_format[]   = '%s';
+			$where_format[] = '%s';
 
 			$where['cache_key'] = $type . $this->suffix;
-			$where_format[]     = '%s';
+			$where_format[] = '%s';
 
-			$affected = $wpdb->update( $cache_table_name, $data, $where, $format, $where_format );
+			$wpdb->update($cache_table_name, $data, $where, $format, $where_format);
 
 			$where['feed_id'] = $feed_id . '_CUSTOMIZER';
 
-			$affected = $wpdb->update( $cache_table_name, $data, $where, $format, $where_format );
+			$wpdb->update($cache_table_name, $data, $where, $format, $where_format);
 
 			$where['feed_id'] = $feed_id . '_CUSTOMIZER_MODMODE';
 
-			$affected = $wpdb->update( $cache_table_name, $data, $where, $format, $where_format );
+			$affected = $wpdb->update($cache_table_name, $data, $where, $format, $where_format);
 		}
 
 		return $affected;
 	}
 
-	public function get_customizer_cache() {
-		if ( strpos( $this->feed_id, '_CUSTOMIZER' ) === false ) {
+	public function get_customizer_cache()
+	{
+		if (strpos($this->feed_id, '_CUSTOMIZER') === false) {
 			$feed_id = $this->feed_id . '_CUSTOMIZER';
 		} else {
 			$feed_id = $this->feed_id;
@@ -428,222 +587,60 @@ class SB_Instagram_Cache {
 		global $wpdb;
 		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
 
-		$sql     = $wpdb->prepare(
+		$sql = $wpdb->prepare(
 			"
 			SELECT * FROM $cache_table_name
 			WHERE feed_id = %s
 			AND cache_key = 'posts'",
 			$feed_id
 		);
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		$results = $wpdb->get_results($sql, ARRAY_A);
 
 		$return = array();
-		if ( ! empty( $results[0] ) ) {
-			$return = $this->maybe_decrypt( $results[0]['cache_value'] );
-			$return = json_decode( $return, true );
+		if (!empty($results[0])) {
+			$return = $this->maybe_decrypt($results[0]['cache_value']);
+			$return = json_decode($return, true);
 
-			$return = isset( $return['data'] ) ? $return['data'] : array();
+			$return = isset($return['data']) ? $return['data'] : array();
 		}
 
 		return $return;
 	}
 
-	/**
-	 * Clears caches in the WP Options table used mostly by legacy feeds.
-	 * Also resets caches created by common page caching plugins
-	 *
-	 * @param false $hard_clear
-	 * @since 6.0
-	 */
-	public static function clear_legacy( $hard_clear = false ) {
+	public function update_last_updated()
+	{
 		global $wpdb;
 		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
 
-		if ( $hard_clear ) {
-			$affected         = $wpdb->query(
-				"DELETE FROM $cache_table_name
-				WHERE feed_id LIKE ('sbi\_%')
-				AND cache_key NOT IN ( 'posts_backup', 'header_backup' );"
-			);
-		} else {
-			$affected         = $wpdb->query(
-				"UPDATE $cache_table_name
-				SET cache_value = ''
-				WHERE feed_id LIKE ('sbi\_%')
-				AND cache_key NOT IN ( 'posts_backup', 'header_backup' );"
-			);
-		}
-
-
-		sb_instagram_clear_page_caches();
-
-	}
-
-	/**
-	 * Get all available caches from the sbi_cache table.
-	 *
-	 * @return array
-	 *
-	 * @since 6.0
-	 */
-	private function query_sbi_feed_caches() {
-		$feed_cache = wp_cache_get( $this->get_wp_cache_key() );
-		if ( false === $feed_cache ) {
-			global $wpdb;
-			$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
-
-			if ( $this->page === 1 ) {
-				$sql = $wpdb->prepare(
-					"
-				SELECT * FROM $cache_table_name
-				WHERE feed_id = %s",
-					$this->feed_id
-				);
-			} else {
-				$sql = $wpdb->prepare(
-					"
-				SELECT * FROM $cache_table_name
-				WHERE feed_id = %s
-				AND cache_key IN ( 'posts', %s, %s, %s )",
-					$this->feed_id,
-					'posts_' . $this->page,
-					'resized_images_' . $this->page,
-					'meta_' . $this->page
-				);
-			}
-
-			$feed_cache = $wpdb->get_results( $sql, ARRAY_A );
-
-			wp_cache_set( $this->get_wp_cache_key(), $feed_cache );
-		}
-
-		return $feed_cache;
-	}
-
-	/**
-	 * Delete the wp_cache
-	 *
-	 * @since 6.0
-	 */
-	private function clear_wp_cache() {
-		wp_cache_delete( $this->get_wp_cache_key() );
-	}
-
-	/**
-	 * Key used to get the wp cache key
-	 *
-	 * @return string
-	 *
-	 * @since 6.0
-	 */
-	private function get_wp_cache_key() {
-		return 'sbi_feed_' . $this->feed_id . '_' . $this->page;
-	}
-
-	/**
-	 * Uses a raw value and attempts to encrypt it
-	 *
-	 * @param $value
-	 *
-	 * @return bool|string
-	 *
-	 * @since 6.0
-	 */
-	private function maybe_encrypt( $value ) {
-		if ( ! empty( $value ) && ! is_string( $value ) ) {
-			$value = sbi_json_encode( $value );
-		}
-		if ( empty( $value ) ) {
-			return $value;
-		}
-
-		return $this->encryption->encrypt( $value );
-	}
-
-	/**
-	 * Uses a raw value and attempts to decrypt it
-	 *
-	 * @param $value
-	 *
-	 * @return bool|string
-	 *
-	 * @since 6.0
-	 */
-	private function maybe_decrypt( $value ) {
-		if ( ! is_string( $value ) ) {
-			return $value;
-		}
-		if ( strpos( $value, '{' ) === 0 ) {
-			return $value;
-		}
-
-		$decrypted = $this->encryption->decrypt( $value );
-
-		if ( ! $decrypted ) {
-			return $value;
-		}
-
-		return $decrypted;
-	}
-
-	/**
-	 * Add suffix to cache keys used in the customizer
-	 *
-	 * @return string
-	 *
-	 * @since 6.0
-	 */
-	private function maybe_customizer_suffix() {
-		$additional_suffix = '';
-		$in_customizer     = ! empty( $_POST['previewSettings'] ) || ( isset( $_GET['page'] ) && $_GET['page'] === 'sbi-feed-builder' );
-		if ( $in_customizer ) {
-			$additional_suffix .= '_CUSTOMIZER';
-
-			if ( ! empty( $_POST['moderationShoppableMode'] ) ) {
-				$additional_suffix .= '_MODMODE';
-				$offset             = ! empty( $_POST['moderationShoppableModeOffset'] ) ? intval( $_POST['moderationShoppableModeOffset'] ) : '';
-				$additional_suffix .= $offset;
-			}
-		}
-
-		return $additional_suffix;
-	}
-
-	public function update_last_updated() {
-		global $wpdb;
-		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
-
-		$data         = array();
-		$format       = array();
+		$data = array();
+		$format = array();
 		$where_format = array();
 
-		$data['last_updated'] = date( 'Y-m-d H:i:s' );
-		$format[]             = '%s';
+		$data['last_updated'] = date('Y-m-d H:i:s');
+		$format[] = '%s';
 
 		$where['feed_id'] = $this->feed_id;
-		$where_format[]   = '%s';
+		$where_format[] = '%s';
 
 		$where['cache_key'] = 'posts';
-		$where_format[]     = '%s';
+		$where_format[] = '%s';
 
-		$affected = $wpdb->update( $cache_table_name, $data, $where, $format, $where_format );
+		$wpdb->update($cache_table_name, $data, $where, $format, $where_format);
 
-		$data         = array();
-		$format       = array();
+		$data = array();
+		$format = array();
 		$where_format = array();
 
-		$data['last_updated'] = date( 'Y-m-d H:i:s' );
-		$format[]             = '%s';
+		$data['last_updated'] = date('Y-m-d H:i:s');
+		$format[] = '%s';
 
 		$where['feed_id'] = $this->feed_id;
-		$where_format[]   = '%s';
+		$where_format[] = '%s';
 
 		$where['cache_key'] = 'header';
-		$where_format[]     = '%s';
+		$where_format[] = '%s';
 
-		$affected = $wpdb->update( $cache_table_name, $data, $where, $format, $where_format );
-
-		return $affected;
+		return $wpdb->update($cache_table_name, $data, $where, $format, $where_format);
 	}
 
 	/**
@@ -653,19 +650,20 @@ class SB_Instagram_Cache {
 	 *
 	 * @return int
 	 */
-	public function get_cache_count($active = false) {
+	public function get_cache_count($active = false)
+	{
 		global $wpdb;
 		$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
 		$query = "SELECT COUNT(DISTINCT feed_id, cache_key) as cache_count FROM $cache_table_name WHERE feed_id Not Like '%_CUSTOMIZER%'";
 
-		if($active === true) {
+		if ($active === true) {
 			$query .= " AND feed_id Not Like '%_MODMODE%' AND last_updated >= DATE_SUB(NOW(), INTERVAL 1 MONTH)";
 		}
 
 		$sql = $wpdb->prepare($query);
-		$caches = $wpdb->get_results( $sql );
+		$caches = $wpdb->get_results($sql);
 
-		if(!empty($caches)) {
+		if (!empty($caches)) {
 			return $caches[0]->cache_count;
 		}
 

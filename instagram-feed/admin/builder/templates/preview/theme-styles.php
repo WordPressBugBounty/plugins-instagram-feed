@@ -1,8 +1,11 @@
 <?php
-$file = get_stylesheet_uri();
-$theme_css = new \InstagramFeed\Builder\SBI_Theme_CSS( $file );
 
-if ( ! $theme_css->is_cached() ) {
+use InstagramFeed\Builder\SBI_Theme_CSS;
+
+$file = get_stylesheet_uri();
+$theme_css = new SBI_Theme_CSS($file);
+
+if (!$theme_css->is_cached()) {
 	$theme_css->load_css();
 	$theme_css->parse();
 	$theme_css->find_styles();

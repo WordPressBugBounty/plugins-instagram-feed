@@ -1,14 +1,20 @@
 <?php
+
+namespace InstagramFeed\Builder;
+
+use SB_Instagram_Connected_Account;
+use SB_Instagram_Data_Encryption;
+use SB_Instagram_Parse;
+use SB_Instagram_Settings;
+use SB_Instagram_Settings_Pro;
+
 /**
  * Instagram Feed Database
  *
  * @since 6.0
  */
-
-namespace InstagramFeed\Builder;
-
-class SBI_Feed_Saver {
-
+class SBI_Feed_Saver
+{
 	/**
 	 * @var int
 	 *
@@ -59,8 +65,9 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function __construct( $insert_id ) {
-		if ( $insert_id === 'legacy' ) {
+	public function __construct($insert_id)
+	{
+		if ($insert_id === 'legacy') {
 			$this->is_legacy = true;
 			$this->insert_id = 0;
 		} else {
@@ -70,17 +77,32 @@ class SBI_Feed_Saver {
 	}
 
 	/**
+	 * Saves settings for legacy feeds. Runs on first update automatically.
+	 *
+	 * @since 6.0
+	 */
+	public static function set_legacy_feed_settings()
+	{
+		$to_save = SBI_Post_Set::legacy_to_builder_convert();
+
+		$to_save_json = sbi_json_encode($to_save);
+
+		update_option('sbi_legacy_feed_settings', $to_save_json, false);
+	}
+
+	/**
 	 * Feed insert ID if it exists
 	 *
 	 * @return bool|int
 	 *
 	 * @since 6.0
 	 */
-	public function get_feed_id() {
-		if ( $this->is_legacy ) {
+	public function get_feed_id()
+	{
+		if ($this->is_legacy) {
 			return 'legacy';
 		}
-		if ( ! empty( $this->insert_id ) ) {
+		if (!empty($this->insert_id)) {
 			return $this->insert_id;
 		} else {
 			return false;
@@ -92,7 +114,8 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function set_data( $data ) {
+	public function set_data($data)
+	{
 		$this->data = $data;
 	}
 
@@ -101,7 +124,8 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function set_feed_name( $feed_name ) {
+	public function set_feed_name($feed_name)
+	{
 		$this->feed_name = $feed_name;
 	}
 
@@ -112,7 +136,8 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function get_feed_db_data() {
+	public function get_feed_db_data()
+	{
 		return $this->feed_db_data;
 	}
 
@@ -124,14 +149,55 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function update_or_insert() {
+	public function update_or_insert()
+	{
 		$this->sanitize_and_sort_data();
 
-		if ( $this->exists_in_database() ) {
+		if ($this->exists_in_database()) {
 			return $this->update();
 		} else {
 			return $this->insert();
 		}
+	}
+
+	/**
+	 * Used for taking raw post data related to settings
+	 * an sanitizing it and sorting it to easily use in
+	 * the database tables
+	 *
+	 * @since 6.0
+	 */
+	private function sanitize_and_sort_data()
+	{
+		$data = $this->data;
+
+		$sanitized_and_sorted = array(
+			'feeds' => array(),
+			'feed_settings' => array()
+		);
+
+		foreach ($data as $key => $value) {
+			$data_type = SBI_Feed_Saver_Manager::get_data_type($key);
+			$sanitized_values = array();
+			if (is_array($value)) {
+				foreach ($value as $item) {
+					$type = SBI_Feed_Saver_Manager::is_boolean($item) ? 'boolean' : $data_type['sanitization'];
+					$sanitized_values[] = SBI_Feed_Saver_Manager::sanitize($type, $item);
+				}
+			} else {
+				$type = SBI_Feed_Saver_Manager::is_boolean($value) ? 'boolean' : $data_type['sanitization'];
+				$sanitized_values[] = SBI_Feed_Saver_Manager::sanitize($type, $value);
+			}
+
+			$single_sanitized = array(
+				'key' => $key,
+				'values' => $sanitized_values
+			);
+
+			$sanitized_and_sorted[$data_type['table']][] = $single_sanitized;
+		}
+
+		$this->sanitized_and_sorted_data = $sanitized_and_sorted;
 	}
 
 	/**
@@ -142,12 +208,13 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function exists_in_database() {
-		if ( $this->is_legacy ) {
+	public function exists_in_database()
+	{
+		if ($this->is_legacy) {
 			return true;
 		}
 
-		if ( $this->insert_id === false ) {
+		if ($this->insert_id === false) {
 			return false;
 		}
 
@@ -155,57 +222,9 @@ class SBI_Feed_Saver {
 			'id' => $this->insert_id
 		);
 
-		$results = SBI_Db::feeds_query( $args );
+		$results = SBI_Db::feeds_query($args);
 
-		return isset( $results[0] );
-	}
-
-	/**
-	 * Inserts a new feed from sanitized and sorted data.
-	 * Some data is saved in the sbi_feeds table and some is
-	 * saved in the sbi_feed_settings table.
-	 *
-	 * @return false|int
-	 *
-	 * @since 6.0
-	 */
-	public function insert() {
-		if ( $this->is_legacy ) {
-			return $this->update();
-		}
-
-		if ( ! isset( $this->sanitized_and_sorted_data ) ) {
-			return false;
-		}
-
-		$settings_array = SBI_Feed_Saver::format_settings( $this->sanitized_and_sorted_data['feed_settings'] );
-
-		$this->sanitized_and_sorted_data['feeds'][] = array(
-			'key' => 'settings',
-			'values' => array( sbi_json_encode( $settings_array ) )
-		);
-
-		if ( ! empty( $this->feed_name ) ) {
-			$this->sanitized_and_sorted_data['feeds'][] = array(
-				'key' => 'feed_name',
-				'values' => array( $this->feed_name )
-			);
-		}
-
-		$this->sanitized_and_sorted_data['feeds'][] = array(
-			'key' => 'status',
-			'values' => array( 'publish' )
-		);
-
-		$insert_id = SBI_Db::feeds_insert( $this->sanitized_and_sorted_data['feeds'] );
-
-		if ( $insert_id ) {
-			$this->insert_id = $insert_id;
-
-			return $insert_id;
-		}
-
-		return false;
+		return isset($results[0]);
 	}
 
 	/**
@@ -216,8 +235,9 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function update() {
-		if ( ! isset( $this->sanitized_and_sorted_data ) ) {
+	public function update()
+	{
+		if (!isset($this->sanitized_and_sorted_data)) {
 			return false;
 		}
 
@@ -225,16 +245,16 @@ class SBI_Feed_Saver {
 			'id' => $this->insert_id
 		);
 
-		$settings_array = SBI_Feed_Saver::format_settings( $this->sanitized_and_sorted_data['feed_settings'] );
+		$settings_array = SBI_Feed_Saver::format_settings($this->sanitized_and_sorted_data['feed_settings']);
 
-		if ( $this->is_legacy ) {
-			$to_save_json = sbi_json_encode( $settings_array );
-			return update_option( 'sbi_legacy_feed_settings', $to_save_json, false );
+		if ($this->is_legacy) {
+			$to_save_json = sbi_json_encode($settings_array);
+			return update_option('sbi_legacy_feed_settings', $to_save_json, false);
 		}
 
 		$this->sanitized_and_sorted_data['feeds'][] = array(
 			'key' => 'settings',
-			'values' => array( sbi_json_encode( $settings_array ) )
+			'values' => array(sbi_json_encode($settings_array))
 		);
 
 		$this->sanitized_and_sorted_data['feeds'][] = array(
@@ -242,9 +262,7 @@ class SBI_Feed_Saver {
 			'values' => [sanitize_text_field($this->feed_name)]
 		);
 
-		$success = SBI_Db::feeds_update( $this->sanitized_and_sorted_data['feeds'], $args );
-
-		return $success;
+		return SBI_Db::feeds_update($this->sanitized_and_sorted_data['feeds'], $args);
 	}
 
 	/**
@@ -257,18 +275,67 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public static function format_settings( $raw_settings ) {
+	public static function format_settings($raw_settings)
+	{
 		$settings_array = array();
-		foreach ( $raw_settings as $single_setting ) {
-			if ( count( $single_setting['values'] ) > 1 ) {
-				$settings_array[ $single_setting['key'] ] = $single_setting['values'];
-
+		foreach ($raw_settings as $single_setting) {
+			if (count($single_setting['values']) > 1) {
+				$settings_array[$single_setting['key']] = $single_setting['values'];
 			} else {
-				$settings_array[ $single_setting['key'] ] = isset( $single_setting['values'][0] ) ? $single_setting['values'][0] : '';
+				$settings_array[$single_setting['key']] = isset($single_setting['values'][0]) ? $single_setting['values'][0] : '';
 			}
 		}
 
 		return $settings_array;
+	}
+
+	/**
+	 * Inserts a new feed from sanitized and sorted data.
+	 * Some data is saved in the sbi_feeds table and some is
+	 * saved in the sbi_feed_settings table.
+	 *
+	 * @return false|int
+	 *
+	 * @since 6.0
+	 */
+	public function insert()
+	{
+		if ($this->is_legacy) {
+			return $this->update();
+		}
+
+		if (!isset($this->sanitized_and_sorted_data)) {
+			return false;
+		}
+
+		$settings_array = SBI_Feed_Saver::format_settings($this->sanitized_and_sorted_data['feed_settings']);
+
+		$this->sanitized_and_sorted_data['feeds'][] = array(
+			'key' => 'settings',
+			'values' => array(sbi_json_encode($settings_array))
+		);
+
+		if (!empty($this->feed_name)) {
+			$this->sanitized_and_sorted_data['feeds'][] = array(
+				'key' => 'feed_name',
+				'values' => array($this->feed_name)
+			);
+		}
+
+		$this->sanitized_and_sorted_data['feeds'][] = array(
+			'key' => 'status',
+			'values' => array('publish')
+		);
+
+		$insert_id = SBI_Db::feeds_insert($this->sanitized_and_sorted_data['feeds']);
+
+		if ($insert_id) {
+			$this->insert_id = $insert_id;
+
+			return $insert_id;
+		}
+
+		return false;
 	}
 
 	/**
@@ -279,8 +346,8 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function get_feed_preview_settings( $preview_settings ){
-
+	public function get_feed_preview_settings($preview_settings)
+	{
 	}
 
 	/**
@@ -291,12 +358,13 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public function get_feed_settings() {
-		if ( $this->is_legacy ) {
-			if ( sbi_is_pro_version() ) {
-				$instagram_feed_settings = new \SB_Instagram_Settings_Pro( array(), sbi_get_database_settings() );
+	public function get_feed_settings()
+	{
+		if ($this->is_legacy) {
+			if (sbi_is_pro_version()) {
+				$instagram_feed_settings = new SB_Instagram_Settings_Pro(array(), sbi_get_database_settings());
 			} else {
-				$instagram_feed_settings = new \SB_Instagram_Settings( array(), sbi_get_database_settings() );
+				$instagram_feed_settings = new SB_Instagram_Settings(array(), sbi_get_database_settings());
 			}
 
 
@@ -306,19 +374,19 @@ class SBI_Feed_Saver {
 
 			$this->feed_db_data = array(
 				'id' => 'legacy',
-				'feed_name' => __( 'Legacy Feeds', 'instagram-feed' ),
-				'feed_title' => __( 'Legacy Feeds', 'instagram-feed' ),
+				'feed_name' => __('Legacy Feeds', 'instagram-feed'),
+				'feed_title' => __('Legacy Feeds', 'instagram-feed'),
 				'status' => 'publish',
-				'last_modified' => date( 'Y-m-d H:i:s' ),
+				'last_modified' => date('Y-m-d H:i:s'),
 			);
-		} else if ( empty( $this->insert_id ) ) {
+		} elseif (empty($this->insert_id)) {
 			return false;
 		} else {
 			$args = array(
 				'id' => $this->insert_id,
 			);
-			$settings_db_data = SBI_Db::feeds_query( $args );
-			if ( false === $settings_db_data || sizeof($settings_db_data) == 0) {
+			$settings_db_data = SBI_Db::feeds_query($args);
+			if (empty($settings_db_data)) {
 				return false;
 			}
 			$this->feed_db_data = array(
@@ -329,32 +397,32 @@ class SBI_Feed_Saver {
 				'last_modified' => $settings_db_data[0]['last_modified'],
 			);
 
-			$return = json_decode( $settings_db_data[0]['settings'], true );
+			$return = json_decode($settings_db_data[0]['settings'], true);
 			$return['feed_name'] = $settings_db_data[0]['feed_name'];
 		}
 
-		$return = wp_parse_args( $return, SBI_Feed_Saver::settings_defaults() );
-		if ( empty( $return['id'] ) ) {
+		$return = wp_parse_args($return, SBI_Feed_Saver::settings_defaults());
+		if (empty($return['id'])) {
 			return $return;
 		}
 
-		if ( ! is_array( $return['id'] ) ) {
-			$return['id'] = explode( ',', str_replace( ' ', '',  $return['id'] ) );
+		if (!is_array($return['id'])) {
+			$return['id'] = explode(',', str_replace(' ', '', $return['id']));
 		}
-		if ( ! is_array( $return['tagged'] ) ) {
-			$return['tagged'] = explode( ',', str_replace( ' ', '',  $return['tagged'] ) );
+		if (!is_array($return['tagged'])) {
+			$return['tagged'] = explode(',', str_replace(' ', '', $return['tagged']));
 		}
-		if ( ! is_array( $return['hashtag'] ) ) {
-			$return['hashtag'] = explode( ',', str_replace( ' ', '',  $return['hashtag'] ) );
+		if (!is_array($return['hashtag'])) {
+			$return['hashtag'] = explode(',', str_replace(' ', '', $return['hashtag']));
 		}
-		$args = array( 'id' => $return['id'] );
+		$args = array('id' => $return['id']);
 
-		$source_query = SBI_Db::source_query( $args );
+		$source_query = SBI_Db::source_query($args);
 
-		//fallback to source details [username] if source not found.
+		// fallback to source details [username] if source not found.
 		$source_details = isset($return['source_details']) ? $return['source_details'] : array();
 		$type_change = empty($source_query) || (count($source_query) != count($return['id']));
-		if ($type_change && ! empty($source_details)) {
+		if ($type_change && !empty($source_details)) {
 			if (is_array($source_details) && isset($source_details['id']) && isset($source_details['username'])) {
 				$source_details = array($source_details);
 			}
@@ -367,7 +435,7 @@ class SBI_Feed_Saver {
 			}
 			$args = array('username' => $usernames);
 			$source_query = SBI_Db::source_query($args);
-			if (! empty($source_query)) {
+			if (!empty($source_query)) {
 				$return['id'] = array();
 				foreach ($source_query as $source) {
 					$return['id'][] = $source['account_id'];
@@ -377,113 +445,42 @@ class SBI_Feed_Saver {
 
 		$return['sources'] = array();
 
-		if ( ! empty( $source_query ) ) {
-
-			foreach ( $source_query as $source ) {
+		if (!empty($source_query)) {
+			foreach ($source_query as $source) {
 				$user_id = $source['account_id'];
-				$return['sources'][ $user_id ] = self::get_processed_source_data( $source );
+				$return['sources'][$user_id] = self::get_processed_source_data($source);
 			}
 		} else {
 			$found_sources = array();
 
-			foreach ( $return['id'] as $id_or_slug ) {
-				$maybe_source_from_connected = SBI_Source::maybe_one_off_connected_account_update( $id_or_slug );
+			foreach ($return['id'] as $id_or_slug) {
+				$maybe_source_from_connected = SBI_Source::maybe_one_off_connected_account_update($id_or_slug);
 
-				if ( $maybe_source_from_connected ) {
+				if ($maybe_source_from_connected) {
 					$found_sources[] = $maybe_source_from_connected;
 				}
-
 			}
 
-			if ( ! empty( $found_sources ) ) {
-				foreach ( $found_sources as $source ) {
+			if (!empty($found_sources)) {
+				foreach ($found_sources as $source) {
 					$user_id = $source['account_id'];
-					$return['sources'][ $user_id ] = self::get_processed_source_data( $source );
-
+					$return['sources'][$user_id] = self::get_processed_source_data($source);
 				}
 			} else {
+				$source_query = SBI_Db::source_query($args);
 
-				$source_query = SBI_Db::source_query( $args );
-
-				if ( isset( $source_query[0] ) ) {
+				if (isset($source_query[0])) {
 					$source = $source_query[0];
 
 					$user_id = $source['account_id'];
 
-					$return['sources'][ $user_id ] = self::get_processed_source_data( $source );
+					$return['sources'][$user_id] = self::get_processed_source_data($source);
 				}
 			}
-
 		}
 
 		return $return;
 	}
-
-	public static function get_processed_source_data( $source ) {
-		$encryption = new \SB_Instagram_Data_Encryption();
-		$user_id = $source['account_id'];
-		$info = ! empty( $source['info'] ) ? json_decode( $encryption->decrypt( $source['info'] ), true ) : array();
-
-		$cdn_avatar_url = \SB_Instagram_Parse::get_avatar_url( $info );
-
-		$processed = array(
-			'record_id' => stripslashes( $source['id'] ),
-			'user_id' => $user_id,
-			'type' => stripslashes( $source['account_type'] ),
-			'privilege' => stripslashes( $source['privilege'] ),
-			'access_token' => stripslashes( $encryption->decrypt( $source['access_token'] ) ),
-			'username' => stripslashes( $source['username'] ),
-			'name' => stripslashes( $source['username'] ),
-			'info' => stripslashes( $encryption->decrypt( $source['info'] ) ),
-			'error' => stripslashes( $source['error'] ),
-			'expires' => stripslashes( $source['expires'] ),
-			'profile_picture' => $cdn_avatar_url,
-			'local_avatar_url' => \SB_Instagram_Connected_Account::maybe_local_avatar( $source['username'], $cdn_avatar_url ),
-			'connect_type'     => isset($source['connect_type']) ? stripslashes($source['connect_type']) : ''
-		);
-
-		return $processed;
-	}
-
-	/**
-	 * Retrieves and organizes feed setting data for easy use in
-	 * the builder
-	 * It will NOT get the settings from the DB, but from the Customizer builder
-	 * To be used for updating feed preview on the fly
-	 *
-	 * @return array|bool
-	 *
-	 * @since 6.0
-	 */
-	public function get_feed_settings_preview( $settings_db_data ) {
-		if ( false === $settings_db_data || sizeof($settings_db_data) == 0) {
-			return false;
-		}
-		$return = $settings_db_data;
-		$return = wp_parse_args( $return, SBI_Feed_Saver::settings_defaults() );
-		if ( empty( $return['sources'] ) ) {
-			return $return;
-		}
-		$sources = [];
-		foreach ($return['sources'] as $single_source) {
-			array_push($sources, $single_source['account_id']);
-		}
-
-		$args = array( 'id' => $sources );
-		$source_query = SBI_Db::source_query( $args );
-
-		$return['sources'] = array();
-		if ( ! empty( $source_query ) ) {
-			foreach ( $source_query as $source ) {
-				$user_id = $source['account_id'];
-				$return['sources'][ $user_id ] = self::get_processed_source_data( $source );
-			}
-		}
-
-		return $return;
-	}
-
-
 
 	/**
 	 * Default settings, $return_array equalling false will return
@@ -496,14 +493,15 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public static function settings_defaults( $return_array = true ) {
+	public static function settings_defaults($return_array = true)
+	{
 		{
 			$defaults = array(
-				//V6
+				// V6
 				'customizer' => false,
 
-				//Feed general
-				'type' => 'user', //user - hashtag -
+				// Feed general
+				'type' => 'user', // user - hashtag -
 				'order' => 'recent',
 				'id' => [],
 				'hashtag' => [],
@@ -519,7 +517,7 @@ class SBI_Feed_Saver {
 				'captionlinks' => false,
 				'offset' => 0,
 				'num' => 20,
-				'apinum'           => '',
+				'apinum' => '',
 				'nummobile' => 20,
 				'cols' => 4,
 				'colstablet' => 2,
@@ -529,17 +527,17 @@ class SBI_Feed_Saver {
 				'imagepaddingunit' => 'px',
 				'layout' => 'grid',
 
-				//Lightbox comments
+				// Lightbox comments
 				'lightboxcomments' => true,
 				'numcomments' => 20,
 
-				//Photo hover styles
+				// Photo hover styles
 				'hovereffect' => '',
 				'hovercolor' => '',
 				'hovertextcolor' => '',
 				'hoverdisplay' => 'username,date,instagram',
 
-				//Item misc
+				// Item misc
 				'background' => '',
 				'imageres' => 'auto',
 				'media' => 'all',
@@ -553,7 +551,7 @@ class SBI_Feed_Saver {
 				'likessize' => '13',
 				'hidephotos' => '',
 
-				//Footer
+				// Footer
 				'showbutton' => true,
 				'buttoncolor' => '',
 				'buttonhovercolor' => '', // to be tested
@@ -565,9 +563,9 @@ class SBI_Feed_Saver {
 				'followtextcolor' => '',
 				'followtext' => 'Follow on Instagram',
 
-				//Header
+				// Header
 				'showheader' => true,
-				'headertextsize'	=> '', //to be tested
+				'headertextsize' => '', // to be tested
 				'headercolor' => '',
 				'headerstyle' => 'standard',
 				'showfollowers' => false,
@@ -587,7 +585,7 @@ class SBI_Feed_Saver {
 				'includewords' => '',
 				'maxrequests' => 5,
 
-				//Carousel
+				// Carousel
 				'carouselrows' => 1,
 				'carouselloop' => 'rewind',
 				'carouselarrows' => false,
@@ -595,78 +593,77 @@ class SBI_Feed_Saver {
 				'carouselautoplay' => false,
 				'carouseltime' => 5000,
 
-				//Highlight
+				// Highlight
 				'highlighttype' => 'pattern',
 				'highlightoffset' => 0,
 				'highlightpattern' => '',
 				'highlighthashtag' => '',
 				'highlightids' => '',
 
-				//WhiteList
+				// WhiteList
 				'whitelist' => '',
 
-				//Load More on Scroll
+				// Load More on Scroll
 				'autoscroll' => false,
 				'autoscrolldistance' => '',
 
-				//Permanent
+				// Permanent
 				'permanent' => false,
 				'accesstoken' => '',
 				'user' => '',
 
-				//Misc
+				// Misc
 				'feedid' => false,
 
-				'resizeprocess'    => 'background',
-				'mediavine'    => '',
-				'customtemplates'    => false,
-				'moderationmode'    => false,
+				'resizeprocess' => 'background',
+				'mediavine' => '',
+				'customtemplates' => false,
+				'moderationmode' => false,
 
-				//NEWLY ADDED
-				//TO BE CHECKED
+				// NEWLY ADDED
+				// TO BE CHECKED
 				'colstablet' => 2,
-				'colorpalette'	=> 'inherit',
-				'custombgcolor1'	=> '',
-				'customtextcolor1'	=> '',
-				'customtextcolor2'	=> '',
-				'customlinkcolor1'	=> '',
-				'custombuttoncolor1'	=> '',
-				'custombuttoncolor2'	=> '',
+				'colorpalette' => 'inherit',
+				'custombgcolor1' => '',
+				'customtextcolor1' => '',
+				'customtextcolor2' => '',
+				'customlinkcolor1' => '',
+				'custombuttoncolor1' => '',
+				'custombuttoncolor2' => '',
 
 
-
-				'photosposts'	=> true,
-				'videosposts'	=> true,
-				'igtvposts'	=> true,
+				'photosposts' => true,
+				'videosposts' => true,
+				'igtvposts' => true,
 				'reelsposts' => true,
 
 				'shoppablefeed' => false,
 				'shoppablelist' => '{}',
 				'moderationlist' => '{"list_type_selected" : "allow", "allow_list" : [], "block_list" : [] }',
-				'customBlockModerationlist'    => '',
+				'customBlockModerationlist' => '',
 				'enablemoderationmode' => false,
 
 				'fakecolorpicker' => ''
 
 			);
 
-			$defaults = SBI_Feed_Saver::filter_defaults( $defaults );
+			$defaults = SBI_Feed_Saver::filter_defaults($defaults);
 
 			// some settings are comma separated and not arrays when the feed is created
-			if ( $return_array ) {
+			if ($return_array) {
 				$settings_with_multiples = array(
 					'sources'
 				);
 
-				foreach ( $settings_with_multiples as $multiple_key ) {
-					if ( isset( $defaults[ $multiple_key ] ) ) {
-						$defaults[ $multiple_key ] = explode( ',', $defaults[ $multiple_key ] );
+				foreach ($settings_with_multiples as $multiple_key) {
+					if (isset($defaults[$multiple_key])) {
+						$defaults[$multiple_key] = explode(',', $defaults[$multiple_key]);
 					}
 				}
 			}
 
 			return $defaults;
-		}
+			}
 	}
 
 	/**
@@ -678,61 +675,73 @@ class SBI_Feed_Saver {
 	 *
 	 * @since 6.0
 	 */
-	public static function filter_defaults( $defaults ) {
+	public static function filter_defaults($defaults)
+	{
 
 		return $defaults;
 	}
 
-	/**
-	 * Saves settings for legacy feeds. Runs on first update automatically.
-	 *
-	 * @since 6.0
-	 */
-	public static function set_legacy_feed_settings() {
-		$to_save = SBI_Post_Set::legacy_to_builder_convert();
+	public static function get_processed_source_data($source)
+	{
+		$encryption = new SB_Instagram_Data_Encryption();
+		$user_id = $source['account_id'];
+		$info = !empty($source['info']) ? json_decode($encryption->decrypt($source['info']), true) : array();
 
-		$to_save_json = sbi_json_encode( $to_save );
+		$cdn_avatar_url = SB_Instagram_Parse::get_avatar_url($info);
 
-		update_option( 'sbi_legacy_feed_settings', $to_save_json, false );
+		return array(
+			'record_id' => stripslashes($source['id']),
+			'user_id' => $user_id,
+			'type' => stripslashes($source['account_type']),
+			'privilege' => stripslashes($source['privilege']),
+			'access_token' => stripslashes($encryption->decrypt($source['access_token'])),
+			'username' => stripslashes($source['username']),
+			'name' => stripslashes($source['username']),
+			'info' => stripslashes($encryption->decrypt($source['info'])),
+			'error' => stripslashes($source['error']),
+			'expires' => stripslashes($source['expires']),
+			'profile_picture' => $cdn_avatar_url,
+			'local_avatar_url' => SB_Instagram_Connected_Account::maybe_local_avatar($source['username'], $cdn_avatar_url),
+			'connect_type' => isset($source['connect_type']) ? stripslashes($source['connect_type']) : ''
+		);
 	}
 
 	/**
-	 * Used for taking raw post data related to settings
-	 * an sanitizing it and sorting it to easily use in
-	 * the database tables
+	 * Retrieves and organizes feed setting data for easy use in
+	 * the builder
+	 * It will NOT get the settings from the DB, but from the Customizer builder
+	 * To be used for updating feed preview on the fly
+	 *
+	 * @return array|bool
 	 *
 	 * @since 6.0
 	 */
-	private function sanitize_and_sort_data() {
-		$data = $this->data;
-
-		$sanitized_and_sorted = array(
-			'feeds' => array(),
-			'feed_settings' => array()
-		);
-
-		foreach ( $data as $key => $value ) {
-
-			$data_type = SBI_Feed_Saver_Manager::get_data_type( $key );
-			$sanitized_values = array();
-			if ( is_array( $value ) ) {
-				foreach ( $value as $item ) {
-					$type = SBI_Feed_Saver_Manager::is_boolean( $item ) ? 'boolean' : $data_type['sanitization'];
-					$sanitized_values[] = SBI_Feed_Saver_Manager::sanitize( $type , $item );
-				}
-			} else {
-				$type = SBI_Feed_Saver_Manager::is_boolean( $value ) ? 'boolean' : $data_type['sanitization'];
-				$sanitized_values[] = SBI_Feed_Saver_Manager::sanitize( $type, $value );
-			}
-
-			$single_sanitized = array(
-				'key' => $key,
-				'values' => $sanitized_values
-			);
-
-			$sanitized_and_sorted[ $data_type['table'] ][] = $single_sanitized;
+	public function get_feed_settings_preview($settings_db_data)
+	{
+		if (false === $settings_db_data || sizeof($settings_db_data) == 0) {
+			return false;
+		}
+		$return = $settings_db_data;
+		$return = wp_parse_args($return, SBI_Feed_Saver::settings_defaults());
+		if (empty($return['sources'])) {
+			return $return;
+		}
+		$sources = [];
+		foreach ($return['sources'] as $single_source) {
+			array_push($sources, $single_source['account_id']);
 		}
 
-		$this->sanitized_and_sorted_data = $sanitized_and_sorted;
+		$args = array('id' => $sources);
+		$source_query = SBI_Db::source_query($args);
+
+		$return['sources'] = array();
+		if (!empty($source_query)) {
+			foreach ($source_query as $source) {
+				$user_id = $source['account_id'];
+				$return['sources'][$user_id] = self::get_processed_source_data($source);
+			}
+		}
+
+		return $return;
 	}
 }

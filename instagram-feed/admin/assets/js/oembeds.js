@@ -30,38 +30,38 @@ var sbioEmbeds = new Vue({
     },
     data: sbioembeds_data,
     methods: {
-        openFacebookllModal: function() {
+        openFacebookllModal: function () {
             this.openFacebookInstaller = true
         },
-        closeModal: function() {
+        closeModal: function () {
             this.openFacebookInstaller = false
         },
-        isoEmbedsEnabled: function() {
-            if ( this.facebook.doingOembeds && this.instagram.doingOembeds ) {
+        isoEmbedsEnabled: function () {
+            if (this.facebook.doingOembeds && this.instagram.doingOembeds) {
                 return true;
             }
-            return;
+
         },
-        FacebookShouldInstallOrEnable: function() {
+        FacebookShouldInstallOrEnable: function () {
             // if the plugin is activated and installed then just enable oEmbed
-            if( this.isFacebookActivated ) {
+            if (this.isFacebookActivated) {
                 this.enableFacebookOembed();
                 return;
             }
             // if the plugin is not activated and installed then open the modal to install and activate the plugin
-            if( !this.isFacebookActivated ) {
+            if (!this.isFacebookActivated) {
                 this.openFacebookllModal();
-                return;
+
             }
         },
-        installFacebook: function() {
+        installFacebook: function () {
             this.installerStatus = 'loading';
             let data = new FormData();
-            data.append( 'action', sbi_oembeds.facebook.installer.action );
-            data.append( 'nonce', sbi_oembeds.nonce );
-            data.append( 'plugin', sbi_oembeds.facebook.installer.plugin );
-            data.append( 'type', 'plugin' );
-            data.append( 'referrer', sbi_oembeds.facebook.installer.referrer );
+            data.append('action', sbi_oembeds.facebook.installer.action);
+            data.append('nonce', sbi_oembeds.nonce);
+            data.append('plugin', sbi_oembeds.facebook.installer.plugin);
+            data.append('type', 'plugin');
+            data.append('referrer', sbi_oembeds.facebook.installer.referrer);
 
             fetch(sbi_oembeds.ajax_handler, {
                 method: "POST",
@@ -70,22 +70,22 @@ var sbioEmbeds = new Vue({
             })
                 .then(response => response.json())
                 .then(data => {
-                    if( data.success == false ) {
+                    if (data.success == false) {
                         this.installerStatus = 'error'
                     }
-                    if( data.success == true ) {
+                    if (data.success == true) {
                         this.isFacebookActivated = true;
                         this.installerStatus = 'success'
                     }
-                    if ( typeof data.data === 'object') {
+                    if (typeof data.data === 'object') {
                         this.facebookInstallBtnText = data.data.msg;
                     } else {
                         this.facebookInstallBtnText = data.data;
                     }
-                    setTimeout(function() {
+                    setTimeout(function () {
                         this.installerStatus = null;
                     }.bind(this), 3000);
-                    return;
+
                 });
         },
         enableInstaoEmbed: function () {
@@ -139,11 +139,11 @@ var sbioEmbeds = new Vue({
             document.body.appendChild(form);
             form.submit();
         },
-        disableFboEmbed: function() {
+        disableFboEmbed: function () {
             this.fboEmbedLoader = true;
             let data = new FormData();
-            data.append( 'action', 'disable_facebook_oembed_from_instagram' );
-            data.append( 'nonce', this.nonce );
+            data.append('action', 'disable_facebook_oembed_from_instagram');
+            data.append('nonce', this.nonce);
             fetch(sbi_oembeds.ajax_handler, {
                 method: "POST",
                 credentials: 'same-origin',
@@ -151,20 +151,20 @@ var sbioEmbeds = new Vue({
             })
                 .then(response => response.json())
                 .then(data => {
-                    if( data.success == true ) {
+                    if (data.success == true) {
                         this.fboEmbedLoader = false;
                         this.facebook.doingOembeds = false;
                         // get the updated connection URL after disabling oEmbed
                         this.connectionURL = data.data.connectionUrl;
                     }
-                    return;
+
                 });
         },
-        disableInstaoEmbed: function() {
+        disableInstaoEmbed: function () {
             this.instaoEmbedLoader = true;
             let data = new FormData();
-            data.append( 'action', 'disable_instagram_oembed_from_instagram' );
-            data.append( 'nonce', this.nonce );
+            data.append('action', 'disable_instagram_oembed_from_instagram');
+            data.append('nonce', this.nonce);
             fetch(sbi_oembeds.ajax_handler, {
                 method: "POST",
                 credentials: 'same-origin',
@@ -172,35 +172,35 @@ var sbioEmbeds = new Vue({
             })
                 .then(response => response.json())
                 .then(data => {
-                    if( data.success == true ) {
+                    if (data.success == true) {
                         this.instaoEmbedLoader = false;
                         this.instagram.doingOembeds = false;
                         // get the updated connection URL after disabling oEmbed
                         this.connectionURL = data.data.connectionUrl;
                     }
-                    return;
+
                 });
         },
-        installButtonText: function( buttonText = null ) {
-            if ( buttonText ) {
+        installButtonText: function (buttonText = null) {
+            if (buttonText) {
                 return buttonText;
-            } else if ( this.facebook.installer.nextStep == 'free_install' ) {
+            } else if (this.facebook.installer.nextStep == 'free_install') {
                 return this.modal.install;
-            } else if ( this.facebook.installer.nextStep == 'free_activate' ) {
+            } else if (this.facebook.installer.nextStep == 'free_activate') {
                 return this.modal.activate;
             }
         },
-        installIcon: function() {
-            if ( this.isFacebookActivated ) {
+        installIcon: function () {
+            if (this.isFacebookActivated) {
                 return;
             }
-            if( this.installerStatus == null ) {
+            if (this.installerStatus == null) {
                 return this.modal.plusIcon;
-            } else if( this.installerStatus == 'loading' ) {
+            } else if (this.installerStatus == 'loading') {
                 return this.loaderSVG;
-            } else if( this.installerStatus == 'success' ) {
+            } else if (this.installerStatus == 'success') {
                 return this.checkmarkSVG;
-            } else if( this.installerStatus == 'error' ) {
+            } else if (this.installerStatus == 'error') {
                 return this.timesCircleSVG;
             }
         },
@@ -210,15 +210,15 @@ var sbioEmbeds = new Vue({
          *
          * @since 4.0
          */
-        toggleStickyWidget: function() {
+        toggleStickyWidget: function () {
             this.stickyWidget = !this.stickyWidget;
         },
     },
     created() {
         // Display the "Install" button text on modal depending on condition
-        if ( this.facebook.installer.nextStep == 'free_install' ) {
+        if (this.facebook.installer.nextStep == 'free_install') {
             this.facebookInstallBtnText = this.modal.install;
-        } else if ( this.facebook.installer.nextStep == 'free_activate' || this.facebook.installer.nextStep == 'pro_activate' ) {
+        } else if (this.facebook.installer.nextStep == 'free_activate' || this.facebook.installer.nextStep == 'pro_activate') {
             this.facebookInstallBtnText = this.modal.activate;
         }
     }

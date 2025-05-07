@@ -1,40 +1,43 @@
 <?php
+
 /**
  * Customizer Builder
  * CheckBox Section Control
  *
  * @since 4.0
  */
+
 namespace InstagramFeed\Builder\Controls;
 
-if(!defined('ABSPATH'))	exit;
+if (!defined('ABSPATH')) {
+	exit;
+}
 
-class SB_Checkboxsection_Control extends SB_Controls_Base{
-
+class SB_Checkboxsection_Control extends SB_Controls_Base
+{
 	/**
 	 * Get control type.
 	 *
 	 * Getting the Control Type
 	 *
+	 * @return string
 	 * @since 4.0
 	 * @access public
-	 *
-	 * @return string
-	*/
-	public function get_type(){
+	 */
+	public function get_type()
+	{
 		return 'checkboxsection';
 	}
 
 	/**
 	 * Output Control
 	 *
-	 *
+	 * @return HTML
 	 * @since 4.0
 	 * @access public
-	 *
-	 * @return HTML
-	*/
-	public function get_control_output($controlEditingTypeModel){
+	 */
+	public function get_control_output($controlEditingTypeModel)
+	{
 		?>
 		<div class="sb-control-checkboxsection-header" v-if="control.header">
 			<div class="sb-control-checkboxsection-name">
@@ -43,9 +46,12 @@ class SB_Checkboxsection_Control extends SB_Controls_Base{
 			</div>
 			<strong>{{genericText.edit}}</strong>
 		</div>
-		<div class="sb-control-checkbox-ctn sbi-fb-fs" @click.prevent.default="switchNestedSection(control.section.id, control.section)">
+		<div class="sb-control-checkbox-ctn sbi-fb-fs"
+			 @click.prevent.default="switchNestedSection(control.section.id, control.section)">
 			<div class="sb-control-checkbox-hover sb-tr-2"></div>
-			<div class="sb-control-checkbox" @click.stop.prevent.default="changeCheckboxSectionValue(control.id, control.value)" :data-active="checkboxSectionValueExists(control.id, control.value)"></div>
+			<div class="sb-control-checkbox"
+				 @click.stop.prevent.default="changeCheckboxSectionValue(control.id, control.value)"
+				 :data-active="checkboxSectionValueExists(control.id, control.value)"></div>
 			<div class="sbi-fb-fs" :data-active="checkboxSectionValueExists(control.id, control.value)">
 				<strong class="sb-control-label">{{control.label}}</strong>
 			</div>
@@ -53,5 +59,4 @@ class SB_Checkboxsection_Control extends SB_Controls_Base{
 		</div>
 		<?php
 	}
-
 }

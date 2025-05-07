@@ -7,11 +7,13 @@
         <h2>{{modal.title}}</h2>
         <p>{{modal.description}}</p>
         <div class="sb-action-buttons">
-            <button type="button" class="sbi-btn sbi-install-btn" @click="installFacebook()" :class="installerStatus" :disabled="isFacebookActivated">
+            <button type="button" class="sbi-btn sbi-install-btn" @click="installFacebook()" :class="installerStatus"
+                    :disabled="isFacebookActivated">
                 <span v-html="installIcon()"></span>
                 <span v-html="facebookInstallBtnText"></span>
             </button>
-            <button type="button" class="sbi-btn" @click="closeModal" v-if="!isFacebookActivated">{{modal.cancel}}</button>
+            <button type="button" class="sbi-btn" @click="closeModal" v-if="!isFacebookActivated">{{modal.cancel}}
+            </button>
         </div>
     </div>
 </div>

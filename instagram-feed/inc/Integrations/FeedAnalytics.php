@@ -3,6 +3,8 @@
 namespace InstagramFeed\Integrations;
 
 use InstagramFeed\Builder\SBI_Db;
+use SB_Instagram_Data_Encryption;
+use SB_Instagram_Parse;
 
 class FeedAnalytics
 {
@@ -38,7 +40,7 @@ class FeedAnalytics
 			return $profile_details;
 		}
 
-		$feed = SBI_Db::feeds_query(['id' => (int) $feed_id]);
+		$feed = SBI_Db::feeds_query(['id' => (int)$feed_id]);
 		$settings = !empty($feed[0]['settings']) ? json_decode($feed[0]['settings'], true) : [];
 
 		if (!empty($settings['id'])) {
@@ -46,12 +48,12 @@ class FeedAnalytics
 			$source = SBI_Db::source_query(['id' => $source_id]);
 
 			if (!empty($source[0]['info'])) {
-				$encryption  = new \SB_Instagram_Data_Encryption();
+				$encryption = new SB_Instagram_Data_Encryption();
 				$info = json_decode($encryption->maybe_decrypt($source[0]['info']), true);
-				$cdn_avatar_url = \SB_Instagram_Parse::get_avatar_url($info);
+				$cdn_avatar_url = SB_Instagram_Parse::get_avatar_url($info);
 
 				$profile_details = [
-					'id'         => stripslashes($info['username']),
+					'id' => stripslashes($info['username']),
 					'pluginSlug' => self::$current_plugin,
 					'profile' => [
 						'label' => stripslashes($info['username']),

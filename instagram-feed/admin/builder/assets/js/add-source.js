@@ -4,52 +4,50 @@ var sbiStorage = window.localStorage;
  *
  * @since 4.0
  */
- Vue.component('sb-add-source-component', {
+Vue.component('sb-add-source-component', {
     name: 'sb-add-source-component',
     template: '#sb-add-source-component',
     props: [
-    'genericText',
-    'links',
-    'svgIcons',
-    'viewsActive',
-    'selectSourceScreen',
-    'selectedFeed',
-    'parent'
+        'genericText',
+        'links',
+        'svgIcons',
+        'viewsActive',
+        'selectSourceScreen',
+        'selectedFeed',
+        'parent'
     ],
-    data: function() {
-        return{
-            sourcesList : sbi_source.sources,
-            nonce : sbi_source.nonce,
+    data: function () {
+        return {
+            sourcesList: sbi_source.sources,
+            nonce: sbi_source.nonce,
 
-          //Add New Source
-            newSourceData        : sbi_source.newSourceData ? sbi_source.newSourceData : null,
-            sourceConnectionURLs : sbi_source.sourceConnectionURLs,
-            manualSourcePopupInit : sbi_source.manualSourcePopupInit,
-            returnedApiSourcesList : [],
-            addNewSource : {
-                typeSelected        : 'personal',
-                manualSourceID      : null,
-                manualSourceToken   : null
+            //Add New Source
+            newSourceData: sbi_source.newSourceData ? sbi_source.newSourceData : null,
+            sourceConnectionURLs: sbi_source.sourceConnectionURLs,
+            manualSourcePopupInit: sbi_source.manualSourcePopupInit,
+            returnedApiSourcesList: [],
+            addNewSource: {
+                typeSelected: 'personal',
+                manualSourceID: null,
+                manualSourceToken: null
             },
-            selectedSourcesToConnect : [],
-            loadingAjax : false
+            selectedSourcesToConnect: [],
+            loadingAjax: false
         }
     },
-    computed : {
-
+    computed: {},
+    mounted: function () {
+        var self = this;
+        if (self.newSourceData != null) {
+            self.initAddSourceData();
+        }
+        if (self.manualSourcePopupInit != undefined && self.manualSourcePopupInit == true) {
+            self.viewsActive.sourcePopupScreen = 'step_3';
+            self.viewsActive.sourcePopup = true;
+        }
+        self.processIFConnectSuccess();
     },
-    mounted : function(){
-      var self = this;
-      if(self.newSourceData != null){
-        self.initAddSourceData();
-      }
-      if( self.manualSourcePopupInit != undefined && self.manualSourcePopupInit == true){
-        self.viewsActive.sourcePopupScreen = 'step_3';
-        self.viewsActive.sourcePopup = true;
-      }
-      self.processIFConnectSuccess();
-    },
-    methods : {
+    methods: {
         /**
          * Return Page/Group Avatar
          *
@@ -57,14 +55,14 @@ var sbiStorage = window.localStorage;
          *
          * @return string
          */
-         returnAccountAvatar : function(source){
-             if (typeof source.avatar !== "undefined" && source.avatar !== '') {
-                 return source.avatar;
-             } else if (typeof this.newSourceData !== 'undefined'
-                 && typeof this.newSourceData.matchingExistingAccounts !== 'undefined'
-                 && typeof this.newSourceData.matchingExistingAccounts.avatar !== 'undefined') {
-                 return this.newSourceData.matchingExistingAccounts.avatar;
-             }
+        returnAccountAvatar: function (source) {
+            if (typeof source.avatar !== "undefined" && source.avatar !== '') {
+                return source.avatar;
+            } else if (typeof this.newSourceData !== 'undefined'
+                && typeof this.newSourceData.matchingExistingAccounts !== 'undefined'
+                && typeof this.newSourceData.matchingExistingAccounts.avatar !== 'undefined') {
+                return this.newSourceData.matchingExistingAccounts.avatar;
+            }
 
             return false;
         },
@@ -75,17 +73,17 @@ var sbiStorage = window.localStorage;
          *
          * @since 4.0
          */
-        addSourceManually: function(isEventSource = false){
+        addSourceManually: function (isEventSource = false) {
             var self = this,
-            manualSourceData = {
-                'action' : 'sbi_source_builder_update',
-                'type' : self.addNewSource.typeSelected,
-                'id' : self.addNewSource.manualSourceID,
-                'access_token' : self.addNewSource.manualSourceToken,
-              'nonce' : self.nonce
+                manualSourceData = {
+                    'action': 'sbi_source_builder_update',
+                    'type': self.addNewSource.typeSelected,
+                    'id': self.addNewSource.manualSourceID,
+                    'access_token': self.addNewSource.manualSourceToken,
+                    'nonce': self.nonce
 
-            };
-            if(isEventSource){
+                };
+            if (isEventSource) {
                 manualSourceData.privilege = 'events';
             }
             var alerts = document.querySelectorAll(".sb-alerts-wrap");
@@ -93,9 +91,9 @@ var sbiStorage = window.localStorage;
                 alerts[0].parentNode.removeChild(alerts[0]);
             }
 
-            if(self.$parent.checkNotEmpty(self.addNewSource.manualSourceID) && self.$parent.checkNotEmpty(self.addNewSource.manualSourceToken) ){
+            if (self.$parent.checkNotEmpty(self.addNewSource.manualSourceID) && self.$parent.checkNotEmpty(self.addNewSource.manualSourceToken)) {
                 self.loadingAjax = true;
-                self.$parent.ajaxPost(manualSourceData, function(_ref){
+                self.$parent.ajaxPost(manualSourceData, function (_ref) {
                     var data = _ref.data;
                     if (typeof data.success !== 'undefined' && data.success === false) {
                         //sbi-if-source-inputs sbi-if-fs
@@ -103,45 +101,45 @@ var sbiStorage = window.localStorage;
                         var div = document.createElement('div');
                         div.innerHTML = data.data.message;
 
-                      while (div.children.length > 0) {
+                        while (div.children.length > 0) {
                             inputs.appendChild(div.children[0]);
                         }
 
                     } else {
-                        self.addNewSource = {typeSelected : 'personal', manualSourceID : null,manualSourceToken : null};
+                        self.addNewSource = {typeSelected: 'personal', manualSourceID: null, manualSourceToken: null};
                         self.sourcesList = data.data;
                         self.$parent.sourcesList = data.data;
                         self.$parent.viewsActive.sourcePopup = false;
-                        if(self.$parent.customizerFeedData){
+                        if (self.$parent.customizerFeedData) {
                             self.$parent.activateView('sourcePopup', 'customizer');
                         }
                     }
                     self.loadingAjax = false;
 
                 });
-            }else{
+            } else {
                 alert("Token or ID Empty")
             }
         },
 
-      //Check if source are Array
-      createSourcesArray : function( element ){
+        //Check if source are Array
+        createSourcesArray: function (element) {
             var self = this;
-            if(Array.isArray(element) && element.length == 1 && !self.$parent.checkNotEmpty(element[0]) ){
+            if (Array.isArray(element) && element.length == 1 && !self.$parent.checkNotEmpty(element[0])) {
                 return [];
             }
-            var arrayResult = Array.isArray(element) ? Array.from(element) : Array.from( element.split(',') );
+            var arrayResult = Array.isArray(element) ? Array.from(element) : Array.from(element.split(','));
             return arrayResult.filter(function (el) {
-              return el != null && self.$parent.checkNotEmpty(el);
+                return el != null && self.$parent.checkNotEmpty(el);
             });
-      },
+        },
 
         /**
          * Make sure something entered for manual connections
          *
          * @since 4.0
          */
-        checkManualEmpty : function() {
+        checkManualEmpty: function () {
             var self = this;
             return self.$parent.checkNotEmpty(self.addNewSource.manualSourceID) && self.$parent.checkNotEmpty(self.addNewSource.manualSourceToken);
         },
@@ -152,18 +150,18 @@ var sbiStorage = window.localStorage;
          *
          * @since 4.0
          */
-         initAddSourceData : function(){
+        initAddSourceData: function () {
             var self = this;
             // If a quick update or insert was done, skip step 2
-            if ( self.newSourceData.didQuickUpdate) {
-                if(self.newSourceData.type !== 'business'){
-                    if(self.$parent.customizerFeedData){
-                        if(sbiStorage.feedTypeOnSourcePopup != undefined){
-                           self.$parent.feedTypeOnSourcePopup = sbiStorage.feedTypeOnSourcePopup;
-                           if( self.$parent.feedTypeOnSourcePopup == 'tagged' ){
+            if (self.newSourceData.didQuickUpdate) {
+                if (self.newSourceData.type !== 'business') {
+                    if (self.$parent.customizerFeedData) {
+                        if (sbiStorage.feedTypeOnSourcePopup != undefined) {
+                            self.$parent.feedTypeOnSourcePopup = sbiStorage.feedTypeOnSourcePopup;
+                            if (self.$parent.feedTypeOnSourcePopup == 'tagged') {
                                 self.$parent.selectedSourcesPopup = self.createSourcesArray(self.$parent.selectedSourcesTagged);
                                 self.$parent.selectedSourcesTaggedPopup = self.createSourcesArray(self.$parent.selectedSourcesTagged);
-                            }else if( self.$parent.feedTypeOnSourcePopup == 'user' ){
+                            } else if (self.$parent.feedTypeOnSourcePopup == 'user') {
                                 self.$parent.selectedSourcesPopup = self.createSourcesArray(self.$parent.selectedSourcesUser);
                                 self.$parent.selectedSourcesUserPopup = self.createSourcesArray(self.$parent.selectedSourcesUser);
                             }
@@ -175,16 +173,16 @@ var sbiStorage = window.localStorage;
             }
             self.$parent.viewsActive.sourcePopup = true;
             self.$parent.viewsActive.sourcePopupScreen = 'step_2';
-            if(self.newSourceData && !self.newSourceData.error){
+            if (self.newSourceData && !self.newSourceData.error) {
                 if (self.newSourceData.type === 'business') {
-                   self.newSourceData.unconnectedAccounts.forEach(function(singleSource){
-                       self.returnedApiSourcesList.push(self.createSourceObject('business',singleSource));
-                   });
-                } else {
-                    self.newSourceData.unconnectedAccounts.forEach(function(singleSource){
-                        self.returnedApiSourcesList.push(self.createSourceObject('personal',singleSource));
+                    self.newSourceData.unconnectedAccounts.forEach(function (singleSource) {
+                        self.returnedApiSourcesList.push(self.createSourceObject('business', singleSource));
                     });
-                   self.$parent.viewsActive.sourcePopupScreen = 'step_4';
+                } else {
+                    self.newSourceData.unconnectedAccounts.forEach(function (singleSource) {
+                        self.returnedApiSourcesList.push(self.createSourceObject('personal', singleSource));
+                    });
+                    self.$parent.viewsActive.sourcePopupScreen = 'step_4';
                 }
             }
         },
@@ -196,16 +194,16 @@ var sbiStorage = window.localStorage;
          *
          * @return Object
          */
-         createSourceObject : function(type,object){
+        createSourceObject: function (type, object) {
             return {
-                id : object.id,
-                account_id : object.id,
-                access_token : object.access_token,
-                account_type : type,
-                type : type,
-                avatar : object.avatar,
-                info : JSON.stringify(object),
-                username : object.username
+                id: object.id,
+                account_id: object.id,
+                access_token: object.access_token,
+                account_type: type,
+                type: type,
+                avatar: object.avatar,
+                info: JSON.stringify(object),
+                username: object.username
             }
         },
 
@@ -214,16 +212,16 @@ var sbiStorage = window.localStorage;
          *
          * @since 4.0
          */
-         selectSourcesToConnect : function(source){
+        selectSourcesToConnect: function (source) {
             var self = this;
 
             if (typeof window.sbiSelected === 'undefined') {
                 window.sbiSelected = [];
             }
-            if(self.selectedSourcesToConnect.includes(source.account_id)){
+            if (self.selectedSourcesToConnect.includes(source.account_id)) {
                 self.selectedSourcesToConnect.splice(self.selectedSourcesToConnect.indexOf(source.account_id), 1);
                 window.sbiSelected.splice(self.selectedSourcesToConnect.indexOf(source.admin), 1);
-            }else{
+            } else {
                 self.selectedSourcesToConnect.push(source.account_id);
                 window.sbiSelected.push(source.admin);
             }
@@ -234,38 +232,38 @@ var sbiStorage = window.localStorage;
          *
          * @since 4.0
          */
-         addSourcesOnConnect : function(){
+        addSourcesOnConnect: function () {
             var self = this,
                 isSingleSource = self.returnedApiSourcesList.length === 1;
-            if(self.selectedSourcesToConnect.length > 0 || isSingleSource){
+            if (self.selectedSourcesToConnect.length > 0 || isSingleSource) {
                 var sourcesListToAdd = [];
                 if (self.selectedSourcesToConnect.length > 0) {
-                    self.selectedSourcesToConnect.forEach(function(accountID, index){
-                        self.returnedApiSourcesList.forEach(function(source){
-                            if(source.account_id === accountID) {
+                    self.selectedSourcesToConnect.forEach(function (accountID, index) {
+                        self.returnedApiSourcesList.forEach(function (source) {
+                            if (source.account_id === accountID) {
                                 sourcesListToAdd.push(source);
                             }
                         });
                     });
                 } else {
-                    self.returnedApiSourcesList.forEach(function(source){
+                    self.returnedApiSourcesList.forEach(function (source) {
                         sourcesListToAdd.push(source);
                     });
                 }
 
                 var connectSourceData = {
-                    'action' : 'sbi_source_builder_update_multiple',
-                    'type' : self.addNewSource.typeSelected,
-                    'sourcesList' : sourcesListToAdd,
-                    'nonce' : self.nonce
+                    'action': 'sbi_source_builder_update_multiple',
+                    'type': self.addNewSource.typeSelected,
+                    'sourcesList': sourcesListToAdd,
+                    'nonce': self.nonce
                 };
-                self.$parent.ajaxPost(connectSourceData, function(_ref){
+                self.$parent.ajaxPost(connectSourceData, function (_ref) {
                     var data = _ref.data;
                     self.sourcesList = data;
                     self.$parent.sourcesList = data;
                     self.$parent.viewsActive.sourcePopup = false;
                     self.$parent.viewsActive.sourcesListPopup = false;
-                    if(self.$parent.customizerFeedData){
+                    if (self.$parent.customizerFeedData) {
                         //self.$parent.activateView('sourcePopup', 'customizer');
                         self.$parent.viewsActive.sourcesListPopup = true;
                     }
@@ -278,19 +276,19 @@ var sbiStorage = window.localStorage;
          *
          * @since 4.0
          */
-        processIFConnect : function(){
+        processIFConnect: function () {
             var self = this,
-            accountType = self.addNewSource.typeSelected,
-            params = accountType === 'personal' ? self.sourceConnectionURLs.personal : self.sourceConnectionURLs.business,
-            ifConnectURL = params.connect,
+                accountType = self.addNewSource.typeSelected,
+                params = accountType === 'personal' ? self.sourceConnectionURLs.personal : self.sourceConnectionURLs.business,
+                ifConnectURL = params.connect,
 
-            screenType = (self.$parent.customizerFeedData != undefined) ? 'customizer'  : 'creationProcess',
-            appendURL = ( screenType == 'customizer' ) ? self.sourceConnectionURLs.stateURL + ',feed_id='+ self.$parent.customizerFeedData.feed_info.id : self.sourceConnectionURLs.stateURL;
+                screenType = (self.$parent.customizerFeedData != undefined) ? 'customizer' : 'creationProcess',
+                appendURL = (screenType == 'customizer') ? self.sourceConnectionURLs.stateURL + ',feed_id=' + self.$parent.customizerFeedData.feed_info.id : self.sourceConnectionURLs.stateURL;
             //if(screenType != 'customizer'){
-                self.createLocalStorage(screenType);
+            self.createLocalStorage(screenType);
             //}
-            if( self.$parent.isSetupPage === 'true'){
-                appendURL = appendURL+ ',is_setup_page=yes';
+            if (self.$parent.isSetupPage === 'true') {
+                appendURL = appendURL + ',is_setup_page=yes';
             }
 
             var form = document.createElement('form');
@@ -298,11 +296,11 @@ var sbiStorage = window.localStorage;
             form.action = ifConnectURL;
 
             const urlParams = {
-                'wordpress_user' : params.wordpress_user,
-                'v' : params.v,
-                'vn' : params.vn,
-                'sbi_con' : params.sbi_con,
-                'state' : "{'{url=" + appendURL + "}'}"
+                'wordpress_user': params.wordpress_user,
+                'v': params.v,
+                'vn': params.vn,
+                'sbi_con': params.sbi_con,
+                'state': "{'{url=" + appendURL + "}'}"
             };
 
             for (const param in urlParams) {
@@ -324,24 +322,24 @@ var sbiStorage = window.localStorage;
          *
          * @since 4.0
          */
-         createLocalStorage : function(screenType){
+        createLocalStorage: function (screenType) {
             var self = this;
             switch (screenType) {
                 case 'creationProcess':
                     sbiStorage.setItem('selectedFeed', self.$parent.selectedFeed);
                     sbiStorage.setItem('feedTypeOnSourcePopup', self.$parent.feedTypeOnSourcePopup);
-                    if( self.$parent.isSetupPage === 'true'){
+                    if (self.$parent.isSetupPage === 'true') {
                         sbiStorage.setItem('isSetupPage', 'true');
                     }
-                break;
+                    break;
                 case 'customizer':
                     sbiStorage.setItem('selectedFeed', self.$parent.selectedFeedPopup);
                     sbiStorage.setItem('feedTypeOnSourcePopup', self.$parent.feedTypeOnSourcePopup);
-                    sbiStorage.setItem( 'feed_id', self.$parent.customizerFeedData.feed_info.id );
-                break;
+                    sbiStorage.setItem('feed_id', self.$parent.customizerFeedData.feed_info.id);
+                    break;
             }
-            sbiStorage.setItem( 'IFConnect', 'true' );
-            sbiStorage.setItem( 'screenType', screenType );
+            sbiStorage.setItem('IFConnect', 'true');
+            sbiStorage.setItem('screenType', screenType);
         },
 
 
@@ -350,27 +348,27 @@ var sbiStorage = window.localStorage;
          *
          * @since 4.0
          */
-         processIFConnectSuccess : function(){
+        processIFConnectSuccess: function () {
             var self = this;
-            if( sbiStorage.IFConnect === 'true' && sbiStorage.screenType ){
-                if( sbiStorage?.isSetupPage === 'true'  && sbiStorage?.isSetupPage ){
+            if (sbiStorage.IFConnect === 'true' && sbiStorage.screenType) {
+                if (sbiStorage?.isSetupPage === 'true' && sbiStorage?.isSetupPage) {
                     sbiStorage.removeItem("isSetupPage");
-                    sbiStorage.setItem('setCurrentStep',1);
-                    window.location = window.location.href.replace('sbi-feed-builder', 'sbi-setup') ;
+                    sbiStorage.setItem('setCurrentStep', 1);
+                    window.location = window.location.href.replace('sbi-feed-builder', 'sbi-setup');
                 }
 
-               if( sbiStorage.screenType == 'creationProcess' && sbiStorage.selectedFeed ){
-                   self.$parent.selectedFeed = self.createSourcesArray(sbiStorage.selectedFeed);
-                   self.$parent.feedTypeOnSourcePopup = sbiStorage.feedTypeOnSourcePopup;
-                   self.$parent.viewsActive.pageScreen = 'selectFeed';
-                   self.$parent.viewsActive.selectedFeedSection = 'selectSource';
-                   self.$parent.viewsActive.sourcesListPopup = true;
-               }
-               if( sbiStorage.screenType == 'customizer' && sbiStorage.feed_id){
-                   var urlParams = new URLSearchParams(window.location.search);
-                   urlParams.set('feed_id', sbiStorage.feed_id);
-                   window.location.search = urlParams;
-               }
+                if (sbiStorage.screenType == 'creationProcess' && sbiStorage.selectedFeed) {
+                    self.$parent.selectedFeed = self.createSourcesArray(sbiStorage.selectedFeed);
+                    self.$parent.feedTypeOnSourcePopup = sbiStorage.feedTypeOnSourcePopup;
+                    self.$parent.viewsActive.pageScreen = 'selectFeed';
+                    self.$parent.viewsActive.selectedFeedSection = 'selectSource';
+                    self.$parent.viewsActive.sourcesListPopup = true;
+                }
+                if (sbiStorage.screenType == 'customizer' && sbiStorage.feed_id) {
+                    var urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('feed_id', sbiStorage.feed_id);
+                    window.location.search = urlParams;
+                }
             }
             sbiStorage.removeItem("IFConnect");
             sbiStorage.removeItem("screenType");
@@ -379,14 +377,14 @@ var sbiStorage = window.localStorage;
             sbiStorage.removeItem("feed_id");
         },
 
-        groupNext : function() {
+        groupNext: function () {
         },
 
-        checkDisclaimer : function(){
+        checkDisclaimer: function () {
             return typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed.length === 1 && window.sbiSelectedFeed[0] !== 'user';
         },
 
-        printDisclaimer : function(){
+        printDisclaimer: function () {
             return (typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed.length === 1 && window.sbiSelectedFeed[0] === 'tagged') ? this.selectSourceScreen.modal.disclaimerMentions : this.selectSourceScreen.modal.disclaimerHashtag;
         },
 

@@ -2,6 +2,7 @@
 
 namespace InstagramFeed\Vendor\Brumann\Polyfill;
 
+/** @internal */
 final class Unserialize
 {
     /**
@@ -17,16 +18,16 @@ final class Unserialize
         if (\PHP_VERSION_ID >= 70000) {
             return \unserialize($serialized, $options);
         }
-        if (!array_key_exists('allowed_classes', $options) || \true === $options['allowed_classes']) {
+        if (!\array_key_exists('allowed_classes', $options) || \true === $options['allowed_classes']) {
             return \unserialize($serialized);
         }
         $allowedClasses = $options['allowed_classes'];
         if (\false === $allowedClasses) {
             $allowedClasses = array();
         }
-        if (!is_array($allowedClasses)) {
+        if (!\is_array($allowedClasses)) {
             $allowedClasses = array();
-            trigger_error('unserialize(): allowed_classes option should be array or boolean', \E_USER_WARNING);
+            \trigger_error('unserialize(): allowed_classes option should be array or boolean', \E_USER_WARNING);
         }
         $worker = new DisallowedClassesSubstitutor($serialized, $allowedClasses);
         return \unserialize($worker->getSubstitutedSerialized());

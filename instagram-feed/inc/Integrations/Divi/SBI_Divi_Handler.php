@@ -1,18 +1,12 @@
 <?php
 
-/**
- * Divi Integration
- *
- * @since 6.2.9
- */
-
 namespace InstagramFeed\Integrations\Divi;
 
-use InstagramFeed\Integrations\SBI_Integration;
 use InstagramFeed\Helpers\Util;
+use InstagramFeed\Integrations\SBI_Integration;
 
 // Exit if accessed directly.
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -48,9 +42,8 @@ class SBI_Divi_Handler
 	/**
 	 * Indicate if current integration is allowed to load.
 	 *
-	 * @since 6.2.9
-	 *
 	 * @return bool
+	 * @since 6.2.9
 	 */
 	public function allow_load()
 	{
@@ -58,8 +51,8 @@ class SBI_Divi_Handler
 			return true;
 		}
 
-		$allow_themes = [ 'Divi' ];
-		$theme_name   = get_template();
+		$allow_themes = ['Divi'];
+		$theme_name = get_template();
 
 		return in_array($theme_name, $allow_themes, true);
 	}
@@ -71,15 +64,26 @@ class SBI_Divi_Handler
 	 */
 	public function hooks()
 	{
-		add_action('et_builder_ready', [ $this, 'register_module' ]);
+		add_action('et_builder_ready', [$this, 'register_module']);
 
 		if (wp_doing_ajax()) {
-			add_action('wp_ajax_sb_instagramfeed_divi_preview', [ $this, 'preview' ]);
+			add_action('wp_ajax_sb_instagramfeed_divi_preview', [$this, 'preview']);
 		}
 
 		if ($this->is_divi_builder()) {
-			add_action('wp_enqueue_scripts', [ $this, 'builder_scripts' ]);
+			add_action('wp_enqueue_scripts', [$this, 'builder_scripts']);
 		}
+	}
+
+	/**
+	 * Determine if a current page is opened in the Divi Builder.
+	 *
+	 * @return bool
+	 * @since 6.2.9
+	 */
+	private function is_divi_builder()
+	{
+		return !empty($_GET['et_fb']); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -93,7 +97,7 @@ class SBI_Divi_Handler
 			'sbinstagram-divi',
 			// The unminified version is not supported by the browser.
 			SBI_PLUGIN_URL . 'admin/assets/js/divi-handler.min.js',
-			[ 'react', 'react-dom', 'jquery' ],
+			['react', 'react-dom', 'jquery'],
 			SBIVER,
 			true
 		);
@@ -102,9 +106,9 @@ class SBI_Divi_Handler
 			'sbinstagram-divi',
 			'sb_divi_builder',
 			[
-				'ajax_handler'		=> admin_url('admin-ajax.php'),
-				'nonce'             => wp_create_nonce('sbi-admin'),
-				'feed_splash' 		=> htmlspecialchars(SBI_Integration::get_widget_cta('button'))
+				'ajax_handler' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('sbi-admin'),
+				'feed_splash' => htmlspecialchars(SBI_Integration::get_widget_cta('button'))
 			]
 		);
 
@@ -115,11 +119,11 @@ class SBI_Divi_Handler
 			'font_method' => 'svg',
 			'placeholder' => trailingslashit(SBI_PLUGIN_URL) . 'img/placeholder.png',
 			'resized_url' => $resized_url,
-			'ajax_url'  => admin_url('admin-ajax.php'),
+			'ajax_url' => admin_url('admin-ajax.php'),
 		);
 
 		// legacy settings
-        $path = Util::sbi_legacy_css_enabled() ? 'js/legacy/' : 'js/';
+		$path = Util::sbi_legacy_css_enabled() ? 'js/legacy/' : 'js/';
 
 		wp_enqueue_script(
 			'sbiscripts',
@@ -138,7 +142,7 @@ class SBI_Divi_Handler
 	 */
 	public function register_module()
 	{
-		if (! class_exists('ET_Builder_Module')) {
+		if (!class_exists('ET_Builder_Module')) {
 			return;
 		}
 
@@ -154,11 +158,11 @@ class SBI_Divi_Handler
 	{
 		check_ajax_referer('sbi-admin', 'nonce');
 
-		if (! sbi_current_user_can('manage_instagram_feed_options')) {
+		if (!sbi_current_user_can('manage_instagram_feed_options')) {
 			wp_send_json_error();
 		}
 
-		$feed_id    = absint(filter_input(INPUT_POST, 'feed_id', FILTER_SANITIZE_NUMBER_INT));
+		$feed_id = absint(filter_input(INPUT_POST, 'feed_id', FILTER_SANITIZE_NUMBER_INT));
 
 		wp_send_json_success(
 			do_shortcode(
@@ -168,17 +172,5 @@ class SBI_Divi_Handler
 				)
 			)
 		);
-	}
-
-	/**
-	 * Determine if a current page is opened in the Divi Builder.
-	 *
-	 * @since 6.2.9
-	 *
-	 * @return bool
-	 */
-	private function is_divi_builder()
-	{
-		return ! empty($_GET['et_fb']); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 }

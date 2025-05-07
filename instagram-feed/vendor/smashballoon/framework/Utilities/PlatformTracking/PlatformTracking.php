@@ -8,6 +8,7 @@ use InstagramFeed\Vendor\Smashballoon\Framework\Utilities\PlatformTracking\Platf
 use InstagramFeed\Vendor\Smashballoon\Framework\Utilities\PlatformTracking\Platforms\Kinsta;
 use InstagramFeed\Vendor\Smashballoon\Framework\Utilities\PlatformTracking\Platforms\SiteGround;
 use InstagramFeed\Vendor\Smashballoon\Framework\Utilities\PlatformTracking\Platforms\WPEngine;
+/** @internal */
 class PlatformTracking
 {
     /**
@@ -44,6 +45,6 @@ class PlatformTracking
      */
     public static function get_platform()
     {
-        return apply_filters('sb_hosting_platform', 'unknown');
+        return \apply_filters('sb_hosting_platform', 'unknown');
     }
 }

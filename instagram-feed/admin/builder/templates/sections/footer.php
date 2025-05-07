@@ -9,54 +9,64 @@
 			</div>
 			<div class="sbi-bld-ft-action">
 				<a :href="links.allAccessBundle" target="_blank" class="sb-button-standard sb-button-right-icon sb-button sbi-btn-grey">{{genericText.learnMore}}
-            <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.33336 0L0.15836 1.175L3.97503 5L0.15836 8.825L1.33336 10L6.33336 5L1.33336 0Z" fill="#141B38"/>
-            </svg>
-        </a>
+			<svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M1.33336 0L0.15836 1.175L3.97503 5L0.15836 8.825L1.33336 10L6.33336 5L1.33336 0Z" fill="#141B38"/>
+			</svg>
+		</a>
 			</div>
 		</div>
 		<div v-if="pluginType !== 'pro'" class="sbi-bld-ft-btm" v-html="mainFooterScreen.promo"></div>
 	</div>
 </div>
 -->
-<div class="sbi-stck-wdg" v-if="viewsActive.pageScreen !== 'selectFeed' && ! iscustomizerScreen" :data-active="checkActiveView('footerWidget')">
+<div class="sbi-stck-wdg" v-if="viewsActive.pageScreen !== 'selectFeed' && ! iscustomizerScreen"
+	 :data-active="checkActiveView('footerWidget')">
 	<?php
+
 	use InstagramFeed\Admin\SBI_Callout;
-		$smashballoon_info = InstagramFeed\Builder\SBI_Feed_Builder::get_smashballoon_info();
+
+	$smashballoon_info = InstagramFeed\Builder\SBI_Feed_Builder::get_smashballoon_info();
 	?>
 	<div class="sbi-stck-pop">
 
 		<div class="sbi-stck-el sbi-stck-el-upgrd sbi-fb-fs sb-btn-orange">
 			<div class="sbi-stck-el-icon"><?php echo $icons($smashballoon_info['upgrade']['icon']); ?></div>
-			<div class="sbi-stck-el-txt sb-small-p sb-bold" style="color: #fff;"><?php echo __('Get All Access Bundle','instagram-feed') ?></div>
-            <div class="sbi-chevron">
-                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1.3332 0L0.158203 1.175L3.97487 5L0.158203 8.825L1.3332 10L6.3332 5L1.3332 0Z" fill="white"/>
-                </svg>
-            </div>
-            <a :href="links.popup.allAccessBundle" target="_blank" class="sbi-fs-a"></a>
+			<div class="sbi-stck-el-txt sb-small-p sb-bold"
+				 style="color: #fff;"><?php echo __('Get All Access Bundle', 'instagram-feed') ?></div>
+			<div class="sbi-chevron">
+				<svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M1.3332 0L0.158203 1.175L3.97487 5L0.158203 8.825L1.3332 10L6.3332 5L1.3332 0Z"
+						  fill="white"/>
+				</svg>
+			</div>
+			<a :href="links.popup.allAccessBundle" target="_blank" class="sbi-fs-a"></a>
 		</div>
 
-		<div class="sbi-stck-title sbi-fb-fs sb-small-p sb-bold sb-dark-text"><?php echo __('Our Feeds for other platforms','instagram-feed') ?></div>
+		<div class="sbi-stck-title sbi-fb-fs sb-small-p sb-bold sb-dark-text"><?php echo __('Our Feeds for other platforms', 'instagram-feed') ?></div>
 
 		<div class="sbi-stck-el-list sbi-fb-fs">
-			<?php foreach ($smashballoon_info['platforms'] as $platform): ?>
+			<?php foreach ($smashballoon_info['platforms'] as $platform) : ?>
 				<div class="sbi-stck-el sbi-fb-fs">
 
-					<div class="sbi-stck-el-icon" style="color:<?php echo $smashballoon_info['colorSchemes'][$platform['icon']] ?>;"><?php echo $icons($platform['icon']); ?></div>
+					<div class="sbi-stck-el-icon"
+						 style="color:<?php echo $smashballoon_info['colorSchemes'][$platform['icon']] ?>;"><?php echo $icons($platform['icon']); ?></div>
 					<div class="sbi-stck-el-txt sb-small-text sb-small-p sb-dark-text"><?php echo $platform['name'] ?></div>
-                    <div class="sbi-chevron">
-                        <svg width="7" height="10" viewBox="0 0 7 10" fill="#8C8F9A" xmlns="http://www.w3.org/2000/svg"><path d="M1.3332 0L0.158203 1.175L3.97487 5L0.158203 8.825L1.3332 10L6.3332 5L1.3332 0Z" fill="#8C8F9A"></path></svg>
-                    </div>
-					<a href="<?php echo esc_url($platform['link'] ) ?>" target="_blank" class="sbi-fs-a"></a>
+					<div class="sbi-chevron">
+						<svg width="7" height="10" viewBox="0 0 7 10" fill="#8C8F9A" xmlns="http://www.w3.org/2000/svg">
+							<path d="M1.3332 0L0.158203 1.175L3.97487 5L0.158203 8.825L1.3332 10L6.3332 5L1.3332 0Z"
+								  fill="#8C8F9A"></path>
+						</svg>
+					</div>
+					<a href="<?php echo esc_url($platform['link']) ?>" target="_blank" class="sbi-fs-a"></a>
 				</div>
 			<?php endforeach ?>
 		</div>
 		<div class="sbi-stck-follow sbi-fb-fs">
-			<span><?php echo __('Follow Us','instagram-feed') ?></span>
+			<span><?php echo __('Follow Us', 'instagram-feed') ?></span>
 			<div class="sbi-stck-flw-links">
-				<?php foreach ($smashballoon_info['socialProfiles'] as $social_key => $social): ?>
-					<a href="<?php echo esc_url($social); ?>" target="_blank"  style="color:<?php echo $smashballoon_info['colorSchemes'][$social_key] ?>;"><?php echo $icons($social_key); ?></a>
+				<?php foreach ($smashballoon_info['socialProfiles'] as $social_key => $social) : ?>
+					<a href="<?php echo esc_url($social); ?>" target="_blank"
+					   style="color:<?php echo $smashballoon_info['colorSchemes'][$social_key] ?>;"><?php echo $icons($social_key); ?></a>
 				<?php endforeach ?>
 			</div>
 		</div>
@@ -65,23 +75,24 @@
 		<?php echo $icons('smash'); ?>
 		<div class="sbi-stck-wdg-btn-cls">
 			<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M14.501 1.77279L13.091 0.362793L7.50098 5.95279L1.91098 0.362793L0.500977 1.77279L6.09098 7.36279L0.500977 12.9528L1.91098 14.3628L7.50098 8.77279L13.091 14.3628L14.501 12.9528L8.91098 7.36279L14.501 1.77279Z" fill="#141B38"/>
+				<path d="M14.501 1.77279L13.091 0.362793L7.50098 5.95279L1.91098 0.362793L0.500977 1.77279L6.09098 7.36279L0.500977 12.9528L1.91098 14.3628L7.50098 8.77279L13.091 14.3628L14.501 12.9528L8.91098 7.36279L14.501 1.77279Z"
+					  fill="#141B38"/>
 			</svg>
-        </div>
+		</div>
 	</div>
 </div>
 <?php
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/add-source-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/sources-list-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/extensions-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/feedtypes-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/feedtypes-customizer-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/confirm-dialog-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/embed-popup.php';
-    include_once SBI_BUILDER_DIR . 'templates/sections/popup/onboarding-popup.php';
-    include_once SBI_BUILDER_DIR . 'templates/sections/popup/onboarding-customizer-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/install-plugin-popup.php';
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/personal-account-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/add-source-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/sources-list-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/extensions-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/feedtypes-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/feedtypes-customizer-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/confirm-dialog-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/embed-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/onboarding-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/onboarding-customizer-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/install-plugin-popup.php';
+include_once SBI_BUILDER_DIR . 'templates/sections/popup/personal-account-popup.php';
 ?>
 <div class="sb-notification-ctn" :data-active="notificationElement.shown" :data-type="notificationElement.type">
 	<div class="sb-notification-icon" v-html="svgIcons[notificationElement.type+'Notification']"></div>
@@ -99,37 +110,37 @@
 </div>
 
 <sb-personal-account-component
-:generic-text="genericText"
-:svg-icons="svgIcons"
-ref="personalAccountRef"
+		:generic-text="genericText"
+		:svg-icons="svgIcons"
+		ref="personalAccountRef"
 >
 </sb-personal-account-component>
 
 <sb-confirm-dialog-component
-:dialog-box.sync="dialogBox"
-:source-to-delete="sourceToDelete"
-:svg-icons="svgIcons"
-:parent-type="'builder'"
-:generic-text="genericText"
+		:dialog-box.sync="dialogBox"
+		:source-to-delete="sourceToDelete"
+		:svg-icons="svgIcons"
+		:parent-type="'builder'"
+		:generic-text="genericText"
 ></sb-confirm-dialog-component>
 
 <sb-add-source-component
-:sources-list="sourcesList"
-:select-source-screen="selectSourceScreen"
-:views-active="viewsActive"
-:generic-text="genericText"
-:selected-feed="selectedFeed"
-:svg-icons="svgIcons"
-:links="links"
-ref="addSourceRef"
+		:sources-list="sourcesList"
+		:select-source-screen="selectSourceScreen"
+		:views-active="viewsActive"
+		:generic-text="genericText"
+		:selected-feed="selectedFeed"
+		:svg-icons="svgIcons"
+		:links="links"
+		ref="addSourceRef"
 >
 </sb-add-source-component>
 
 <install-plugin-popup
-:views-active="viewsActive"
-:generic-text="genericText"
-:svg-icons="svgIcons"
-:plugins="plugins[viewsActive.installPluginModal]"
+		:views-active="viewsActive"
+		:generic-text="genericText"
+		:svg-icons="svgIcons"
+		:plugins="plugins[viewsActive.installPluginModal]"
 >
 </install-plugin-popup>
 

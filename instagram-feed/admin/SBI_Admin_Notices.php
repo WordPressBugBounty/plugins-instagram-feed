@@ -8,212 +8,209 @@
 
 namespace InstagramFeed\Admin;
 
-if (! defined('ABSPATH')) exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+	exit; // Exit if accessed directly.
+}
 
-use InstagramFeed\SBI_Response;
-use InstagramFeed\SBI_HTTP_Request;
+use InstagramFeed\Builder\SBI_Db;
 use InstagramFeed\Helpers\Util;
+use InstagramFeed\SBI_Response;
 
 class SBI_Admin_Notices
 {
+	/**
+	 * CFF License Key
+	 */
+	public $sbi_license;
 
-    /**
-     * CFF License Key
-     */
-    public $sbi_license;
+	public function __construct()
+	{
+		$this->init();
+	}
 
-    public function __construct()
-    {
-        $this->init();
-    }
+	/**
+	 * Determining if the user is viewing the our page, if so, party on.
+	 *
+	 * @since 4.0
+	 */
+	public function init()
+	{
+		if (!is_admin()) {
+			return;
+		}
+		add_action('in_admin_header', [$this, 'remove_admin_notices']);
+		add_action('wp_ajax_sbi_check_license', [$this, 'sbi_check_license']);
 
-    /**
-     * Determining if the user is viewing the our page, if so, party on.
-     *
-     * @since 4.0
-     */
-    public function init()
-    {
-        if (! is_admin()) {
-            return;
-        }
-        add_action('in_admin_header', [$this, 'remove_admin_notices']);
-        add_action('wp_ajax_sbi_check_license', [$this, 'sbi_check_license']);
+		add_action('sbi_header_notices', array($this, 'header_notices'));
+		add_action('wp_ajax_sbi_dismiss_upgrade_notice', array($this, 'dismiss_upgrade_notice'));
+		add_action('admin_init', array($this, 'sbi_admin_notices'));
+		add_action('sb_notice_custom_feed_templates_dismissed', array($this, 'sbi_dismiss_notice'));
+		add_action('admin_notices', array($this, 'clicksocial_upsell_notice'));
+		add_action('wp_ajax_sbi_dismiss_clicksocial_upsell', array($this, 'sbi_dismiss_clicksocial_upsell'));
+	}
 
-        add_action('sbi_header_notices', array($this, 'header_notices'));
-        add_action('wp_ajax_sbi_dismiss_upgrade_notice', array($this, 'dismiss_upgrade_notice'));
-        add_action('admin_init', array($this, 'sbi_admin_notices'));
-        add_action('sb_notice_custom_feed_templates_dismissed', array($this, 'sbi_dismiss_notice'));
-        add_action('admin_notices', array($this, 'clicksocial_upsell_notice'));
-        add_action('wp_ajax_sbi_dismiss_clicksocial_upsell', array($this, 'sbi_dismiss_clicksocial_upsell'));
-    }
+	/**
+	 * Header Notices
+	 *
+	 * @since 6.0
+	 */
+	public function header_notices()
+	{
+		$lite_notice_dismissed = get_transient('instagram_feed_dismiss_lite');
+		if ($lite_notice_dismissed) {
+			return;
+		}
 
-    /**
-     * Header Notices
-     *
-     * @since 6.0
-     */
-    public function header_notices()
-    {
-        $lite_notice_dismissed = get_transient('instagram_feed_dismiss_lite');
-        if ($lite_notice_dismissed) {
-            return;
-        }
+		$output = '';
 
-        $output = '';
+		$upgrade_url = 'https://smashballoon.com/instagram-feed/demo/?utm_campaign=instagram-free&utm_source=lite-upgrade-bar';
+		$output .= '<div id="sbi-notice-bar" class="sbi-header-notice">';
+		$output .= sprintf(
+			'<span class="sbi-notice-bar-message">%s <a href="%s" target="_blank" rel="noopener">%s</a></span>',
+			__('You\'re using Instagram Feed Lite. To unlock more features consider', 'instagram-feed'),
+			$upgrade_url,
+			__('upgrading to Pro', 'instagram-feed')
+		);
 
-        $upgrade_url = 'https://smashballoon.com/instagram-feed/demo/?utm_campaign=instagram-free&utm_source=lite-upgrade-bar';
-        $output .= '<div id="sbi-notice-bar" class="sbi-header-notice">';
-        $output .= sprintf(
-            '<span class="sbi-notice-bar-message">%s <a href="%s" target="_blank" rel="noopener">%s</a></span>',
-            __('You\'re using Instagram Feed Lite. To unlock more features consider', 'instagram-feed'),
-            $upgrade_url,
-            __('upgrading to Pro', 'instagram-feed')
-        );
+		$output .= sprintf(
+			'<button type="button" class="sbi-dismiss" id="sbi-dismiss-header-notice" title="%s" data-page="overview">%s</button>',
+			__('Dismiss this message', 'instagram-feed'),
+			'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.8327 5.34175L14.6577 4.16675L9.99935 8.82508L5.34102 4.16675L4.16602 5.34175L8.82435 10.0001L4.16602 14.6584L5.34102 15.8334L9.99935 11.1751L14.6577 15.8334L15.8327 14.6584L11.1744 10.0001L15.8327 5.34175Z" fill="white"/></svg>'
+		);
 
-        $output .= sprintf(
-            '<button type="button" class="sbi-dismiss" id="sbi-dismiss-header-notice" title="%s" data-page="overview">%s</button>',
-            __('Dismiss this message', 'instagram-feed'),
-            '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.8327 5.34175L14.6577 4.16675L9.99935 8.82508L5.34102 4.16675L4.16602 5.34175L8.82435 10.0001L4.16602 14.6584L5.34102 15.8334L9.99935 11.1751L14.6577 15.8334L15.8327 14.6584L11.1744 10.0001L15.8327 5.34175Z" fill="white"/></svg>'
-        );
+		$output .= '</div>';
 
-        $output .= '</div>';
+		echo $output;
+	}
 
-        echo $output;
-    }
+	/**
+	 * Dismiss Upgrade Notice
+	 *
+	 * @return SBI_Response
+	 * @since 6.0
+	 */
+	public function dismiss_upgrade_notice()
+	{
+		// Run a security check.
+		check_ajax_referer('sbi_nonce', 'sbi_nonce');
 
-    /**
-     * Dismiss Upgrade Notice
-     *
-     * @since 6.0
-     *
-     * @return SBI_Response
-     */
-    public function dismiss_upgrade_notice()
-    {
-        // Run a security check.
-        check_ajax_referer('sbi_nonce', 'sbi_nonce');
+		$cap = current_user_can('manage_instagram_feed_options') ? 'manage_instagram_feed_options' : 'manage_options';
+		$cap = apply_filters('sbi_settings_pages_capability', $cap);
+		if (!current_user_can($cap)) {
+			wp_send_json_error(); // This auto-dies.
+		}
+		// set the transient so it will hide for next 7 days
+		set_transient('instagram_feed_dismiss_lite', 'dismiss', 1 * WEEK_IN_SECONDS);
 
-        $cap = current_user_can('manage_instagram_feed_options') ? 'manage_instagram_feed_options' : 'manage_options';
-        $cap = apply_filters('sbi_settings_pages_capability', $cap);
-        if (! current_user_can($cap)) {
-            wp_send_json_error(); // This auto-dies.
-        }
-        // set the transient so it will hide for next 7 days
-        set_transient('instagram_feed_dismiss_lite', 'dismiss', 1 * WEEK_IN_SECONDS);
+		$response = new SBI_Response(true, array());
+		$response->send();
+	}
 
-        $response = new SBI_Response(true, array());
-        $response->send();
-    }
+	/**
+	 * Remove admin notices from inside our plugin screens so we can show our customized notices
+	 *
+	 * @since 4.0
+	 */
+	public function remove_admin_notices()
+	{
+		$current_screen = get_current_screen();
+		$not_allowed_screens = array(
+			'instagram-feed_page_sbi-feed-builder',
+			'instagram-feed_page_sbi-settings',
+			'instagram-feed_page_sbi-oembeds-manager',
+			'instagram-feed_page_sbi-extensions-manager',
+			'instagram-feed_page_sbi-about-us',
+			'instagram-feed_page_sbi-support',
+		);
 
-    /**
-     * Remove admin notices from inside our plugin screens so we can show our customized notices
-     *
-     * @since 4.0
-     */
-    public function remove_admin_notices()
-    {
-        $current_screen = get_current_screen();
-        $not_allowed_screens = array(
-            'instagram-feed_page_sbi-feed-builder',
-            'instagram-feed_page_sbi-settings',
-            'instagram-feed_page_sbi-oembeds-manager',
-            'instagram-feed_page_sbi-extensions-manager',
-            'instagram-feed_page_sbi-about-us',
-            'instagram-feed_page_sbi-support',
-        );
+		if (in_array($current_screen->base, $not_allowed_screens) || strpos($current_screen->base, 'sbi-') !== false) {
+			remove_all_actions('admin_notices');
+			remove_all_actions('all_admin_notices');
+		}
+	}
 
-        if (in_array($current_screen->base, $not_allowed_screens) || strpos($current_screen->base, 'sbi-') !== false) {
-            remove_all_actions('admin_notices');
-            remove_all_actions('all_admin_notices');
-        }
-    }
+	/**
+	 * CFF Get Renew License URL
+	 *
+	 * @return string $url
+	 * @since 4.0
+	 */
+	public function get_renew_url()
+	{
+		global $sbi_download_id;
 
-    /**
-     * CFF Get Renew License URL
-     *
-     * @since 4.0
-     *
-     * @return string $url
-     */
-    public function get_renew_url()
-    {
-        global $sbi_download_id;
+		$license_key = get_option('sbi_license_key') ? get_option('sbi_license_key') : null;
 
-        $license_key = get_option('sbi_license_key') ? get_option('sbi_license_key') : null;
+		$url = sprintf(
+			'https://smashballoon.com/checkout/?edd_license_key=%s&download_id=%s&utm_campaign=instagram-free&utm_source=expired-notice&utm_medium=renew-license',
+			esc_attr($license_key),
+			$sbi_download_id
+		);
 
-        $url = sprintf(
-            'https://smashballoon.com/checkout/?edd_license_key=%s&download_id=%s&utm_campaign=instagram-free&utm_source=expired-notice&utm_medium=renew-license',
-            esc_attr($license_key),
-            $sbi_download_id
-        );
+		return $url;
+	}
 
-        return $url;
-    }
+	/**
+	 * CFF Check License
+	 *
+	 * @return SBI_Response
+	 * @since 4.0
+	 */
+	public function sbi_check_license()
+	{
+		// Run a security check.
+		check_ajax_referer('sbi_nonce', 'sbi_nonce');
 
-    /**
-     * CFF Check License
-     *
-     * @since 4.0
-     *
-     * @return SBI_Response
-     */
-    public function sbi_check_license()
-    {
-        // Run a security check.
-        check_ajax_referer('sbi_nonce', 'sbi_nonce');
+		$cap = current_user_can('manage_instagram_feed_options') ? 'manage_instagram_feed_options' : 'manage_options';
+		$cap = apply_filters('sbi_settings_pages_capability', $cap);
+		if (!current_user_can($cap)) {
+			wp_send_json_error(); // This auto-dies.
+		}
 
-        $cap = current_user_can('manage_instagram_feed_options') ? 'manage_instagram_feed_options' : 'manage_options';
-        $cap = apply_filters('sbi_settings_pages_capability', $cap);
-        if (! current_user_can($cap)) {
-            wp_send_json_error(); // This auto-dies.
-        }
+		$sbi_license = trim(get_option('sbi_license_key'));
 
-        $sbi_license = trim(get_option('sbi_license_key'));
+		// Check the API
+		$sbi_api_params = array(
+			'edd_action' => 'check_license',
+			'nocache' => '1',
+			'license' => $sbi_license,
+			'item_name' => urlencode(SBI_PLUGIN_NAME) // the name of our product in EDD
+		);
+		$sbi_response = wp_safe_remote_get(add_query_arg($sbi_api_params, SBI_STORE_URL), array('timeout' => 60));
+		$sbi_license_data = (array)json_decode(wp_remote_retrieve_body($sbi_response));
+		// Update the updated license data
+		update_option('sbi_license_data', $sbi_license_data);
 
-        // Check the API
-        $sbi_api_params = array(
-            'edd_action' => 'check_license',
-            'nocache'    => '1',
-            'license'   => $sbi_license,
-            'item_name' => urlencode(SBI_PLUGIN_NAME) // the name of our product in EDD
-        );
-        $sbi_response = wp_safe_remote_get(add_query_arg($sbi_api_params, SBI_STORE_URL), array('timeout' => 60));
-        $sbi_license_data = (array) json_decode(wp_remote_retrieve_body($sbi_response));
-        // Update the updated license data
-        update_option('sbi_license_data', $sbi_license_data);
+		$sbi_todays_date = date('Y-m-d');
+		// Check whether it's active
+		if ($sbi_license_data['license'] !== 'expired' && (strtotime($sbi_license_data['expires']) > strtotime($sbi_todays_date))) {
+			// if the license is active then lets remove the ignore check for dashboard so next time it will show the expired notice in dashboard screen
+			update_user_meta(get_current_user_id(), 'sbi_ignore_dashboard_license_notice', false);
 
-        $sbi_todays_date = date('Y-m-d');
-        // Check whether it's active
-        if ($sbi_license_data['license'] !== 'expired' && (strtotime($sbi_license_data['expires']) > strtotime($sbi_todays_date))) {
-            // if the license is active then lets remove the ignore check for dashboard so next time it will show the expired notice in dashboard screen
-            update_user_meta(get_current_user_id(), 'sbi_ignore_dashboard_license_notice', false);
+			$response = new SBI_Response(true, array(
+				'msg' => 'License Active',
+				'content' => $this->get_renewed_license_notice_content()
+			));
+			$response->send();
+		} else {
+			$content = 'Your Instagram Feed Pro license key has expired';
+			$response = new SBI_Response(false, array(
+				'msg' => 'License Not Renewed',
+				'content' => $content
+			));
+			$response->send();
+		}
+	}
 
-            $response = new SBI_Response(true, array(
-                'msg' => 'License Active',
-                'content' => $this->get_renewed_license_notice_content()
-            ));
-            $response->send();
-        } else {
-            $content = 'Your Instagram Feed Pro license key has expired';
-            $response = new SBI_Response(false, array(
-                'msg' => 'License Not Renewed',
-                'content' => $content
-            ));
-            $response->send();
-        }
-    }
-
-    /**
-     * Get content for successfully renewed license notice
-     *
-     * @since 4.0
-     *
-     * @return string $output
-     */
-    public function get_renewed_license_notice_content()
-    {
-        $output = '<span class="sb-notice-icon sb-error-icon">
+	/**
+	 * Get content for successfully renewed license notice
+	 *
+	 * @return string $output
+	 * @since 4.0
+	 */
+	public function get_renewed_license_notice_content()
+	{
+		$output = '<span class="sb-notice-icon sb-error-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#59AB46"/>
                 </svg>
@@ -231,19 +228,18 @@ class SBI_Admin_Notices
                 </div>
             </div>';
 
-        return $output;
-    }
+		return $output;
+	}
 
-    /**
-     * Get modal content that will trigger by "Why Renew" button
-     *
-     * @since 4.0
-     *
-     * @return string $output
-     */
-    public function get_modal_content()
-    {
-        $output = '<div class="sbi-sb-modal license-details-modal">
+	/**
+	 * Get modal content that will trigger by "Why Renew" button
+	 *
+	 * @return string $output
+	 * @since 4.0
+	 */
+	public function get_modal_content()
+	{
+		$output = '<div class="sbi-sb-modal license-details-modal">
             <div class="sbi-modal-content">
                 <button type="button" class="cancel-btn sbi-btn" id="sbi-sb-close-modal">
                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -307,284 +303,286 @@ class SBI_Admin_Notices
             </div>
         </div>';
 
-        return $output;
-    }
+		return $output;
+	}
 
-    /**
-     * Display admin notices in the plugin's pages
-     *
-     * @since 6.3
-     */
-    public function sbi_admin_notices()
-    {
-        $allowed_screens = array(
-            'sbi-feed-builder',
-            'sbi-settings',
-            'sbi-oembeds-manager',
-            'sbi-extensions-manager',
-            'sbi-about-us',
-            'sbi-support',
-        );
-        $current_screen  = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
-        $is_allowed      = in_array($current_screen, $allowed_screens);
+	/**
+	 * Display admin notices in the plugin's pages
+	 *
+	 * @since 6.3
+	 */
+	public function sbi_admin_notices()
+	{
+		$allowed_screens = array(
+			'sbi-feed-builder',
+			'sbi-settings',
+			'sbi-oembeds-manager',
+			'sbi-extensions-manager',
+			'sbi-about-us',
+			'sbi-support',
+		);
+		$current_screen = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+		$is_allowed = in_array($current_screen, $allowed_screens);
 
-        // We will display the notice only on those allowed screens.
-        if (! $current_screen || ! $is_allowed) {
-            return;
-        }
+		// We will display the notice only on those allowed screens.
+		if (!$current_screen || !$is_allowed) {
+			return;
+		}
 
-        // Only display notice to admins.
-        if (!sbi_current_user_can('manage_instagram_feed_options')) {
-            return;
-        }
+		// Only display notice to admins.
+		if (!sbi_current_user_can('manage_instagram_feed_options')) {
+			return;
+		}
 
-        $this->sbi_custom_feed_templates_notice();
-        $this->sbi_personal_api_deprecation_notice();
-    }
+		$this->sbi_custom_feed_templates_notice();
+		$this->sbi_personal_api_deprecation_notice();
+	}
 
-    /**
-     * Custom Feed Templates Notice
-     * 
-     * @since 6.3
-     */
-    public function sbi_custom_feed_templates_notice()
-    {
-        $has_custom_templates = Util::sbi_has_custom_templates();
-        $sbi_statuses = get_option('sbi_statuses', array());
+	/**
+	 * Custom Feed Templates Notice
+	 *
+	 * @since 6.3
+	 */
+	public function sbi_custom_feed_templates_notice()
+	{
+		$has_custom_templates = Util::sbi_has_custom_templates();
+		$sbi_statuses = get_option('sbi_statuses', array());
 
-        if (! $has_custom_templates) {
-            $sbi_statuses['custom_templates_notice'] = true;
-            update_option('sbi_statuses', $sbi_statuses);
-            return;
-        }
+		if (!$has_custom_templates) {
+			$sbi_statuses['custom_templates_notice'] = true;
+			update_option('sbi_statuses', $sbi_statuses);
+			return;
+		}
 
-        if (true == get_option('sbi_custom_templates_notice_dismissed') || isset($sbi_statuses['custom_templates_notice'])) {
-            return;
-        }
+		if (true == get_option('sbi_custom_templates_notice_dismissed') || isset($sbi_statuses['custom_templates_notice'])) {
+			return;
+		}
 
-        global $sbi_notices;
-        $title    = __('Heads Up! Feed Item Files and CSS Have Changed', 'instagram-feed');
-        $message  = '<p>' . __('Version 6.3 includes changes to the HTML and CSS files that make up your feeds. If you have customized your feed through custom theme templates, custom CSS, or custom JavaScript, your customizations may have been affected.', 'instagram-feed') . '</p>';
-        $message .= '<p>' . __('You can use the CSS file from previous versions if needed. Enable the related setting on the Advanced tab of the settings page.', 'instagram-feed') . '</p>';
+		global $sbi_notices;
+		$title = __('Heads Up! Feed Item Files and CSS Have Changed', 'instagram-feed');
+		$message = '<p>' . __('Version 6.3 includes changes to the HTML and CSS files that make up your feeds. If you have customized your feed through custom theme templates, custom CSS, or custom JavaScript, your customizations may have been affected.', 'instagram-feed') . '</p>';
+		$message .= '<p>' . __('You can use the CSS file from previous versions if needed. Enable the related setting on the Advanced tab of the settings page.', 'instagram-feed') . '</p>';
 
-        $error_args = array(
-            'class'       => 'sbi-admin-notices sbi-admin-notices-spaced-p',
-            'title'              => array(
-                'text'  => $title,
-                'class' => 'sb-notice-title',
-                'tag'   => 'h4',
-            ),
-            'message'     => $message,
-            'dismissible' => true,
-            'dismiss'     => array(
-                'class' => 'sbi-notice-dismiss',
-                'icon'  => SBI_PLUGIN_URL . 'admin/assets/img/sbi-dismiss-icon.svg',
-                'tag'   => 'a',
-                'href' => array(
-                    'args' => array(
-                        'sb-dismiss-notice' => 'custom_feed_templates'
-                    ),
-                    'action' => 'sb_dismiss_notice_nonce',
-                    'nonce' => '_sb_notice_nonce',
-                )
-            ),
-            'buttons' => array(
-                array(
-                    'text' => __('Sounds good!', 'instagram-feed'),
-                    'class' => 'button button-primary',
-                    'id' => 'custom_feed_templates_dismiss',
-                    'url' => array(
-                        'args' => array(
-                            'sb-dismiss-notice' => 'custom_feed_templates'
-                        ),
-                        'action' => 'sb_dismiss_notice_nonce',
-                        'nonce' => '_sb_notice_nonce',
-                    ),
-                    'tag' => 'a',
-                ),
-                array(
-                    'text' => __('Learn More', 'instagram-feed'),
-                    'class' => 'button button-secondary',
-                    'id' => 'custom_feed_templates_learn',
-                    'url' => 'https://smashballoon.com/doc/instagram-css-layout-changes/?utm_source=instagram-pro&utm_medium=dashboard-notice&utm_campaign=63changes&utm_content=LearnMore',
-                    'target' => 'blank',
-                    'tag' => 'a',
-                ),
-            ),
-            'buttons_wrap_start' => '<p class="sbi-error-directions">',
-            'buttons_wrap_end'   => '</p>',
-            'priority'    => 1,
-            'page'        => array(
-                'sbi-feed-builder',
-                'sbi-settings',
-                'sbi-oembeds-manager',
-                'sbi-extensions-manager',
-                'sbi-about-us',
-                'sbi-support',
-            ),
-            'icon'        => array(
-                'src'  => SBI_PLUGIN_URL . 'admin/assets/img/balloon.svg',
-                'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
-            ),
-            'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-body">{title}{message}</div>{dismiss}{buttons}</div>',
-        );
+		$error_args = array(
+			'class' => 'sbi-admin-notices sbi-admin-notices-spaced-p',
+			'title' => array(
+				'text' => $title,
+				'class' => 'sb-notice-title',
+				'tag' => 'h4',
+			),
+			'message' => $message,
+			'dismissible' => true,
+			'dismiss' => array(
+				'class' => 'sbi-notice-dismiss',
+				'icon' => SBI_PLUGIN_URL . 'admin/assets/img/sbi-dismiss-icon.svg',
+				'tag' => 'a',
+				'href' => array(
+					'args' => array(
+						'sb-dismiss-notice' => 'custom_feed_templates'
+					),
+					'action' => 'sb_dismiss_notice_nonce',
+					'nonce' => '_sb_notice_nonce',
+				)
+			),
+			'buttons' => array(
+				array(
+					'text' => __('Sounds good!', 'instagram-feed'),
+					'class' => 'button button-primary',
+					'id' => 'custom_feed_templates_dismiss',
+					'url' => array(
+						'args' => array(
+							'sb-dismiss-notice' => 'custom_feed_templates'
+						),
+						'action' => 'sb_dismiss_notice_nonce',
+						'nonce' => '_sb_notice_nonce',
+					),
+					'tag' => 'a',
+				),
+				array(
+					'text' => __('Learn More', 'instagram-feed'),
+					'class' => 'button button-secondary',
+					'id' => 'custom_feed_templates_learn',
+					'url' => 'https://smashballoon.com/doc/instagram-css-layout-changes/?utm_source=instagram-pro&utm_medium=dashboard-notice&utm_campaign=63changes&utm_content=LearnMore',
+					'target' => 'blank',
+					'tag' => 'a',
+				),
+			),
+			'buttons_wrap_start' => '<p class="sbi-error-directions">',
+			'buttons_wrap_end' => '</p>',
+			'priority' => 1,
+			'page' => array(
+				'sbi-feed-builder',
+				'sbi-settings',
+				'sbi-oembeds-manager',
+				'sbi-extensions-manager',
+				'sbi-about-us',
+				'sbi-support',
+			),
+			'icon' => array(
+				'src' => SBI_PLUGIN_URL . 'admin/assets/img/balloon.svg',
+				'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
+			),
+			'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-body">{title}{message}</div>{dismiss}{buttons}</div>',
+		);
 
-        $sbi_notices->add_notice('custom_feed_templates', 'information', $error_args);
+		$sbi_notices->add_notice('custom_feed_templates', 'information', $error_args);
 
-        $sbi_statuses['custom_templates_notice'] = true;
-        update_option('sbi_statuses', $sbi_statuses);
-    }
+		$sbi_statuses['custom_templates_notice'] = true;
+		update_option('sbi_statuses', $sbi_statuses);
+	}
 
-    /**
-     * Dismiss custom feeds template admin notices
-     * 
-     * @since 6.3
-     */
-    public function sbi_dismiss_notice($notice_id)
-    {
-        if ('custom_feed_templates' === $notice_id) {
-            update_option('sbi_custom_templates_notice_dismissed', true);
-        }
-    }
+	/**
+	 * Display notice for personal API deprecation
+	 *
+	 * @since 6.3
+	 */
+	public function sbi_personal_api_deprecation_notice()
+	{
+		global $sbi_notices;
+		$personal_accounts = SBI_Db::source_query(array('type' => 'basic'));
+		if (empty($personal_accounts)) {
+			$personal_api_notice = $sbi_notices->get_notice('personal_api_deprecation');
+			if (!empty($personal_api_notice)) {
+				$sbi_notices->remove_notice('personal_api_deprecation');
+			}
+			return;
+		}
 
-    /**
-     * Display notice for personal API deprecation
-     *
-     * @since 6.3
-     */
-    public function sbi_personal_api_deprecation_notice()
-    {
-        global $sbi_notices;
-        $personal_accounts = \InstagramFeed\Builder\SBI_Db::source_query(array('type' => 'basic'));
-        if (empty($personal_accounts)) {
-            $personal_api_notice = $sbi_notices->get_notice('personal_api_deprecation');
-            if (!empty($personal_api_notice)) {
-                $sbi_notices->remove_notice('personal_api_deprecation');
-            }
-            return;
-        }
+		$title = __('Deprecation notice', 'instagram-feed');
+		$message = '<p>' . __('Due to changes by Instagram, all “Personal” accounts will stop working as of December 2024. To continue to use the plugin, reconnect all personal accounts as a “Business” account.', 'instagram-feed') . '</p>';
 
-        $title   = __('Deprecation notice', 'instagram-feed');
-        $message = '<p>' . __('Due to changes by Instagram, all “Personal” accounts will stop working as of December 2024. To continue to use the plugin, reconnect all personal accounts as a “Business” account.', 'instagram-feed') . '</p>';
+		$notice_args = array(
+			'class' => 'sbi-admin-notices',
+			'title' => array(
+				'text' => $title,
+				'class' => 'sb-notice-title',
+				'tag' => 'h4',
+			),
+			'message' => $message,
+			'buttons' => array(
+				array(
+					'text' => __('Update Sources', 'instagram-feed'),
+					'url' => admin_url('admin.php?page=sbi-settings'),
+					'class' => 'sbi-notice-btn',
+					'tag' => 'a',
+					'condition' => array(
+						'key' => 'screen',
+						'compare' => '!==',
+						'value' => 'sbi-settings',
+					),
+				),
+				array(
+					'text' => __('Learn More', 'instagram-feed'),
+					'class' => 'sbi-notice-btn',
+					'url' => 'https://smashballoon.com/doc/instagram-business-basic/?instagram&utm_campaign=instagram-free&utm_source=notice&utm_medium=basicdisplaydeprecation&utm_content=learnmore',
+					'target' => 'blank',
+					'tag' => 'a',
+				),
+			),
+			'buttons_wrap_start' => '<div class="sb-notice-buttons">',
+			'buttons_wrap_end' => '</div>',
+			'priority' => 1,
+			'page' => array(
+				'sbi-feed-builder',
+				'sbi-settings',
+				'sbi-oembeds-manager',
+				'sbi-extensions-manager',
+				'sbi-about-us',
+				'sbi-support',
+			),
+			'icon' => array(
+				'src' => SBI_PLUGIN_URL . 'admin/assets/img/sbi-exclamation.svg',
+				'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
+			),
+			'styles' => array(
+				'display' => 'flex',
+				'justify-content' => 'space-between',
+				'gap' => '2rem',
+			),
+			'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-wrap" {styles}><div class="sbi-notice-body">{title}{message}</div>{buttons}</div></div>',
+		);
 
-        $notice_args = array(
-            'class'       => 'sbi-admin-notices',
-            'title'       => array(
-                'text' => $title,
-                'class' => 'sb-notice-title',
-                'tag' => 'h4',
-            ),
-            'message'     => $message,
-            'buttons'     => array(
-                array(
-                    'text'      => __('Update Sources', 'instagram-feed'),
-                    'url'       => admin_url('admin.php?page=sbi-settings'),
-                    'class'     => 'sbi-notice-btn',
-                    'tag'       => 'a',
-                    'condition' => array(
-                        'key'     => 'screen',
-                        'compare' => '!==',
-                        'value'   => 'sbi-settings',
-                    ),
-                ),
-                array(
-                    'text' => __('Learn More', 'instagram-feed'),
-                    'class' => 'sbi-notice-btn',
-                    'url' => 'https://smashballoon.com/doc/instagram-business-basic/?instagram&utm_campaign=instagram-free&utm_source=notice&utm_medium=basicdisplaydeprecation&utm_content=learnmore',
-                    'target' => 'blank',
-                    'tag' => 'a',
-                ),
-            ),
-            'buttons_wrap_start' => '<div class="sb-notice-buttons">',
-            'buttons_wrap_end'   => '</div>',
-            'priority'    => 1,
-            'page'        => array(
-                'sbi-feed-builder',
-                'sbi-settings',
-                'sbi-oembeds-manager',
-                'sbi-extensions-manager',
-                'sbi-about-us',
-                'sbi-support',
-            ),
-            'icon'        => array(
-                'src'  => SBI_PLUGIN_URL . 'admin/assets/img/sbi-exclamation.svg',
-                'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
-            ),
-            'styles'      => array(
-                'display' => 'flex',
-                'justify-content' => 'space-between',
-                'gap' => '2rem',
-            ),
-            'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-wrap" {styles}><div class="sbi-notice-body">{title}{message}</div>{buttons}</div></div>',
-        );
+		$sbi_notices->add_notice('personal_api_deprecation', 'information', $notice_args);
+	}
 
-        $sbi_notices->add_notice('personal_api_deprecation', 'information', $notice_args);
-    }
+	/**
+	 * Dismiss custom feeds template admin notices
+	 *
+	 * @since 6.3
+	 */
+	public function sbi_dismiss_notice($notice_id)
+	{
+		if ('custom_feed_templates' === $notice_id) {
+			update_option('sbi_custom_templates_notice_dismissed', true);
+		}
+	}
 
-    /**
-     * Display upsell notice
-     * 
-     * @since 6.7.0
-     */
-    public function clicksocial_upsell_notice()
-    {
-        if (! current_user_can('manage_options') || ! current_user_can('manage_instagram_feed_options')) {
-            return;
-        }
+	/**
+	 * Display upsell notice
+	 *
+	 * @since 6.7.0
+	 */
+	public function clicksocial_upsell_notice()
+	{
+		if (! current_user_can('manage_options') || ! current_user_can('manage_instagram_feed_options')) {
+			return;
+		}
 
-        $screen = get_current_screen();
-        if (! in_array($screen->id, array('edit-page', 'edit-post'), true)) {
-            return;
-        }
+		$screen = get_current_screen();
+		if (!in_array($screen->id, array('edit-page', 'edit-post'), true)) {
+			return;
+		}
 
-        if (is_plugin_active('click-social/click-social.php') || true == get_option('sbi_clicksocial_upsell_dismissed')) {
-            return;
-        }
+		if (is_plugin_active('click-social/click-social.php') || true == get_option('sbi_clicksocial_upsell_dismissed')) {
+			return;
+		}
 
-        $sb_plugins_info = Util::get_sb_active_plugins_info();
-        $clicksocial_installed = $sb_plugins_info['is_clicksocial_installed'];
+		$sb_plugins_info = Util::get_sb_active_plugins_info();
+		$clicksocial_installed = $sb_plugins_info['is_clicksocial_installed'];
 
-        $plugin_data = array(
-            'step' => $clicksocial_installed ? 'activate' : 'install',
-            'action' => $clicksocial_installed ? 'sbi_activate_addon' : 'sbi_install_addon',
-            'nonce' => wp_create_nonce('sbi-admin'),
-            'plugin' => 'click-social/click-social.php',
-            'download_plugin' => 'https://downloads.wordpress.org/plugin/click-social.zip',
-            'redirect' => admin_url('admin.php?page=click-social'),
-        );
+		$plugin_data = array(
+			'step' => $clicksocial_installed ? 'activate' : 'install',
+			'action' => $clicksocial_installed ? 'sbi_activate_addon' : 'sbi_install_addon',
+			'nonce' => wp_create_nonce('sbi-admin'),
+			'plugin' => 'click-social/click-social.php',
+			'download_plugin' => 'https://downloads.wordpress.org/plugin/click-social.zip',
+			'redirect' => admin_url('admin.php?page=click-social'),
+		);
 
-        ?>
-        <div class="notice notice-info is-dismissible" id="sbi-clicksocial-notice">
-            <p>
-                <strong><?php esc_html_e('Schedule social media posts to promote your blog with ClickSocial', 'instagram-feed'); ?></strong><br>
-                <?php esc_html_e('ClickSocial allows you to auto-schedule posts on Instagram, Facebook, Twitter and more with just a click.', 'instagram-feed'); ?>
-            </p>
-            <p class="sbi-notice-btns">
-                <button class="button button-primary sbi-install-plugin-btn" id='sbi_install_op_btn' data-plugin-atts="<?php echo esc_attr(sbi_json_encode($plugin_data)); ?>">
-                    <?php echo esc_html__($clicksocial_installed ? 'Activate ClickSocial' : 'Install ClickSocial', 'instagram-feed'); ?>
-                </button>
-                <a href="https://clicksocial.com/?utm_campaign=instagram-free&utm_source=all-posts&utm_medium=revival-campaign&utm_content=tryfree" target="_blank" class="button button-secondary">
-                    <?php esc_html_e('Learn More', 'instagram-feed'); ?>
-                </a>
-            </p>
-        </div>
-        <?php
-    }
+		?>
+		<div class="notice notice-info is-dismissible" id="sbi-clicksocial-notice">
+			<p>
+				<strong><?php esc_html_e('Schedule social media posts to promote your blog with ClickSocial', 'instagram-feed'); ?></strong><br>
+				<?php esc_html_e('ClickSocial allows you to auto-schedule posts on Instagram, Facebook, Twitter and more with just a click.', 'instagram-feed'); ?>
+			</p>
+			<p class="sbi-notice-btns">
+				<button class="button button-primary sbi-install-plugin-btn" id='sbi_install_op_btn'
+						data-plugin-atts="<?php echo esc_attr(sbi_json_encode($plugin_data)); ?>">
+					<?php echo esc_html__($clicksocial_installed ? 'Activate ClickSocial' : 'Install ClickSocial', 'instagram-feed'); ?>
+				</button>
+				<a href="https://clicksocial.com/?utm_campaign=instagram-free&utm_source=all-posts&utm_medium=revival-campaign&utm_content=tryfree"
+				   target="_blank" class="button button-secondary">
+					<?php esc_html_e('Learn More', 'instagram-feed'); ?>
+				</a>
+			</p>
+		</div>
+		<?php
+	}
 
-    /**
-     * Dismiss ClickSocial upsell notice
-     * 
-     * @since 6.7.0
-     */
-    public function sbi_dismiss_clicksocial_upsell()
-    {
-        check_ajax_referer('sbi_nonce', 'sbi_nonce');
+	/**
+	 * Dismiss ClickSocial upsell notice
+	 *
+	 * @since 6.7.0
+	 */
+	public function sbi_dismiss_clicksocial_upsell()
+	{
+		check_ajax_referer('sbi_nonce', 'sbi_nonce');
 
-        if (! current_user_can('manage_options') || ! current_user_can('manage_instagram_feed_options')) {
-            wp_send_json_error();
-        }
+		if (!current_user_can('manage_options') || !current_user_can('manage_instagram_feed_options')) {
+			wp_send_json_error();
+		}
 
-        update_option('sbi_clicksocial_upsell_dismissed', true);
-        wp_send_json_success();
-    }
+		update_option('sbi_clicksocial_upsell_dismissed', true);
+		wp_send_json_success();
+	}
 }

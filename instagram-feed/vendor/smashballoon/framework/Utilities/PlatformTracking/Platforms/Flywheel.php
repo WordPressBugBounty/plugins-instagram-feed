@@ -2,6 +2,7 @@
 
 namespace InstagramFeed\Vendor\Smashballoon\Framework\Utilities\PlatformTracking\Platforms;
 
+/** @internal */
 class Flywheel implements PlatformInterface
 {
     /**
@@ -9,14 +10,14 @@ class Flywheel implements PlatformInterface
      */
     public function register()
     {
-        add_filter('sb_hosting_platform', [$this, 'filter_sb_hosting_platform']);
+        \add_filter('sb_hosting_platform', [$this, 'filter_sb_hosting_platform']);
     }
     /**
      * @inheritDoc
      */
     public function filter_sb_hosting_platform($platform)
     {
-        if (defined('FLYWHEEL_CONFIG_DIR')) {
+        if (\defined('FLYWHEEL_CONFIG_DIR')) {
             $platform = 'flywheel';
         }
         return $platform;

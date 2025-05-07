@@ -1,22 +1,13 @@
 <?php
 
-/**
- * Elementor Instagram Feed Widget.
- *
- * Elementor widget that displays Instagram feed.
- *
- * @since 6.2.9
- */
-
 namespace InstagramFeed\Integrations\Elementor;
 
 use Elementor\Widget_Base;
-use Elementor\Controls_Manager;
 use InstagramFeed\Builder\SBI_Db;
 use InstagramFeed\Integrations\SBI_Integration;
 
 // Exit if accessed directly.
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -32,10 +23,9 @@ class SBI_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve Instagram Feed widget name.
 	 *
+	 * @return string Widget name.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return string Widget name.
 	 */
 	public function get_name()
 	{
@@ -47,10 +37,9 @@ class SBI_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve Instagram Feed widget title.
 	 *
+	 * @return string Widget title.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return string Widget title.
 	 */
 	public function get_title()
 	{
@@ -62,10 +51,9 @@ class SBI_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve Instagram Feed widget icon.
 	 *
+	 * @return string Widget icon.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return string Widget icon.
 	 */
 	public function get_icon()
 	{
@@ -77,10 +65,9 @@ class SBI_Elementor_Widget extends Widget_Base
 	 *
 	 * Retrieve the list of categories the Instagram Feed widget belongs to.
 	 *
+	 * @return array Widget categories.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return array Widget categories.
 	 */
 	public function get_categories()
 	{
@@ -92,10 +79,9 @@ class SBI_Elementor_Widget extends Widget_Base
 	 *
 	 * Load the widget scripts.
 	 *
+	 * @return array Widget scripts dependencies.
 	 * @since 6.2.9
 	 * @access public
-	 *
-	 * @return array Widget scripts dependencies.
 	 */
 	public function get_script_depends()
 	{
@@ -126,7 +112,7 @@ class SBI_Elementor_Widget extends Widget_Base
 				'type' => 'sbi_feed_control',
 				'label_block' => true,
 				'dynamic' => ['active' => true],
-				'options' =>  SBI_Db::elementor_feeds_query($default = true),
+				'options' => SBI_Db::elementor_feeds_query($default = true),
 				'default' => 0,
 				'description' => esc_html__('Select a feed to display. If you don\'t have any feeds yet then you can create one in the Instagram Feed settings page.', 'instagram-feed'),
 			]

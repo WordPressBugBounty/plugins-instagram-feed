@@ -94,7 +94,7 @@ var settings_data = {
         sourcePopupScreen: 'redirect_1',
         sourcePopupType: 'creation',
         instanceSourceActive: null,
-        clickSocialIntegrationModal : false,
+        clickSocialIntegrationModal: false,
     },
     //Add New Source
     newSourceData: sbi_settings.newSourceData ? sbi_settings.newSourceData : null,
@@ -260,7 +260,7 @@ var sbiSettings = new Vue({
                             }
                         }
                     }
-                    return;
+
                 });
         },
         deactivateLicense: function () {
@@ -281,7 +281,7 @@ var sbiSettings = new Vue({
                         this.loading = false;
                         this.pressedBtnName = null;
                     }
-                    return;
+
                 });
         },
 
@@ -313,7 +313,7 @@ var sbiSettings = new Vue({
                     if (data.success === true) {
                         window.location.href = data.data.url
                     }
-                    return;
+
                 });
         },
 
@@ -387,7 +387,7 @@ var sbiSettings = new Vue({
                             this.notificationElement.shown = "hidden";
                         }.bind(this), 3000);
                     }
-                    return;
+
                 });
         },
 
@@ -433,7 +433,7 @@ var sbiSettings = new Vue({
                             this.notificationElement.shown = "hidden";
                         }.bind(this), 3000);
                     }
-                    return;
+
                 });
         },
         testConnection: function () {
@@ -459,7 +459,7 @@ var sbiSettings = new Vue({
                             this.testConnectionStatus = null;
                         }.bind(this), 3000);
                     }
-                    return;
+
                 });
         },
         recheckLicense: function (licenseKey, itemName, optionName = null) {
@@ -498,7 +498,7 @@ var sbiSettings = new Vue({
                             this.recheckLicenseStatus = null;
                         }.bind(this), 3000);
                     }
-                    return;
+
                 });
         },
         recheckLicenseIcon: function () {
@@ -891,7 +891,7 @@ var sbiSettings = new Vue({
          * Delete Source Ajax
          *
          * @since 4.0
-        */
+         */
         deleteSource: function (sourceToDelete) {
             var self = this;
             let data = new FormData();
@@ -928,7 +928,7 @@ var sbiSettings = new Vue({
          * Activate View
          *
          * @since 4.0
-        */
+         */
         activateView: function (viewName, sourcePopupType = 'creation', ajaxAction = false) {
             var self = this;
             self.viewsActive[viewName] = (self.viewsActive[viewName] == false) ? true : false;
@@ -983,7 +983,10 @@ var sbiSettings = new Vue({
          * @return boolean
          */
         hasOwnNestedProperty: function (obj, propertyPath) {
-            if (!propertyPath) { return false; } var properties = propertyPath.split('.');
+            if (!propertyPath) {
+                return false;
+            }
+            var properties = propertyPath.split('.');
             for (var i = 0; i < properties.length; i++) {
                 var prop = properties[i];
                 if (!obj || !obj.hasOwnProperty(prop)) {
@@ -1032,7 +1035,7 @@ var sbiSettings = new Vue({
          * Open Dialog Box
          *
          * @since 4.0
-        */
+         */
         openDialogBox: function (type, args = []) {
             var self = this,
                 heading = self.dialogBoxPopupScreen[type].heading,
@@ -1174,7 +1177,7 @@ var sbiSettings = new Vue({
          * Cancel Personal Account
          *
          * @since 6.0.8
-        */
+         */
         cancelPersonalAccountUpdate: function () {
         },
 
