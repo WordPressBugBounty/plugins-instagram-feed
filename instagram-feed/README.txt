@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 6.8
-Stable tag: 6.9.0
+Stable tag: 6.9.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,9 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+= 6.9.1 =
+* Fix - Additional code hardening.
+
 = 6.9.0 =
 * Important - Added accessibility improvements related to the front-end feed display. This may affect custom code applied to the feed. Please check and reach out to support if you need help.
 * Important - To comply with Meta's security standards, we have raised the minimum PHP version to 7.4.

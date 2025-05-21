@@ -1,6 +1,7 @@
 <?php
 
 use InstagramFeed\Admin\SBI_Callout;
+use InstagramFeed\Builder\SBI_Feed_Builder;
 
 /**
  * Includes functions related to actions while in the admin area.
@@ -190,6 +191,7 @@ function sb_instagram_admin_scripts()
 		'plugin_install_activate_confirm' => esc_html__('needs to be installed and activated to import its forms. Would you like us to install and activate it for you?', 'instagram-feed'),
 		'plugin_activate_btn' => esc_html__('Activate', 'instagram-feed'),
 		'oembed_connectionURL' => sbi_get_oembed_connection_url(),
+		'smashPlugins'	=> SBI_Feed_Builder::get_smashballoon_plugins_info()
 	);
 	$strings = apply_filters('sbi_admin_strings', $strings);
 	wp_localize_script(
