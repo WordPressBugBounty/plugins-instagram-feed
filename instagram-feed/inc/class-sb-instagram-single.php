@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 /**
  * Class SB_Instagram_Single
  *
- * Uses oEmbeds to get data about single Instagram posts
+ * Uses Media API to get data about single Instagram posts
  *
  * @since 2.5.3/5.8.3
  *
@@ -24,7 +24,7 @@ class SB_Instagram_Single // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	 */
 	protected $encryption;
 	/**
-	 * The permalink for the post used to get oEmbed data.
+	 * The permalink for the post used to get Media API data.
 	 *
 	 * @var string
 	 */
@@ -42,18 +42,40 @@ class SB_Instagram_Single // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	 */
 	private $post;
 	/**
-	 * Error data from retrieving the oEmbed.
+	 * Error data from retrieving the Media API.
 	 *
 	 * @var array
 	 */
 	private $error;
 
 	/**
+	 * Media ID for direct Graph API access.
+	 *
+	 * @var string
+	 */
+	private $media_id;
+
+	/**
+	 * Post data from original source (contains username for account matching).
+	 *
+	 * @var array
+	 */
+	private $post_data;
+
+	/**
+	 * Cached connected accounts mapped by username for efficient lookup.
+	 *
+	 * @var array|null
+	 */
+	private static $connected_accounts_cache = null;
+
+	/**
 	 * SB_Instagram_Single constructor.
 	 *
 	 * @param string $permalink_or_permalink_id Either a link to the post or the ID embedded in it.
+	 * @param array  $post_data Optional. Original post data containing media_id and username.
 	 */
-	public function __construct($permalink_or_permalink_id)
+	public function __construct($permalink_or_permalink_id, $post_data = array())
 	{
 		if (strpos($permalink_or_permalink_id, 'http') !== false) {
 			$this->permalink = $permalink_or_permalink_id;
@@ -66,6 +88,10 @@ class SB_Instagram_Single // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 			$this->permalink = 'https://www.instagram.com/p/' . $this->permalink_id;
 		}
 		$this->error = false;
+		$this->post_data = $post_data;
+
+		// Extract media_id from post_data if available
+		$this->media_id = !empty($post_data['id']) ? $post_data['id'] : '';
 
 		$this->encryption = new SB_Instagram_Data_Encryption();
 	}
@@ -80,7 +106,7 @@ class SB_Instagram_Single // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	{
 		$this->post = $this->maybe_saved_data();
 
-		if ((empty($this->post) || !$this->was_recently_updated()) && !$this->should_delay_oembed_request()) {
+		if ((empty($this->post) || !$this->was_recently_updated()) && !$this->should_delay_fetch_request()) {
 			$data = $this->fetch();
 			if (!empty($data)) {
 				$data = $this->parse_and_restructure($data);
@@ -88,7 +114,7 @@ class SB_Instagram_Single // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 				$this->update_last_update_timestamp();
 				$this->update_single_cache();
 			} elseif ($data === false) {
-				$this->add_oembed_request_delay();
+				$this->add_fetch_request_delay();
 			}
 		}
 	}
@@ -157,107 +183,200 @@ class SB_Instagram_Single // phpcs:ignore PSR1.Classes.ClassDeclaration.MissingN
 	}
 
 	/**
-	 * If there was a problem with the last oEmbed request, the plugin
-	 * waits 5 minutes to try again to prevent burning out the access token
-	 * or causing Instagram to throttle HTTP requests from the server
+	 * If there was a problem with the last fetch request, the plugin
+	 * waits 5 minutes to try again to prevent excessive API calls
+	 * and Instagram throttling
 	 *
 	 * @return bool
 	 *
 	 * @since 2.5.3/5.8.3
 	 */
-	public function should_delay_oembed_request()
+	public function should_delay_fetch_request()
 	{
-		return get_transient('sbi_delay_oembeds_' . $this->permalink_id) !== false;
+		return get_transient('sbi_delay_fetch_' . $this->permalink_id) !== false;
 	}
 
 	/**
-	 * Makes an HTTP request for fresh data from the oembed
-	 * endpoint. Returns false if no new data or there isn't
-	 * a business access token found.
+	 * Makes an HTTP request for fresh data from Media API.
+	 *
+	 * Media API - For owned posts (user posts with media_id and username)
 	 *
 	 * @return bool|mixed|null
 	 *
 	 * @since 2.5.3/5.8.3
+	 * @since 6.10.0 Added Media API support for future-proofing.
 	 */
 	public function fetch()
 	{
-		// need a connected business account for this to work.
-		$access_token = SB_Instagram_Oembed::last_access_token();
+		// Try Media API if media_id is available
+		if (!empty($this->media_id)) {
+			$data = $this->fetch_from_media_api();
+			return $data;
+		}
 
-		if (empty($access_token)) {
-			$this->error = 'No access token';
+		return false;
+	}
+
+	/**
+	 * Fetches data from Instagram Media API using media ID.
+	 *
+	 * Uses SB_Instagram_API_Connect class to handle proper authentication,
+	 * token validation, and host selection (graph.instagram.com vs graph.facebook.com).
+	 *
+	 * Note: Media API only works for posts owned by the connected account.
+	 *
+	 * @return bool|array False on failure, array of data on success
+	 *
+	 * @since 6.10.0
+	 */
+	private function fetch_from_media_api()
+	{
+		// Get connected account for this post
+		$connected_account = $this->get_connected_account_for_post();
+
+		if (empty($connected_account)) {
 			return false;
 		}
 
-		$url = SB_Instagram_Oembed::oembed_url();
+		// Verify this post belongs to the connected account
+		if (!empty($this->post_data['username']) && !empty($connected_account['username'])) {
+			if ($this->post_data['username'] !== $connected_account['username']) {
+				return false;
+			}
+		}
 
-		$fetch_url = add_query_arg(
-			array(
-				'url' => $this->permalink,
-				'access_token' => $access_token,
-			),
-			$url
+		// Use API Connect class to build URL with proper authentication
+		$params = array(
+			'media_id' => $this->media_id,
+			'fields' => 'thumbnail_url,media_url,media_type'
 		);
 
-		$result = wp_safe_remote_get(esc_url_raw($fetch_url));
+		$api_connect = new SB_Instagram_API_Connect($connected_account, 'media', $params);
 
-		$data = false;
-		if (!is_wp_error($result)) {
-			$data = isset($result['body']) ? json_decode($result['body'], true) : false;
+		// Check for encryption/token errors before connecting
+		if ($api_connect->has_encryption_error()) {
+			return false;
+		}
 
-			if ($data && isset($data['error'])) {
-				$this->add_oembed_request_delay();
-				$error_beginning = __('API error %s:', 'instagram-feed');
-				$this->error = sprintf($error_beginning, $data['error']['code']) . ' ' . $data['error']['message'];
-				$data = false;
-			}
-		} else {
-			$error = '';
-			foreach ($result->errors as $key => $item) {
-				$error .= $key . ' - ' . $item[0] . ' ';
-			}
-			$this->error = $error;
+		// Make the API request
+		$api_connect->connect();
+
+		// Handle errors
+		if ($api_connect->is_wp_error()) {
+			return false;
+		}
+
+		$data = $api_connect->get_data();
+
+		if ($api_connect->is_instagram_error($data)) {
+			$this->add_fetch_request_delay();
+			// Fail silently
+			return false;
 		}
 
 		return $data;
 	}
 
 	/**
-	 * If there's an error, API requests are delayed 5 minutes
-	 * for the specific permalink/post
+	 * Gets the connected account for the current post.
+	 *
+	 * Uses username from post_data to match with connected accounts.
+	 * Implements static caching to avoid repeated database queries.
+	 *
+	 * @return array|bool Connected account array or false if not found
+	 *
+	 * @since 6.10.0
+	 */
+	private function get_connected_account_for_post()
+	{
+		// Load and cache all connected accounts once per request
+		if (self::$connected_accounts_cache === null) {
+			self::$connected_accounts_cache = array();
+
+			if (class_exists('SB_Instagram_Connected_Account')) {
+				$all_accounts = SB_Instagram_Connected_Account::get_all_connected_accounts();
+
+				// Build username => account map for O(1) lookup
+				foreach ($all_accounts as $account) {
+					if (!empty($account['username'])) {
+						self::$connected_accounts_cache[$account['username']] = $account;
+					}
+				}
+			}
+		}
+
+		// Try to get username from post_data
+		$username = '';
+		if (!empty($this->post_data['username'])) {
+			$username = $this->post_data['username'];
+		}
+
+		// Direct lookup by username (O(1))
+		if (!empty($username) && isset(self::$connected_accounts_cache[$username])) {
+			return self::$connected_accounts_cache[$username];
+		}
+
+		// Fallback: return first available account
+		if (!empty(self::$connected_accounts_cache)) {
+			return reset(self::$connected_accounts_cache);
+		}
+
+		return false;
+	}
+
+	/**
+	 * If there's an error, fetch requests are delayed 5 minutes
+	 * for the specific permalink/post to prevent excessive requests
 	 *
 	 * @since 2.5.3/5.8.3
 	 */
-	public function add_oembed_request_delay()
+	public function add_fetch_request_delay()
 	{
-		set_transient('sbi_delay_oembeds_' . $this->permalink_id, true, 300);
+		set_transient('sbi_delay_fetch_' . $this->permalink_id, true, 300);
 	}
 
 	/**
 	 * Data is restructured to look like regular API data
 	 * for ease of use with other plugin features
 	 *
-	 * @param array $data Raw data from the oEmbed endpoint.
+	 * @param array $data Raw data from the Media API.
 	 *
 	 * @return array
 	 *
 	 * @since 2.5.3/5.8.3
+	 * @since 6.10.0 Added Media API support.
 	 */
 	private function parse_and_restructure($data)
 	{
-		// TODO: parse all of the available data for this post, currently just thumbnail.
-
 		$return = array(
 			'thumbnail_url' => '',
+			'media_url' => '',
 			'id' => $this->permalink_id,
-			'media_type' => 'OEMBED',
+			'media_type' => isset($data['media_type']) ? $data['media_type'] : 'IMAGE',
 		);
 
 		if (!empty($data['thumbnail_url'])) {
 			$return['thumbnail_url'] = $data['thumbnail_url'];
 		}
 
-		apply_filters('sbi_single_parse_and_restructure', $return);
+		if (!empty($data['media_url'])) {
+			$return['media_url'] = $data['media_url'];
+		}
+
+		/**
+		 * Filter the restructured post data from Media API
+		 *
+		 * Allows developers to modify or add alternative thumbnail sources
+		 * when Instagram's Media API doesn't return thumbnail_url
+		 *
+		 * @param array  $return       The restructured post data
+		 * @param array  $data         Raw API response data
+		 * @param string $permalink    Post permalink
+		 * @param string $permalink_id Post shortcode/ID
+		 *
+		 * @since 6.10.0
+		 */
+		$return = apply_filters('sbi_single_parse_and_restructure', $return, $data, $this->permalink, $this->permalink_id);
 
 		return $return;
 	}

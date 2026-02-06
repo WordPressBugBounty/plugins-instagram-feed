@@ -45,8 +45,6 @@ class SBI_Admin_Notices
 		add_action('wp_ajax_sbi_dismiss_upgrade_notice', array($this, 'dismiss_upgrade_notice'));
 		add_action('admin_init', array($this, 'sbi_admin_notices'));
 		add_action('sb_notice_custom_feed_templates_dismissed', array($this, 'sbi_dismiss_notice'));
-		add_action('admin_notices', array($this, 'clicksocial_upsell_notice'));
-		add_action('wp_ajax_sbi_dismiss_clicksocial_upsell', array($this, 'sbi_dismiss_clicksocial_upsell'));
 	}
 
 	/**
@@ -515,74 +513,5 @@ class SBI_Admin_Notices
 		if ('custom_feed_templates' === $notice_id) {
 			update_option('sbi_custom_templates_notice_dismissed', true);
 		}
-	}
-
-	/**
-	 * Display upsell notice
-	 *
-	 * @since 6.7.0
-	 */
-	public function clicksocial_upsell_notice()
-	{
-		if (! current_user_can('manage_options') || ! current_user_can('manage_instagram_feed_options')) {
-			return;
-		}
-
-		$screen = get_current_screen();
-		if (!in_array($screen->id, array('edit-page', 'edit-post'), true)) {
-			return;
-		}
-
-		if (is_plugin_active('click-social/click-social.php') || true == get_option('sbi_clicksocial_upsell_dismissed')) {
-			return;
-		}
-
-		$sb_plugins_info = Util::get_sb_active_plugins_info();
-		$clicksocial_installed = $sb_plugins_info['is_clicksocial_installed'];
-
-		$plugin_data = array(
-			'step' => $clicksocial_installed ? 'activate' : 'install',
-			'action' => $clicksocial_installed ? 'sbi_activate_addon' : 'sbi_install_addon',
-			'nonce' => wp_create_nonce('sbi-admin'),
-			'plugin' => 'click-social/click-social.php',
-			'download_plugin' => 'https://downloads.wordpress.org/plugin/click-social.zip',
-			'redirect' => admin_url('admin.php?page=click-social'),
-		);
-
-		?>
-		<div class="notice notice-info is-dismissible" id="sbi-clicksocial-notice">
-			<p>
-				<strong><?php esc_html_e('Schedule social media posts to promote your blog with ClickSocial', 'instagram-feed'); ?></strong><br>
-				<?php esc_html_e('ClickSocial allows you to auto-schedule posts on Instagram, Facebook, Twitter and more with just a click.', 'instagram-feed'); ?>
-			</p>
-			<p class="sbi-notice-btns">
-				<button class="button button-primary sbi-install-plugin-btn" id='sbi_install_op_btn'
-						data-plugin-atts="<?php echo esc_attr(sbi_json_encode($plugin_data)); ?>">
-					<?php echo esc_html__($clicksocial_installed ? 'Activate ClickSocial' : 'Install ClickSocial', 'instagram-feed'); ?>
-				</button>
-				<a href="https://clicksocial.com/?utm_campaign=instagram-free&utm_source=all-posts&utm_medium=revival-campaign&utm_content=tryfree"
-				   target="_blank" class="button button-secondary">
-					<?php esc_html_e('Learn More', 'instagram-feed'); ?>
-				</a>
-			</p>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Dismiss ClickSocial upsell notice
-	 *
-	 * @since 6.7.0
-	 */
-	public function sbi_dismiss_clicksocial_upsell()
-	{
-		check_ajax_referer('sbi_nonce', 'sbi_nonce');
-
-		if (!current_user_can('manage_options') || !current_user_can('manage_instagram_feed_options')) {
-			wp_send_json_error();
-		}
-
-		update_option('sbi_clicksocial_upsell_dismissed', true);
-		wp_send_json_success();
 	}
 }

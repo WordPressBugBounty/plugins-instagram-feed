@@ -1,23 +1,4 @@
 <div v-if="selected === 'app-1'">
-	<div class="sb-tab-box sbi-uo-install-notice clearfix"
-		 v-if="!clickSocialActive && !clickSocialScreen.shouldHideClickSocialNotice && clickSocialScreen.isClickSocialSupported">
-		<div class="sbi-tab-notice">
-			<div class="sbi-notice-left">
-				<span class="icon" v-html="generalTab.clickSocialInstallNotice.logo"></span>
-				<div class="sbi-notice-text">
-					<p>{{generalTab.clickSocialInstallNotice.notice}}</p>
-				</div>
-			</div>
-			<div class="sbi-notice-right">
-				<button class="sbi-btn sbi-notice-learn-more"
-						@click.prevent.default="activateView('clickSocialIntegrationModal')">
-					{{generalTab.clickSocialInstallNotice.learnMore}}
-				</button>
-				<button class="sbi-btn sbi-uo-notice-dismiss" v-html="generalTab.clickSocialInstallNotice.closeIcon"
-						@click.prevent.default="dismissClickSocialNotice()"></button>
-			</div>
-		</div>
-	</div>
 	<div class="sb-tab-box sb-license-box clearfix">
 		<div class="tab-label">
 			<h3>{{generalTab.licenseBox.title}}</h3>

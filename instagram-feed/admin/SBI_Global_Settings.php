@@ -864,7 +864,6 @@ class SBI_Global_Settings
 		$sbi_status = 'inactive';
 
 		global $wp_version;
-		$is_clicksocial_supported = (version_compare($wp_version, '6.0') >= 0);
 
 		$model = $this->get_settings_data();
 		$exported_feeds = SBI_Db::feeds_query();
@@ -898,7 +897,6 @@ class SBI_Global_Settings
 
 		$current_user_id = get_current_user_id();
 		$get_sb_active_plugins_info = Util::get_sb_active_plugins_info();
-		$hide_clicksocial_notice = get_user_meta($current_user_id, 'sbi_hide_clicksocial_notice', true);
 
 		wp_enqueue_style(
 			'settings-style',
@@ -948,7 +946,6 @@ class SBI_Global_Settings
 			'supportPageUrl' => admin_url('admin.php?page=sbi-support'),
 			'builderUrl' => admin_url('admin.php?page=sbi-feed-builder'),
 			'links' => $this->get_links_with_utm(),
-			'clickSocialActive' => is_plugin_active('click-social/click-social.php'),
 			'pluginItemName' => SBI_PLUGIN_NAME,
 			'licenseType' => 'free',
 			'licenseKey' => $license_key,
@@ -968,12 +965,6 @@ class SBI_Global_Settings
 			'genericText' => SBI_Feed_Builder::get_generic_text(),
 			'legacyCSSSettings' => Util::sbi_show_legacy_css_settings(),
 			'generalTab' => array(
-				'clickSocialInstallNotice' => array(
-					'notice' => __('Post to Instagram right from WordPress with ClickSocial by Smash Balloon', 'instagram-feed'),
-					'learnMore' => __('Learn More', 'instagram feed'),
-					'logo' => '<svg width="23" height="25" viewBox="0 0 23 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.86377 6.92969L5.07657 8.29316C2.61293 12.5603 4.07496 18.0167 8.34211 20.4803V20.4803C12.6092 22.9439 18.0656 21.4819 20.5293 17.2148L21.3165 15.8513" stroke="#663D00" stroke-width="3.1488"/><line x1="14.5656" y1="1.10629" x2="8.53041" y2="11.5596" stroke="#663D00" stroke-width="3.1488"/><path d="M16.1455 6.8667L12.2095 13.6841" stroke="#663D00" stroke-width="3.1488"/><path d="M18.8931 10.8765L16.0067 15.8759" stroke="#663D00" stroke-width="3.1488"/></svg>',
-					'closeIcon' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="#663D00"/></svg>'
-				),
 				'licenseBox' => array(
 					'title' => __('License Key', 'instagram-feed'),
 					'description' => __('Your license key provides access to updates and support', 'instagram-feed'),
@@ -1181,30 +1172,6 @@ class SBI_Global_Settings
 			),
 
 			'selectSourceScreen' => SBI_Feed_Builder::select_source_screen_text(),
-			'clickSocialScreen' => array(
-				'heading' => __('Promote your blog and post from WordPress to Instagram with ClickSocial', 'instagram-feed'),
-				'description' => __('ClickSocial by Smash Balloon lets you easily promote your blog and schedule social media posts. Automatically post to your Instagram Business account (and Facebook and Twitter too).', 'instagram-feed'),
-				'integrationLogo' => SBI_PLUGIN_URL . '/admin/assets/img/instagram-clicksocial.png',
-				'installStep' => array(
-					'title' => __('Install and activate ClickSocial', 'instagram-feed'),
-					'description' => __('The plugin is installed from the Wordpress.org repository', 'instagram-feed'),
-					'icon' => SBI_Feed_Builder::builder_svg_icons('clickSocialInstall'),
-				),
-				'setupStep' => array(
-					'title' => __('Set up ClickSocial', 'instagram-feed'),
-					'description' => __('Connect ClickSocial to your Instagram Account', 'instagram-feed'),
-					'icon' => SBI_Feed_Builder::builder_svg_icons('clickSocialSetup'),
-				),
-				'shouldHideClickSocialNotice' => $hide_clicksocial_notice,
-				'isClickSocialSupported' => $is_clicksocial_supported,
-				'isPluginInstalled' => $get_sb_active_plugins_info['is_clicksocial_installed'],
-				'isPluginActive' => is_plugin_active($get_sb_active_plugins_info['clicksocial_plugin']),
-				'pluginDownloadPath' => $get_sb_active_plugins_info['clicksocial_path'],
-				'clickSocialPlugin' => $get_sb_active_plugins_info['clicksocial_plugin'],
-				'installSVG' => SBI_Feed_Builder::builder_svg_icons('installPlugin'),
-				'enableSetupStep' => is_plugin_active($get_sb_active_plugins_info['clicksocial_plugin']),
-				'setupPage' => 'admin.php?page=click-social'
-			),
 			'nextCheck' => $this->get_cron_next_check(),
 			'loaderSVG' => '<svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve"><path fill="#fff" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h6.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"/></path></svg>',
 			'checkmarkSVG' => '<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>',

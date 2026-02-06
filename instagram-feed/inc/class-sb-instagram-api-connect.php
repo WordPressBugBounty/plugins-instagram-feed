@@ -372,6 +372,11 @@ class SB_Instagram_API_Connect
 				return $base_url . 'refresh_access_token?grant_type=ig_refresh_token&access_token=' . $access_token;
 			case 'header':
 				return $base_url . 'me?fields=' . $fields . '&access_token=' . $access_token;
+			case 'media':
+				// Single media endpoint for fetching individual post details
+				$media_id = !empty($params['media_id']) ? $params['media_id'] : '';
+				$media_fields = !empty($params['fields']) ? $params['fields'] : 'thumbnail_url,media_url,media_type';
+				return $base_url . $media_id . '?fields=' . $media_fields . '&access_token=' . $access_token;
 			default:
 				$num = min($num, 200);
 				return $base_url . $connected_account['user_id'] . '/media?fields=' . $media_fields . '&limit=' . $num . '&access_token=' . $access_token;
@@ -400,6 +405,11 @@ class SB_Instagram_API_Connect
 		switch ($endpoint) {
 			case 'header':
 				return $base_url . $connected_account['user_id'] . '?fields=' . $header_fields . '&access_token=' . $access_token;
+			case 'media':
+				// Single media endpoint for fetching individual post details
+				$media_id = !empty($params['media_id']) ? $params['media_id'] : '';
+				$media_fields_single = !empty($params['fields']) ? $params['fields'] : 'thumbnail_url,media_url,media_type';
+				return $base_url . $media_id . '?fields=' . $media_fields_single . '&access_token=' . $access_token;
 			default:
 				$num = min($num, 200);
 				return $base_url . $connected_account['user_id'] . '/media?fields=' . $media_fields . '&limit=' . $num . '&access_token=' . $access_token;

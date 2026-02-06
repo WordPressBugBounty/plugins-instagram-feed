@@ -2,8 +2,8 @@
 Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
-Tested up to: 6.8
-Stable tag: 6.9.1
+Tested up to: 6.9
+Stable tag: 6.10.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,13 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.10.0 =
+* New - Added support for Instagram's Media API. This will future-proof the plugin and prevent issues with Instagram deprecating the 'thumbnail_url' from the oEmbed API.
+* Fix - Added compatibility with Complianz GDPR plugin.
+* Fix - Fixed accessibility issues related to the screenreader text.
+* Fix - Additional code hardening.
+
 = 6.9.1 =
 * Fix - Additional code hardening.
 

@@ -101,8 +101,8 @@ msgid "Smash Balloon Team"
 msgstr "Smash Balloon team"
 
 #: admin/SBI_About_Us.php:230
-#: inc/admin/actions.php:29
 #: inc/admin/actions.php:30
+#: inc/admin/actions.php:31
 #: inc/admin/class-sbi-sitehealth.php:66
 #: inc/Integrations/Divi/SBInstagramFeed.php:45
 #: inc/Integrations/Elementor/SBI_Elementor_Widget.php:46
@@ -237,17 +237,17 @@ msgid "Installed"
 msgstr "Geïnstalleerd"
 
 #: admin/SBI_About_Us.php:381
-#: admin/SBI_Global_Settings.php:996
-#: inc/admin/actions.php:173
-#: inc/admin/actions.php:191
+#: admin/SBI_Global_Settings.php:987
+#: inc/admin/actions.php:174
+#: inc/admin/actions.php:192
 #: inc/Builder/SBI_Feed_Builder.php:121
 #: inc/Builder/SBI_Feed_Builder.php:892
 msgid "Activate"
 msgstr "Activeer"
 
 #: admin/SBI_About_Us.php:382
-#: admin/SBI_Global_Settings.php:995
-#: inc/admin/actions.php:176
+#: admin/SBI_Global_Settings.php:986
+#: inc/admin/actions.php:177
 msgid "Deactivate"
 msgstr "Deactiveren"
 
@@ -255,15 +255,15 @@ msgstr "Deactiveren"
 msgid "Open"
 msgstr "Openen"
 
-#: admin/SBI_Admin_Notices.php:70
+#: admin/SBI_Admin_Notices.php:68
 msgid "You're using Instagram Feed Lite. To unlock more features consider"
 msgstr "Je gebruikt Instagram Feed Lite. Om meer functies te ontgrendelen kun je overwegen"
 
-#: admin/SBI_Admin_Notices.php:72
+#: admin/SBI_Admin_Notices.php:70
 msgid "upgrading to Pro"
 msgstr "upgraden naar Pro"
 
-#: admin/SBI_Admin_Notices.php:77
+#: admin/SBI_Admin_Notices.php:75
 #: inc/admin/class-sbi-notifications.php:519
 msgid "Dismiss this message"
 msgstr "Negeer dit bericht"
@@ -281,10 +281,12 @@ msgid "Success! Try creating a feed and connecting a source."
 msgstr "Succes! Probeer een feed aan te maken en een bron te verbinden."
 
 #: admin/SBI_Global_Settings.php:429
+#, php-format
 msgid "You have reached the maximum number of sites available in your plan %s"
 msgstr "Je hebt het maximum aantal beschikbare sites in je abonnement bereikt %s"
 
 #: admin/SBI_Global_Settings.php:430
+#, php-format
 msgid "%sLearn more about%s it or %supgrade your plan%s"
 msgstr "%sLeer meer over%s het of %supgrade je abonnement%s"
 
@@ -301,7 +303,7 @@ msgid "Renew"
 msgstr "Vernieuwen"
 
 #: admin/SBI_Global_Settings.php:838
-#: inc/admin/actions.php:144
+#: inc/admin/actions.php:145
 #: inc/Builder/SBI_Feed_Builder.php:762
 #: inc/Builder/SBI_Feed_Builder.php:775
 #: inc/Builder/SBI_Feed_Builder.php:950
@@ -315,261 +317,262 @@ msgstr "Instellingen"
 msgid "Settings "
 msgstr "Instellingen "
 
-#: admin/SBI_Global_Settings.php:978
+#: admin/SBI_Global_Settings.php:969
 msgid "License Key"
 msgstr "Licentiesleutel"
 
-#: admin/SBI_Global_Settings.php:979
+#: admin/SBI_Global_Settings.php:970
 msgid "Your license key provides access to updates and support"
 msgstr "Je licentiesleutel biedt toegang tot updates en ondersteuning"
 
-#: admin/SBI_Global_Settings.php:980
+#: admin/SBI_Global_Settings.php:971
 msgid "Your <b>Instagram Feed Pro</b> license is Active!"
 msgstr "Je <b>Instagram Feed Pro</b> licentie is actief!"
 
-#: admin/SBI_Global_Settings.php:981
+#: admin/SBI_Global_Settings.php:972
 msgid "Your <b>Instagram Feed Pro</b> license is Inactive!"
 msgstr "Je <b>Instagram Feed Pro</b> licentie is inactief!"
 
-#: admin/SBI_Global_Settings.php:982
+#: admin/SBI_Global_Settings.php:973
 msgid "Already purchased? Simply enter your license key below to activate Instagram Feed Pro."
 msgstr "Al aangeschaft? Voer hieronder je licentiesleutel in om Instagram Feed Pro te activeren."
 
-#: admin/SBI_Global_Settings.php:983
+#: admin/SBI_Global_Settings.php:974
 msgid "Paste license key here"
 msgstr "Plak licentiesleutel hier"
 
-#: admin/SBI_Global_Settings.php:984
+#: admin/SBI_Global_Settings.php:975
+#, php-format
 msgid "You are using the Lite version of the plugin–no license needed. Enjoy! 🙂 To unlock more features, consider %s."
 msgstr "Je gebruikt de Lite versie van de plugin geen licentie nodig. Geniet ervan! 🙂 Om meer functies te ontgrendelen, overweeg %s."
 
-#: admin/SBI_Global_Settings.php:984
+#: admin/SBI_Global_Settings.php:975
 msgid "upgrading to Pro."
 msgstr "upgraden naar Pro."
 
-#: admin/SBI_Global_Settings.php:985
+#: admin/SBI_Global_Settings.php:976
 msgid "As a valued user of our Lite plugin, you receive 50% OFF - automatically applied at checkout!"
 msgstr "Als een gewaardeerde gebruiker van onze Lite plugin, ontvang je 50% KORTING - automatisch toegepast bij het afrekenen!"
 
-#: admin/SBI_Global_Settings.php:986
+#: admin/SBI_Global_Settings.php:977
 msgid "Manage License"
 msgstr "Beheer licentie"
 
-#: admin/SBI_Global_Settings.php:987
+#: admin/SBI_Global_Settings.php:978
 msgid "Test Connection"
 msgstr "Test verbinding"
 
-#: admin/SBI_Global_Settings.php:988
+#: admin/SBI_Global_Settings.php:979
 msgid "Recheck license"
 msgstr "Licentie opnieuw controleren"
 
-#: admin/SBI_Global_Settings.php:989
+#: admin/SBI_Global_Settings.php:980
 msgid "License valid"
 msgstr "Licentie geldig"
 
-#: admin/SBI_Global_Settings.php:990
+#: admin/SBI_Global_Settings.php:981
 msgid "License expired"
 msgstr "Licentie verlopen"
 
-#: admin/SBI_Global_Settings.php:991
+#: admin/SBI_Global_Settings.php:982
 msgid "Connection successful"
 msgstr "Verbinding succesvol"
 
-#: admin/SBI_Global_Settings.php:992
+#: admin/SBI_Global_Settings.php:983
 msgid "Connection failed"
 msgstr "Verbinding mislukt"
 
-#: admin/SBI_Global_Settings.php:993
+#: admin/SBI_Global_Settings.php:984
 msgid "View error"
 msgstr "Fout bekijken"
 
-#: admin/SBI_Global_Settings.php:994
+#: admin/SBI_Global_Settings.php:985
 msgid "Upgrade"
 msgstr "Upgraden"
 
-#: admin/SBI_Global_Settings.php:999
+#: admin/SBI_Global_Settings.php:990
 msgid "Manage Sources"
 msgstr "Bronnen beheren"
 
-#: admin/SBI_Global_Settings.php:1000
+#: admin/SBI_Global_Settings.php:991
 msgid "Add or remove connected Instagram accounts"
 msgstr "Verbonden Instagram accounts toevoegen of verwijderen"
 
-#: admin/SBI_Global_Settings.php:1003
+#: admin/SBI_Global_Settings.php:994
 msgid "Preserve settings if plugin is removed"
 msgstr "Instellingen behouden als plugin wordt verwijderd"
 
-#: admin/SBI_Global_Settings.php:1004
+#: admin/SBI_Global_Settings.php:995
 msgid "This will make sure that all of your feeds and settings are still saved even if the plugin is uninstalled"
 msgstr "Dit zal ervoor zorgen dat al je feeds en instellingen opgeslagen blijven, zelfs als de plugin verwijderd wordt"
 
-#: admin/SBI_Global_Settings.php:1007
+#: admin/SBI_Global_Settings.php:998
 msgid "Import Feed Settings"
 msgstr "Importeer feed instellingen"
 
-#: admin/SBI_Global_Settings.php:1008
+#: admin/SBI_Global_Settings.php:999
 msgid "You will need a JSON file previously exported from the Instagram Feed Plugin"
 msgstr "Je hebt een JSON bestand nodig dat eerder is geëxporteerd vanuit de Instagram feed plugin"
 
-#: admin/SBI_Global_Settings.php:1009
+#: admin/SBI_Global_Settings.php:1000
 msgid "Import"
 msgstr "Importeren"
 
-#: admin/SBI_Global_Settings.php:1012
+#: admin/SBI_Global_Settings.php:1003
 msgid "Export Feed Settings"
 msgstr "Exporteer feed instellingen"
 
-#: admin/SBI_Global_Settings.php:1013
+#: admin/SBI_Global_Settings.php:1004
 msgid "Export settings for one or more of your feeds"
 msgstr "Instellingen exporteren voor een of meer van je feeds"
 
-#: admin/SBI_Global_Settings.php:1014
+#: admin/SBI_Global_Settings.php:1005
 #: admin/SBI_Support.php:211
 msgid "Export"
 msgstr "Export"
 
-#: admin/SBI_Global_Settings.php:1019
+#: admin/SBI_Global_Settings.php:1010
 msgid "Localization"
 msgstr "Vertalingen"
 
-#: admin/SBI_Global_Settings.php:1023
+#: admin/SBI_Global_Settings.php:1014
 msgid "Timezone"
 msgstr "Tijdzone"
 
-#: admin/SBI_Global_Settings.php:1026
+#: admin/SBI_Global_Settings.php:1017
 msgid "Caching"
 msgstr "Caching"
 
-#: admin/SBI_Global_Settings.php:1027
+#: admin/SBI_Global_Settings.php:1018
 msgid "When the Page loads"
 msgstr "Wanneer de pagina wordt geladen"
 
-#: admin/SBI_Global_Settings.php:1028
+#: admin/SBI_Global_Settings.php:1019
 msgid "In the Background"
 msgstr "In de achtergrond"
 
-#: admin/SBI_Global_Settings.php:1030
+#: admin/SBI_Global_Settings.php:1021
 msgid "Every 30 minutes"
 msgstr "Elke 30 minuten"
 
-#: admin/SBI_Global_Settings.php:1031
+#: admin/SBI_Global_Settings.php:1022
 msgid "Every hour"
 msgstr "Elk uur"
 
-#: admin/SBI_Global_Settings.php:1032
+#: admin/SBI_Global_Settings.php:1023
 msgid "Every 12 hours"
 msgstr "Elke 12 uur"
 
-#: admin/SBI_Global_Settings.php:1033
+#: admin/SBI_Global_Settings.php:1024
 msgid "Every 24 hours"
 msgstr "Elke 24 uur"
 
-#: admin/SBI_Global_Settings.php:1035
+#: admin/SBI_Global_Settings.php:1026
 msgid "AM"
 msgstr "AM"
 
-#: admin/SBI_Global_Settings.php:1036
+#: admin/SBI_Global_Settings.php:1027
 msgid "PM"
 msgstr "PM"
 
-#: admin/SBI_Global_Settings.php:1037
+#: admin/SBI_Global_Settings.php:1028
 msgid "Clear All Caches"
 msgstr "Alle caches legen"
 
-#: admin/SBI_Global_Settings.php:1040
+#: admin/SBI_Global_Settings.php:1031
 msgid "GDPR"
 msgstr "AVG/GDPR"
 
-#: admin/SBI_Global_Settings.php:1051
+#: admin/SBI_Global_Settings.php:1042
 msgid "Automatic"
 msgstr "Automatisch"
 
-#: admin/SBI_Global_Settings.php:1052
+#: admin/SBI_Global_Settings.php:1043
 #: inc/admin/class-sbi-new-user.php:268
 #: inc/admin/class-sbi-notifications.php:634
 msgid "Yes"
 msgstr "Ja"
 
-#: admin/SBI_Global_Settings.php:1053
+#: admin/SBI_Global_Settings.php:1044
 #: inc/admin/class-sbi-new-user.php:274
 #: inc/admin/class-sbi-notifications.php:640
 msgid "No"
 msgstr "Nee"
 
-#: admin/SBI_Global_Settings.php:1055
+#: admin/SBI_Global_Settings.php:1046
 msgid "No requests will be made to third-party websites. To accommodate this, some features of the plugin will be limited."
 msgstr "Er worden geen aanvragen gedaan aan sites van derden. Om hieraan tegemoet te komen, zullen sommige functies van de plugin beperkt zijn."
 
-#: admin/SBI_Global_Settings.php:1056
+#: admin/SBI_Global_Settings.php:1047
 msgid "The plugin will function as normal and load images and videos directly from Instagram"
 msgstr "De plugin functioneert zoals normaal en laadt afbeeldingen en video's rechtstreeks van Instagram"
 
-#: admin/SBI_Global_Settings.php:1057
+#: admin/SBI_Global_Settings.php:1048
 msgid "Some Instagram Feed features will be limited for visitors to ensure GDPR compliance, until they give consent."
 msgstr "Sommige Instagram feed functies zijn beperkt voor bezoekers om naleving van de GDPR te garanderen, totdat ze instemming geven."
 
-#: admin/SBI_Global_Settings.php:1058
+#: admin/SBI_Global_Settings.php:1049
 msgid "What will be limited?"
 msgstr "Wat zal beperkt worden?"
 
-#: admin/SBI_Global_Settings.php:1042
+#: admin/SBI_Global_Settings.php:1033
 msgid "Features that would be disabled or limited include: "
 msgstr "Functies die zouden worden uitgeschakeld of beperkt zijn onder meer: "
 
-#: admin/SBI_Global_Settings.php:1044
+#: admin/SBI_Global_Settings.php:1035
 msgid "Only local images (not from Instagram's CDN) will be displayed in the feed."
 msgstr "Alleen lokale afbeeldingen (niet van Instagram zijn CDN) zullen getoond worden in de feed."
 
-#: admin/SBI_Global_Settings.php:1045
+#: admin/SBI_Global_Settings.php:1036
 msgid "Placeholder blank images will be displayed until images are available."
 msgstr "Blanco plaatshouder afbeeldingen zullen getoond worden tot en met de afbeeldingen beschikbaar zijn."
 
-#: admin/SBI_Global_Settings.php:1046
+#: admin/SBI_Global_Settings.php:1037
 msgid "Video posts will link to the post on Instagram.com for visitors to watch."
 msgstr "Video berichten zullen linken naar het bericht op Instagram.com voor bezoekers om te bekijken."
 
-#: admin/SBI_Global_Settings.php:1047
+#: admin/SBI_Global_Settings.php:1038
 msgid "Carousel posts will only show the first image in the lightbox."
 msgstr "Carrousel berichten tonen alleen de eerste afbeelding in de lightbox."
 
-#: admin/SBI_Global_Settings.php:1048
+#: admin/SBI_Global_Settings.php:1039
 msgid "The maximum image resolution will be 640 pixels wide in the lightbox."
 msgstr "De maximale afbeelding resolutie zal 640 pixels breed zijn in de lightbox."
 
-#: admin/SBI_Global_Settings.php:1072
+#: admin/SBI_Global_Settings.php:1063
 msgid "Custom CSS"
 msgstr "Aangepaste CSS"
 
-#: admin/SBI_Global_Settings.php:1073
+#: admin/SBI_Global_Settings.php:1064
 msgid "Enter any custom CSS here"
 msgstr "Geef hier aangepaste CSS in"
 
-#: admin/SBI_Global_Settings.php:1076
+#: admin/SBI_Global_Settings.php:1067
 msgid "Custom JS"
 msgstr "Aangepaste JS"
 
-#: admin/SBI_Global_Settings.php:1077
+#: admin/SBI_Global_Settings.php:1068
 msgid "Enter any custom JS here"
 msgstr "Geef hier aangepaste JS in"
 
-#: admin/SBI_Global_Settings.php:1103
+#: admin/SBI_Global_Settings.php:1094
 #: inc/Builder/SBI_Feed_Builder.php:810
 msgid "Reset"
 msgstr "Resetten"
 
-#: admin/SBI_Global_Settings.php:1097
+#: admin/SBI_Global_Settings.php:1088
 msgid "Usage Tracking"
 msgstr "Gebruik bijhouden"
 
-#: admin/SBI_Global_Settings.php:1098
+#: admin/SBI_Global_Settings.php:1089
+#, php-format
 msgid "This helps to prevent plugin and theme conflicts by sending a report in the background once per week about your settings and relevant site stats. It does not send sensitive information like access tokens, email addresses, or user info. This will also not affect your site performance. %s"
 msgstr "Dit helpt plugin en thema conflicten te voorkomen door eens per week op de achtergrond een rapport te sturen over je instellingen en relevante site statistieken. Het verstuurt geen gevoelige informatie zoals toegangstokens, e-mailadressen of gebruikersinfo. Dit zal ook geen invloed hebben op de prestaties van je site. %s"
 
-#: admin/SBI_Admin_Notices.php:402
-#: admin/SBI_Admin_Notices.php:475
-#: admin/SBI_Admin_Notices.php:565
-#: admin/SBI_Global_Settings.php:1083
-#: admin/SBI_Global_Settings.php:1098
+#: admin/SBI_Admin_Notices.php:400
+#: admin/SBI_Admin_Notices.php:473
+#: admin/SBI_Global_Settings.php:1074
+#: admin/SBI_Global_Settings.php:1089
 #: admin/SBI_Support.php:183
 #: inc/Builder/SBI_Feed_Builder.php:800
 #: inc/Builder/SBI_Tooltip_Wizard.php:126
@@ -577,144 +580,141 @@ msgstr "Dit helpt plugin en thema conflicten te voorkomen door eens per week op 
 msgid "Learn More"
 msgstr "Lees meer"
 
-#: admin/SBI_Global_Settings.php:1101
+#: admin/SBI_Global_Settings.php:1092
 msgid "Reset Error Log"
 msgstr "Foutenlog leegmaken"
 
-#: admin/SBI_Global_Settings.php:1102
+#: admin/SBI_Global_Settings.php:1093
 msgid "Clear all errors stored in the error log."
 msgstr "Wis alle fouten die in het foutenlogboek zijn opgeslagen."
 
-#: admin/SBI_Global_Settings.php:1106
+#: admin/SBI_Global_Settings.php:1097
 msgid "AJAX theme loading fix"
 msgstr "AJAX thema laden oplossing"
 
-#: admin/SBI_Global_Settings.php:1107
+#: admin/SBI_Global_Settings.php:1098
 msgid "Fixes issues caused by Ajax loading themes. It can also be used to workaround JavaScript errors on the page."
 msgstr "Lost problemen op die veroorzaakt worden door het ajax laden van thema's. Het kan ook worden gebruikt om javaScript fouten op de pagina te omzeilen."
 
-#: admin/SBI_Global_Settings.php:1110
+#: admin/SBI_Global_Settings.php:1101
 msgid "Load Initial Posts with AJAX"
 msgstr "Laad initiële berichten met AJAX"
 
-#: admin/SBI_Global_Settings.php:1111
-#: admin/SBI_Global_Settings.php:1127
+#: admin/SBI_Global_Settings.php:1102
+#: admin/SBI_Global_Settings.php:1118
 msgid "Initial posts will be loaded using AJAX instead of added to the page directly. If you use page caching, this will allow the feed to update according to the \"Check for new posts every\" setting on the \"Configure\" tab."
 msgstr "De eerste berichten worden geladen met AJAX in plaats van direct aan de pagina toegevoegd. Als je pagina caching gebruikt, zal dit ervoor zorgen dat de feed wordt bijgewerkt volgens de instelling \"Elke keer controleren op nieuwe berichten\" op het tabblad \"Configureren\"."
 
-#: admin/SBI_Global_Settings.php:1114
+#: admin/SBI_Global_Settings.php:1105
 msgid "Enqueue JavaScript in head"
 msgstr "Activeer JavaScript in head"
 
-#: admin/SBI_Global_Settings.php:1115
+#: admin/SBI_Global_Settings.php:1106
 msgid "Add the JavaScript file for the plugin in the HTML \"head\" instead of the footer."
 msgstr "Voeg het JavaScript bestand voor de plugin toe in de HTML \"head\" in plaats van de footer."
 
-#: admin/SBI_Global_Settings.php:1118
+#: admin/SBI_Global_Settings.php:1109
 msgid "Enqueue CSS only on pages with the Feed"
 msgstr "Enqueue CSS alleen op pagina's met de feed"
 
-#: admin/SBI_Global_Settings.php:1122
+#: admin/SBI_Global_Settings.php:1113
 msgid "JavaScript Image Loading"
 msgstr "JavaScript afbeelding laden"
 
-#: admin/SBI_Global_Settings.php:1123
+#: admin/SBI_Global_Settings.php:1114
 msgid "Load images on the client side with JS, instead of server side."
 msgstr "Laad afbeeldingen aan de client-zijde met JS, in plaats van server-zijde."
 
-#: admin/SBI_Global_Settings.php:1126
+#: admin/SBI_Global_Settings.php:1117
 msgid "Fix a text shortening issue caused by some themes"
 msgstr "Oplossing voor een probleem met het inkorten van tekst, veroorzaakt door sommige thema's"
 
-#: admin/SBI_Global_Settings.php:1130
+#: admin/SBI_Global_Settings.php:1121
 msgid "Admin Error Notice"
 msgstr "Beheerder fout bericht"
 
-#: admin/SBI_Global_Settings.php:1131
+#: admin/SBI_Global_Settings.php:1122
 msgid "This will disable or enable the feed error notice that displays in the bottom right corner of your site for logged-in admins."
 msgstr "Hiermee schakelt je de feed fout bericht uit of in, die rechtsonderaan op je site wordt weergegeven voor ingelogde beheerders."
 
-#: admin/SBI_Global_Settings.php:1134
+#: admin/SBI_Global_Settings.php:1125
 msgid "Feed Issue Email Reports"
 msgstr "Feed probleem e-mail rapport"
 
-#: admin/SBI_Global_Settings.php:1135
+#: admin/SBI_Global_Settings.php:1126
 msgid "If the feed is down due to a critical issue, we will switch to a cached version and notify you based on these settings. <a href=\""
 msgstr "Als de feed is uitgeschakeld als gevolg van een kritieke probleem, zullen we overschakelen naar een cache versie en je op de hoogte op basis van deze instellingen. <a href=\""
 
-#: admin/SBI_Global_Settings.php:1136
+#: admin/SBI_Global_Settings.php:1127
 msgid "Send a report every"
 msgstr "Verstuur een rapport elke"
 
-#: admin/SBI_Global_Settings.php:1137
+#: admin/SBI_Global_Settings.php:1128
 msgid "to"
 msgstr "naar"
 
-#: admin/SBI_Global_Settings.php:1138
+#: admin/SBI_Global_Settings.php:1129
 msgid "Enter one or more email address separated by comma"
 msgstr "Voer een of meer e-mailadressen in, gescheiden door komma's"
 
-#: admin/SBI_Global_Settings.php:1142
+#: admin/SBI_Global_Settings.php:1133
 msgid "Monday"
 msgstr "Maandag"
 
-#: admin/SBI_Global_Settings.php:1146
+#: admin/SBI_Global_Settings.php:1137
 msgid "Tuesday"
 msgstr "Dinsdag"
 
-#: admin/SBI_Global_Settings.php:1150
+#: admin/SBI_Global_Settings.php:1141
 msgid "Wednesday"
 msgstr "Woensdag"
 
-#: admin/SBI_Global_Settings.php:1154
+#: admin/SBI_Global_Settings.php:1145
 msgid "Thursday"
 msgstr "Donderdag"
 
-#: admin/SBI_Global_Settings.php:1158
+#: admin/SBI_Global_Settings.php:1149
 msgid "Friday"
 msgstr "Vrijdag"
 
-#: admin/SBI_Global_Settings.php:1162
+#: admin/SBI_Global_Settings.php:1153
 msgid "Saturday"
 msgstr "Zaterdag"
 
-#: admin/SBI_Global_Settings.php:1166
+#: admin/SBI_Global_Settings.php:1157
 msgid "Sunday"
 msgstr "Zondag"
 
-#: admin/SBI_Global_Settings.php:1171
+#: admin/SBI_Global_Settings.php:1162
 msgid "Manage Data"
 msgstr "Gegevens beheren"
 
-#: admin/SBI_Global_Settings.php:1172
+#: admin/SBI_Global_Settings.php:1163
 msgid "Warning: Clicking this button will permanently delete all Instagram data, including all connected accounts, cached posts, and stored images."
 msgstr "Waarschuwing: klikken op deze knop verwijdert permanent alle Instagram gegevens, inclusief alle verbonden accounts, in het cachegeheugen opgeslagen berichten, en opgeslagen afbeeldingen."
 
-#: admin/SBI_Global_Settings.php:1173
+#: admin/SBI_Global_Settings.php:1164
 msgid "Delete all Platform Data"
 msgstr "Verwijder alle platform gegevens"
 
-#: admin/SBI_Global_Settings.php:1178
+#: admin/SBI_Global_Settings.php:1169
 #: inc/Builder/SBI_Feed_Builder.php:349
 #: inc/Builder/SBI_Feed_Builder.php:353
 #: inc/Builder/SBI_Feed_Builder.php:357
 msgid "Delete \"#\"?"
 msgstr "Verwijder \"#\"?"
 
-#: admin/SBI_Global_Settings.php:1179
+#: admin/SBI_Global_Settings.php:1170
 #: inc/Builder/SBI_Feed_Builder.php:350
 msgid "This source is being used in a feed on your site. If you delete this source then new posts can no longer be retrieved for these feeds."
 msgstr "Deze gegevensbron wordt gebruikt in een feed op je site. Als je deze gegevensbron verwijdert, kunnen nieuwe berichten niet langer worden opgehaald voor deze feeds."
 
-#: admin/SBI_Global_Settings.php:1190
-msgid "The plugin is installed from the Wordpress.org repository"
-msgstr "De plugin wordt geïnstalleerd vanuit de WordPress.org repository"
-
-#: admin/SBI_Global_Settings.php:1356
+#: admin/SBI_Global_Settings.php:1323
+#, php-format
 msgid "No GDPR consent plugin detected. Install a compatible GDPR consent %s, or manually enable the setting to display a GDPR compliant version of the feed to all visitors."
 msgstr "Geen AVG/GDPR toestemming plugin gedetecteerd. Installeer een compatibele AVG/GDPR toestemming %s, of schakel handmatig de instelling in om een AVG/GDPR conforme versie van de feed aan alle bezoekers weer te geven."
 
-#: admin/SBI_Global_Settings.php:1356
+#: admin/SBI_Global_Settings.php:1323
 msgid "plugin"
 msgstr "plugin"
 
@@ -833,7 +833,7 @@ msgstr "Activeer plugin"
 
 #: admin/SBI_oEmbeds.php:252
 #: admin/views/support/support-tools.php:116
-#: inc/admin/actions.php:183
+#: inc/admin/actions.php:184
 #: inc/Builder/SBI_Feed_Builder.php:816
 msgid "Cancel"
 msgstr "Annuleren"
@@ -1007,109 +1007,109 @@ msgstr "De licentie is verlopen."
 msgid "We encountered a problem unlocking the PRO features. Please install the PRO version manually."
 msgstr "We hebben een probleem ondervonden bij het ontgrendelen van de PRO functies. Installeer de PRO versie handmatig."
 
-#: admin/views/settings/tab/general.php:380
+#: admin/views/settings/tab/general.php:361
 msgid "Select Feed"
 msgstr "Selecteer feed"
 
-#: inc/admin/actions.php:38
 #: inc/admin/actions.php:39
-#: inc/admin/actions.php:142
+#: inc/admin/actions.php:40
+#: inc/admin/actions.php:143
 #: inc/Builder/SBI_Feed_Builder.php:933
 #: inc/Builder/SBI_Feed_Builder.php:1298
 msgid "Upgrade to Pro"
 msgstr "Upgraden naar Pro"
 
 #: admin/SBI_About_Us.php:275
-#: inc/admin/actions.php:59
 #: inc/admin/actions.php:60
+#: inc/admin/actions.php:61
 #: inc/Builder/SBI_Feed_Builder.php:1345
 msgid "Reviews Feed"
 msgstr "Beoordelingen feed"
 
-#: inc/admin/actions.php:71
 #: inc/admin/actions.php:72
+#: inc/admin/actions.php:73
 #: inc/Builder/SBI_Feed_Builder.php:1304
 #: inc/Builder/SBI_Feed_Builder.php:1357
 #: inc/Integrations/Elementor/CFF_Elementor_Widget.php:44
 msgid "Facebook Feed"
 msgstr "Facebook feed"
 
-#: inc/admin/actions.php:83
 #: inc/admin/actions.php:84
+#: inc/admin/actions.php:85
 #: inc/Builder/SBI_Feed_Builder.php:1309
 #: inc/Builder/SBI_Feed_Builder.php:1369
 #: inc/Integrations/Elementor/CTF_Elementor_Widget.php:44
 msgid "Twitter Feed"
 msgstr "Twitter feed"
 
-#: inc/admin/actions.php:95
 #: inc/admin/actions.php:96
+#: inc/admin/actions.php:97
 #: inc/Builder/SBI_Feed_Builder.php:1314
 msgid "YouTube Feed"
 msgstr "YouTube feed"
 
-#: inc/admin/actions.php:174
+#: inc/admin/actions.php:175
 msgid "Activated"
 msgstr "Geactiveerd"
 
-#: inc/admin/actions.php:175
+#: inc/admin/actions.php:176
 msgid "Active"
 msgstr "Actief"
 
-#: inc/admin/actions.php:177
+#: inc/admin/actions.php:178
 msgid "Inactive"
 msgstr "Inactief"
 
-#: inc/admin/actions.php:178
+#: inc/admin/actions.php:179
 msgid "Install Addon"
 msgstr "Installeer add-on"
 
-#: inc/admin/actions.php:179
+#: inc/admin/actions.php:180
 #: inc/admin/addon-functions.php:95
 msgid "Could not install addon. Please download from wpforms.com and install manually."
 msgstr "Kan add-on niet installeren. Download van wpforms.com en installeer handmatig."
 
-#: inc/admin/actions.php:180
+#: inc/admin/actions.php:181
 msgid "Could not install a plugin. Please download from WordPress.org and install manually."
 msgstr "Kan een plugin niet installeren. Download van WordPress.org en installeer handmatig."
 
-#: inc/admin/actions.php:181
+#: inc/admin/actions.php:182
 msgid "Searching Addons"
 msgstr "Add-ons zoeken"
 
-#: inc/admin/actions.php:184
+#: inc/admin/actions.php:185
 msgid "Close"
 msgstr "Sluiten"
 
-#: inc/admin/actions.php:186
+#: inc/admin/actions.php:187
 msgid "Almost Done"
 msgstr "Bijna klaar"
 
-#: inc/admin/actions.php:187
+#: inc/admin/actions.php:188
 msgid "Oops!"
 msgstr "Oeps!"
 
-#: inc/admin/actions.php:188
+#: inc/admin/actions.php:189
 msgid "OK"
 msgstr "OK"
 
-#: inc/admin/actions.php:189
+#: inc/admin/actions.php:190
 msgid "Install and Activate"
 msgstr "Installeren en activeren"
 
-#: inc/admin/actions.php:190
+#: inc/admin/actions.php:191
 msgid "needs to be installed and activated to import its forms. Would you like us to install and activate it for you?"
 msgstr "moet worden geïnstalleerd en geactiveerd om de formulieren te importeren. Wil je dat wij het voor je installeren en activeren?"
 
-#: inc/admin/actions.php:228
+#: inc/admin/actions.php:230
 #: inc/class-sb-instagram-posts-manager.php:361
 #: inc/class-sb-instagram-posts-manager.php:377
-#: inc/class-sb-instagram-single.php:210
+#, php-format
 msgid "API error %s:"
 msgstr "API fout %s:"
 
-#: inc/admin/actions.php:229
-#: inc/admin/actions.php:239
+#: inc/admin/actions.php:231
+#: inc/admin/actions.php:241
 #: inc/Builder/SBI_Source.php:152
 #: inc/class-sb-instagram-posts-manager.php:340
 #: inc/class-sb-instagram-posts-manager.php:362
@@ -1122,56 +1122,57 @@ msgstr "API fout %s:"
 msgid "Directions on how to resolve this issue"
 msgstr "Aanwijzingen voor het oplossen van dit probleem"
 
-#: inc/admin/actions.php:233
+#: inc/admin/actions.php:235
 #: inc/Builder/SBI_Source.php:144
 #: inc/class-sb-instagram-posts-manager.php:338
+#, php-format
 msgid "Error connecting to %s."
 msgstr "Fout verbinden met %s."
 
-#: inc/admin/actions.php:290
+#: inc/admin/actions.php:292
 msgid "Instagram Feed was unable to create new database tables."
 msgstr "Instagram Feed was niet in staat om nieuwe database tabellen aan te maken."
 
-#: inc/admin/actions.php:295
-#: inc/admin/actions.php:349
+#: inc/admin/actions.php:297
+#: inc/admin/actions.php:351
 msgid "Visit our FAQ page for help"
 msgstr "Bezoek onze FAQ pagina voor hulp"
 
-#: inc/admin/actions.php:305
-#: inc/admin/actions.php:356
+#: inc/admin/actions.php:307
+#: inc/admin/actions.php:358
 msgid "Try creating database tables again"
 msgstr "Probeer de database tabellen opnieuw te maken"
 
-#: inc/admin/actions.php:322
+#: inc/admin/actions.php:324
 msgid "Action Required Within 7 Days:"
 msgstr "Actie vereist binnen 7 dagen:"
 
-#: inc/admin/actions.php:323
+#: inc/admin/actions.php:325
 msgid "Or you can simply press the \"Fix Usage\" button to fix this issue."
 msgstr "Of je kan gewoon op de \"Herstel gebruik\" knop drukken om dit probleem op te lossen."
 
-#: inc/admin/actions.php:326
+#: inc/admin/actions.php:328
 msgid "Fix Usage"
 msgstr "Herstel gebruik"
 
-#: inc/admin/actions.php:337
+#: inc/admin/actions.php:339
 msgid "All Instagram Data has Been Removed:"
 msgstr "Alle Instagram gegevens zijn verwijderd:"
 
-#: inc/admin/actions.php:338
+#: inc/admin/actions.php:340
 #: inc/Platform_Data.php:244
 msgid "To fix your feeds, reconnect all accounts that were in use on the Settings page."
 msgstr "Om je feeds te herstellen, koppel je alle accounts die in gebruik waren opnieuw op de Instellingen pagina."
 
-#: inc/admin/actions.php:369
+#: inc/admin/actions.php:371
 msgid "Instagram Feed is encountering an error and your feeds may not be updating due to the following reasons:"
 msgstr "Instagram Feed ondervindt een fout en je feeds worden mogelijk niet bijgewerkt om de volgende redenen:"
 
-#: inc/admin/actions.php:439
+#: inc/admin/actions.php:441
 msgid "The Instagram Feed Settings page has moved!"
 msgstr "De Instagram feed instellingen pagina is verhuisd!"
 
-#: inc/admin/actions.php:440
+#: inc/admin/actions.php:442
 msgid "Click here to go to the new page."
 msgstr "Klik hier om naar de nieuwe pagina te gaan."
 
@@ -1289,6 +1290,7 @@ msgid "Your Instagram Feed is experiencing an error."
 msgstr "Je Instagram feed ondervind een fout."
 
 #: inc/admin/class-sbi-sitehealth.php:80
+#, php-format
 msgid "A critical issue has been detected with your Instagram Feed. Visit the %sInstagram Feed settings page%s to fix the issue."
 msgstr "Er is een kritiek probleem gedetecteerd met je Instagram feed. Ga naar de %sInstagram Feed instellingen pagina%s om het probleem op te lossen."
 
@@ -1649,6 +1651,7 @@ msgid "Add Another Source Type"
 msgstr "Ander bron type toevoegen"
 
 #: inc/Builder/SBI_Feed_Builder.php:402
+#, php-format
 msgid "Upgrade to the %1$sAll Access Bundle%2$s to get all of our Pro Plugins"
 msgstr "Upgrade naar de %1$sAll Access Bundle%2$s om al onze Pro plugins te krijgen"
 
@@ -1657,6 +1660,7 @@ msgid "Includes all Smash Balloon plugins for one low price: Instagram, Facebook
 msgstr "Inclusief alle Smash Balloon plugins voor één lage prijs: Instagram, Facebook, Twitter, YouTube en Social Wall"
 
 #: inc/Builder/SBI_Feed_Builder.php:404
+#, php-format
 msgid "%1$sBonus%2$s Lite users get %3$s50&#37; Off%4$s automatically applied at checkout"
 msgstr "%1$sBonus%2$s Lite gebruikers krijgen automatisch %3$s50&#37; korting%4$s bij het afrekenen"
 
@@ -2591,6 +2595,7 @@ msgid "Go to your group settings page by "
 msgstr "Ga naar de pagina met je groepsinstellingen door "
 
 #: inc/Builder/SBI_Feed_Builder.php:1179
+#, php-format
 msgid "Search for \"Smash Balloon\" and select our app %1$s(see screenshot)%2$s"
 msgstr "Zoek naar \"Smash Balloon\" en selecteer onze app %1$s(zie schermafbeeldingen)%2$s"
 
@@ -2692,6 +2697,7 @@ msgid "Legacy Feed Settings"
 msgstr "Verouderde feed instellingen"
 
 #: inc/Builder/SBI_Feed_Builder.php:989
+#, php-format
 msgid "These settings will impact %1$s legacy feeds on your site. You can learn more about what legacy feeds are and how they differ from new feeds %2$shere%3$s."
 msgstr "Deze instellingen hebben invloed op %1$s oude feeds op je site. Je kunt hier meer informatie vinden over wat oude feeds zijn en hoe ze verschillen van nieuwe feeds %2$shier%3$s."
 
@@ -3131,6 +3137,7 @@ msgid "Something went wrong. Please make sure the ID and access token are correc
 msgstr "Er is iets fout gegaan. Zorg ervoor dat de ID en het toegangstoken correct zijn."
 
 #: inc/Builder/SBI_Source.php:158
+#, php-format
 msgid "Connection Error: %s "
 msgstr "Verbindingsfout: %s "
 
@@ -3148,10 +3155,12 @@ msgid "Couldn't find Business Profile"
 msgstr "Kon geen bedrijfsprofiel vinden"
 
 #: inc/Builder/SBI_Source.php:528
+#, php-format
 msgid "Uh oh. It looks like this Facebook account is not currently connected to an Instagram Business profile. Please check that you are logged into the %1$sFacebook account%2$s in this browser which is associated with your Instagram Business Profile."
 msgstr "Uh oh. Het lijkt erop dat dit Facebook account momenteel niet is gekoppeld aan een Instagram bedrijfsprofiel. Controleer of je bent ingelogd op het %1$sFacebook account%2$s in deze browser dat is gekoppeld aan je Instagram bedrijfsprofiel."
 
 #: inc/Builder/SBI_Source.php:603
+#, php-format
 msgid "Uh oh. It looks like this Facebook account is not currently connected to an Instagram Business profile. Please check that you are logged into the %1$sFacebook account%2$s in this browser which is associated with your Instagram Business Profile. If you are, in fact, logged-in to the correct account please make sure you have Instagram accounts connected with your Facebook account by following %3$sthis FAQ%4$s"
 msgstr "Uh oh. Het lijkt erop dat dit Facebook account momenteel niet is gekoppeld aan een Instagram bedrijfsprofiel. Controleer of je bent ingelogd op het %1$sFacebook account%2$s in deze browser dat gekoppeld is aan je Instagram bedrijfsprofiel. Als je inderdaad bent ingelogd op het juiste account, controleer dan of je Instagram accounts zijn gekoppeld aan je Facebook-account door %3$sdeze FAQ%4$s te volgen"
 
@@ -3565,6 +3574,7 @@ msgid "Custom Templates"
 msgstr "Aangepaste templates"
 
 #: inc/Builder/Tabs/SBI_Settings_Tab.php:368
+#, php-format
 msgid "The default HTML for the feed can be replaced with custom templates added to your theme's folder. Enable this setting to use these templates. Custom templates are not used in the feed editor. %sLearn More%s"
 msgstr "De standaard HTML voor de feed kan worden vervangen door aangepaste templates die aan de map van je thema zijn toegevoegd. Schakel deze instelling in om deze templates te gebruiken. Aangepaste templates worden niet gebruikt in de feed editor. %sMeer informatie%s"
 
@@ -3675,6 +3685,7 @@ msgid "Tables used for storing information about resized images were not success
 msgstr "De tabellen die gebruikt worden om informatie over herschaalde afbeeldingen op te slaan, werden niet succesvol aangemaakt."
 
 #: inc/class-sb-instagram-gdpr-integrations.php:220
+#, php-format
 msgid "An image editor is not available on your server. Instagram Feed is unable to create local resized images. See %1$sthis FAQ%2$s for more information"
 msgstr "Er is geen afbeeldingseditor beschikbaar op je server. Instagram Feed is niet in staat om lokaal aangepaste afbeeldingen te maken. Zie %1$sdeze FAQ%2$s voor meer informatie"
 
@@ -3718,6 +3729,7 @@ msgid "If you need to display more than 30 hashtag feeds on your site, consider 
 msgstr "Als je meer dan 30 hashtag-feeds op je site moet weergeven, overweeg dan om een extra bedrijfsaccount aan te sluiten vanaf een aparte Instagram-identiteit en Facebook-pagina. Als je een extra Instagram-bedrijfsaccount vanaf dezelfde Facebook-pagina aansluit, wordt de limiet niet verhoogd."
 
 #: inc/class-sb-instagram-posts-manager.php:368
+#, php-format
 msgid "Error: Connected account for the user %s does not have permission to use this feed type."
 msgstr "Fout: de aangesloten account voor de gebruiker %s heeft geen toestemming om dit feed type te gebruiken."
 
@@ -3746,6 +3758,7 @@ msgid "There was an error creating the folder for storing resized images."
 msgstr "Er is een fout opgetreden bij het aanmaken van de map waarin de herschaalde afbeeldingen opgeslagen worden."
 
 #: inc/class-sb-instagram-posts-manager.php:1034
+#, php-format
 msgid "Instagram Feed related data for the account(s) %s was removed due to permission for the Smash Balloon App on Facebook or Instagram being revoked. <br><br> To prevent the automated data deletion for the account, please reconnect your account within 7 days."
 msgstr "Instagram Feed gerelateerde gegevens voor de account(s) %s zijn verwijderd omdat de toestemming voor de Smash Balloon App op Facebook of Instagram is ingetrokken. <br><br> Om de automatische gegevensverwijdering voor de account te voorkomen, koppel je account binnen 7 dagen opnieuw."
 
@@ -3761,6 +3774,7 @@ msgid "An account admin has deauthorized the Smash Balloon app used to power the
 msgstr "Een accountbeheerder heeft de Smash Balloon app die wordt gebruikt voor de Instagram Feed plugin gedeautoriseerd."
 
 #: inc/class-sb-instagram-posts-manager.php:1044
+#, php-format
 msgid "If the Instagram source is not reconnected within 7 days then all Instagram data will be automatically deleted on your website for this account (ID: %s) due to Facebook data privacy rules."
 msgstr "Als het Instagram account niet binnen 7 dagen opnieuw wordt gekoppeld, worden alle Instagram gegevens voor dit account (ID: %s) automatisch verwijderd op je site vanwege de privacyregels van Facebook."
 
@@ -3784,6 +3798,7 @@ msgid "Error: Private Instagram Account."
 msgstr "Fout: deze Instagram account is privé."
 
 #: inc/class-sb-instagram-posts-manager.php:1076
+#, php-format
 msgid "It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %1$smake your Instagram account public%2$s."
 msgstr "Het lijkt erop dat je Instagram account privé is. Instagram vereist dat privéaccounts elke 60 dagen opnieuw worden geauthenticeerd. Vernieuw je account om het te kunnen blijven bijwerken, of %1$smaak je Instagram account openbaar%2$s."
 
@@ -3806,10 +3821,12 @@ msgid "plugin Settings page"
 msgstr "plugin instellingen pagina"
 
 #: inc/class-sb-instagram-settings.php:1451
+#, php-format
 msgid "Error: There is no connected account for the user %s."
 msgstr "Fout: er zijn geen verbonden accounts voor de gebruiker %s."
 
 #: inc/class-sb-instagram-settings.php:1452
+#, php-format
 msgid "A connected account related to the user is required to display user feeds. Please connect an account for this user on the %s."
 msgstr "Een verbonden account gerelateerd aan de gebruiker is vereist om gebruikersfeeds weer te geven. Gelieve een account te verbinden voor deze gebruiker op de %s."
 
@@ -3818,6 +3835,7 @@ msgid "Error: Cannot add access token directly to the shortcode."
 msgstr "Fout: kan access token niet direct in de shortcode toevoegen."
 
 #: inc/class-sb-instagram-settings.php:1294
+#, php-format
 msgid "Due to recent Instagram platform changes, it's no longer possible to create a feed by adding the access token to the shortcode. Remove the access token from the shortcode and connect an account on the %s instead."
 msgstr "Als gevolg van recente wijzigingen in het Instagram-platform is het niet langer mogelijk om een feed te maken door het access token toe te voegen aan de shortcode. Verwijder het access token uit de shortcode en verbind in plaats daarvan een account op de %s."
 
@@ -3830,6 +3848,7 @@ msgid "Please visit the plugin's settings page to select a user account or add o
 msgstr "Ga naar de instellingen pagina van de plugin om een gebruikersaccount te selecteren of voeg er een toe aan de shortcode - user=\"username\"."
 
 #: inc/class-sb-instagram-settings.php:1340
+#, php-format
 msgid "It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s."
 msgstr "Het lijkt erop dat je Instagram account privé is. Instagram vereist dat privéaccounts elke 60 dagen opnieuw worden geauthenticeerd. Vernieuw je account om het te kunnen blijven updaten, of %smaak je Instagram account openbaar%s."
 
@@ -3848,10 +3867,12 @@ msgid "This is a courtesy email sent from the Smash Balloon Instagram Feed plugi
 msgstr "Dit is een beleefdheid e-mail die wordt verzonden vanuit de Smash Balloon Instagram Feed plugin op je site om je te waarschuwen wanneer er een probleem is met een van je Instagram feeds."
 
 #: inc/email.php:124
+#, php-format
 msgid "Sent from %s"
 msgstr "Verzonden van %s"
 
 #: inc/email.php:128
+#, php-format
 msgid "%sLog in and disable these emails%s"
 msgstr "%sMeld aan en schakel deze e-mails uit%s"
 
@@ -3860,6 +3881,7 @@ msgid "Once Weekly"
 msgstr "Eens per week"
 
 #: inc/if-functions.php:45
+#, php-format
 msgid "Error: No feed with the ID %s found."
 msgstr "Fout: geen feed gevonden met ID %s."
 
@@ -3886,10 +3908,12 @@ msgstr "Instagram Feed kritiek probleem"
 
 #. Translators: %s is the link to the article where more details about critical are listed.
 #: inc/if-functions.php:1413
+#, php-format
 msgid "An issue is preventing your Instagram Feeds from updating. %1$sResolve this issue%2$s."
 msgstr "Er is een probleem waardoor je Instagram-feeds niet worden bijgewerkt. %1$sVerhelp dit probleem%2$s."
 
 #: inc/if-functions.php:1614
+#, php-format
 msgid "Instagram Feed Report for %s"
 msgstr "Instagram feed rapport voor %s"
 
@@ -3902,6 +3926,7 @@ msgid "An Instagram feed on your website is currently unable to connect to Insta
 msgstr "Een Instagram feed op je site kan momenteel geen verbinding maken met Instagram om nieuwe berichten op te halen. Maak je geen zorgen, je feed wordt nog steeds weergegeven met behulp van een cache versie, maar is niet langer in staat om nieuwe berichten weer te geven."
 
 #: inc/if-functions.php:1617
+#, php-format
 msgid "This is caused by an issue with your Instagram account connecting to the Instagram API. For information on the exact issue and directions on how to resolve it, please visit the %sInstagram Feed settings page%s on your website."
 msgstr "Dit wordt veroorzaakt door een probleem met je Instagram account dat verbinding maakt met de Instagram API. Voor informatie over het exacte probleem en aanwijzingen over hoe het op te lossen, bezoek de %sInstagram feed instellingen pagina%s op je site."
 
@@ -3918,6 +3943,7 @@ msgid "As your Instagram account is set to be \"Private\", Instagram requires th
 msgstr "Omdat je Instagram account is ingesteld als \"privé\", vereist Instagram dat je je account elke 60 dagen opnieuw authenticeert. Dit is een beleefdheidsmailtje om je te laten weten dat je actie moet ondernemen om de Instagram feed op je site te kunnen blijven bijwerken. Als je je account niet vernieuwt, wordt in plaats daarvan een back-up cache weergegeven."
 
 #: inc/if-functions.php:1622
+#, php-format
 msgid "To prevent your account expiring every 60 days %sswitch your account to be public%s. For more information and to refresh your account, click here to visit the %sInstagram Feed settings page%s on your website."
 msgstr "Om te voorkomen dat je account elke 60 dagen verloopt %swissel je account naar openbaar%s. Voor meer informatie en om je account op te frissen, klik hier om de %sInstagram feed instellingen pagina%s op je site te bezoeken."
 
@@ -3940,6 +3966,7 @@ msgid "your website"
 msgstr "je site"
 
 #: inc/Platform_Data.php:290
+#, php-format
 msgid "An account admin has deauthorized the Smash Balloon app used to power the Instagram Feed plugin on %s. If the Instagram source is not reconnected within 7 days then all Instagram data will be automatically deleted on your website  due to Facebook data privacy rules."
 msgstr "Een accountbeheerder heeft de Smash Balloon app die wordt gebruikt om de Instagram Feed plugin op %s te voeden, gedeautoriseerd. Als het Instagram account niet binnen 7 dagen opnieuw wordt gekoppeld, worden alle Instagram gegevens automatisch verwijderd op je site vanwege de privacyregels van Facebook."
 
@@ -3949,10 +3976,12 @@ msgid "Settings Page"
 msgstr "Instellingen pagina"
 
 #: inc/Platform_Data.php:292
+#, php-format
 msgid "To prevent the automated deletion of data for the account, please reconnect your source for the plugin %s within 7 days."
 msgstr "Om te voorkomen dat de gegevens van het account automatisch worden verwijderd, dien je je account binnen 7 dagen opnieuw te koppelen op de plugin %s."
 
 #: inc/Platform_Data.php:336
+#, php-format
 msgid "An Instagram feed on %s has been not viewed in the last 14 days. Due to Instagram data privacy rules, all data for this feed will be deleted in 7 days time."
 msgstr "Een Instagram feed op %s is in de afgelopen 14 dagen niet bekeken. Vanwege de privacyregels van Instagram zullen alle gegevens voor deze feed over 7 dagen worden verwijderd."
 
@@ -3965,6 +3994,7 @@ msgid "All Instagram Data has Been Removed"
 msgstr "Alle Instagram gegevens zijn verwijderd"
 
 #: inc/Platform_Data.php:242
+#, php-format
 msgid "The page was not reconnected within the 7 day limit and all Instagram data was automatically deleted on %s due to Facebook data privacy rules."
 msgstr "De pagina werd niet opnieuw gekoppeld binnen de termijn van 7 dagen en alle Instagram gegevens werden automatisch verwijderd op %s als gevolg van de privacyregels van Facebook."
 
@@ -3974,7 +4004,7 @@ msgid "There was an error when trying to create the database tables used for res
 msgstr "Er is een fout opgetreden bij het aanmaken van de databasetabellen die gebruikt worden om herschalen van afbeeldingen."
 
 #: templates/item.php:34
-#: templates/item.php:45
+#, php-format
 msgid "Instagram post %s"
 msgstr "Instagram bericht %s"
 
@@ -3982,27 +4012,27 @@ msgstr "Instagram bericht %s"
 msgid "Display your Instagram feed"
 msgstr "Je Instagram feed tonen"
 
-#: admin/SBI_Admin_Notices.php:362
+#: admin/SBI_Admin_Notices.php:360
 msgid "Heads Up! Feed Item Files and CSS Have Changed"
 msgstr ""
 
-#: admin/SBI_Admin_Notices.php:363
+#: admin/SBI_Admin_Notices.php:361
 msgid "Version 6.3 includes changes to the HTML and CSS files that make up your feeds. If you have customized your feed through custom theme templates, custom CSS, or custom JavaScript, your customizations may have been affected."
 msgstr ""
 
-#: admin/SBI_Admin_Notices.php:364
+#: admin/SBI_Admin_Notices.php:362
 msgid "You can use the CSS file from previous versions if needed. Enable the related setting on the Advanced tab of the settings page."
 msgstr ""
 
-#: admin/SBI_Admin_Notices.php:389
+#: admin/SBI_Admin_Notices.php:387
 msgid "Sounds good!"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1082
+#: admin/SBI_Global_Settings.php:1073
 msgid "Use legacy CSS"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1083
+#: admin/SBI_Global_Settings.php:1074
 msgid "This would revert your CSS file for the feed to the file used in version 6.2. Enable this setting if your customizations are not working properly. "
 msgstr ""
 
@@ -4095,6 +4125,7 @@ msgid "Get Account Info"
 msgstr ""
 
 #: admin/views/support/support-tools.php:89
+#, php-format
 msgid "Get Media (%s)"
 msgstr ""
 
@@ -4127,8 +4158,8 @@ msgid "This information can be helpful when troubleshooting issues."
 msgstr ""
 
 #: admin/SBI_About_Us.php:266
-#: inc/admin/actions.php:48
 #: inc/admin/actions.php:49
+#: inc/admin/actions.php:50
 msgid "TikTok Feeds"
 msgstr ""
 
@@ -4172,7 +4203,7 @@ msgstr ""
 msgid "YouTube Feeds is a highly customizable way to display tweets from your YouTube account. Promote your latest content and update your site content automatically."
 msgstr ""
 
-#: admin/SBI_Callout.php:386
+#: admin/SBI_Callout.php:395
 #: inc/Integrations/Divi/SBInstagramFeed.php:60
 msgid "Feed"
 msgstr ""
@@ -4214,6 +4245,7 @@ msgid "Select an Instagram feed to embed"
 msgstr ""
 
 #: inc/Integrations/SBI_Integration.php:75
+#, php-format
 msgid "Select %s Feed"
 msgstr ""
 
@@ -4226,6 +4258,7 @@ msgid "Or create a Feed for"
 msgstr ""
 
 #: inc/Integrations/SBI_Integration.php:109
+#, php-format
 msgid "Create %s Feed"
 msgstr ""
 
@@ -4237,87 +4270,87 @@ msgstr ""
 msgid "Clicking Next will install "
 msgstr ""
 
-#: admin/SBI_Admin_Notices.php:451
+#: admin/SBI_Admin_Notices.php:449
 msgid "Deprecation notice"
 msgstr ""
 
-#: admin/SBI_Admin_Notices.php:452
+#: admin/SBI_Admin_Notices.php:450
 msgid "Due to changes by Instagram, all “Personal” accounts will stop working as of December 2024. To continue to use the plugin, reconnect all personal accounts as a “Business” account."
 msgstr ""
 
-#: admin/SBI_Admin_Notices.php:464
+#: admin/SBI_Admin_Notices.php:462
 msgid "Update Sources"
 msgstr ""
 
-#: admin/SBI_Callout.php:355
+#: admin/SBI_Callout.php:364
 msgid "Only Visible to you"
 msgstr ""
 
-#: admin/SBI_Callout.php:357
+#: admin/SBI_Callout.php:366
 msgid "Smash Balloon Feeds"
 msgstr ""
 
-#: admin/SBI_Callout.php:376
+#: admin/SBI_Callout.php:385
 msgid "Setup is almost complete"
 msgstr ""
 
-#: admin/SBI_Callout.php:377
+#: admin/SBI_Callout.php:386
 msgid "Complete your Smash Balloon feed setup and increase engagment"
 msgstr ""
 
-#: admin/SBI_Callout.php:386
+#: admin/SBI_Callout.php:395
 msgid "Create an"
 msgstr ""
 
-#: admin/SBI_Callout.php:386
+#: admin/SBI_Callout.php:395
 msgid "Create a"
 msgstr ""
 
-#: admin/SBI_Callout.php:390
+#: admin/SBI_Callout.php:399
 msgid "Go to Plugin"
 msgstr ""
 
-#: admin/SBI_Callout.php:401
+#: admin/SBI_Callout.php:410
 msgid "Go to"
 msgstr ""
 
-#: admin/SBI_Callout.php:401
+#: admin/SBI_Callout.php:410
 msgid "Plugin"
 msgstr ""
 
-#: admin/SBI_Callout.php:404
+#: admin/SBI_Callout.php:413
 msgid "Skip this step"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1086
+#: admin/SBI_Global_Settings.php:1077
 msgid "Image Optimization (Recommended)"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1087
+#: admin/SBI_Global_Settings.php:1078
 msgid "Creates multiple local copies of image in different sizes and uses smallest size based on where it is displayed. "
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1087
+#: admin/SBI_Global_Settings.php:1078
 msgid "Uses local Wordpress storage."
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1088
+#: admin/SBI_Global_Settings.php:1079
 msgid "Reset Image Storage"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1089
+#: admin/SBI_Global_Settings.php:1080
 msgid "Use dynamic sizes"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1090
+#: admin/SBI_Global_Settings.php:1081
 msgid "Default Image Format"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1092
+#: admin/SBI_Global_Settings.php:1083
 msgid "WebP"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1093
+#: admin/SBI_Global_Settings.php:1084
 msgid "JPG"
 msgstr ""
 
@@ -4345,11 +4378,11 @@ msgstr ""
 msgid "As of December 2024, the personal account connection type will no longer work. Reconnect as a business account to continue using the plugin."
 msgstr ""
 
-#: inc/admin/actions.php:345
+#: inc/admin/actions.php:347
 msgid "Action Required: Unable to save or update feed sources"
 msgstr ""
 
-#: inc/admin/actions.php:346
+#: inc/admin/actions.php:348
 msgid "Please ensure that all database tables are created and the user has the following permissions: SELECT, INSERT, UPDATE, DELETE, ALTER (for updates), CREATE TABLE, DROP TABLE, and INDEX."
 msgstr ""
 
@@ -4363,6 +4396,7 @@ msgid "There was an error when trying to update the database."
 msgstr ""
 
 #: admin/SBI_About_Us.php:217
+#, php-format
 msgid "We’re more than just an Instagram plugin! %s Check out our other plugins and add more content to your site."
 msgstr ""
 
@@ -4382,27 +4416,8 @@ msgstr ""
 msgid "Get in depth analytics on all your social feeds in a single place"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:972
-msgid "Post to Instagram right from WordPress with ClickSocial by Smash Balloon"
-msgstr ""
-
-#: admin/SBI_Global_Settings.php:1185
-msgid "Promote your blog and post from WordPress to Instagram with ClickSocial"
-msgstr ""
-
-#: admin/SBI_Global_Settings.php:1189
-msgid "Install and activate ClickSocial"
-msgstr ""
-
-#: admin/SBI_Global_Settings.php:1194
-msgid "Set up ClickSocial"
-msgstr ""
-
-#: admin/SBI_Global_Settings.php:1195
-msgid "Connect ClickSocial to your Instagram Account"
-msgstr ""
-
 #: inc/Integrations/SBI_Integration.php:135
+#, php-format
 msgid "You can display feeds of Instagram photos, videos, albums, events and more using the %s."
 msgstr ""
 
@@ -4411,19 +4426,12 @@ msgid "Pro version"
 msgstr ""
 
 #: inc/Integrations/SBI_Integration.php:139
+#, php-format
 msgid "You can also add Facebook, Twitter, and YouTube posts into your feed using our %s."
 msgstr ""
 
 #: inc/Integrations/SBI_Integration.php:140
 msgid "Social Wall plugin"
-msgstr ""
-
-#: admin/SBI_Admin_Notices.php:555
-msgid "Schedule social media posts to promote your blog with ClickSocial"
-msgstr ""
-
-#: admin/SBI_Admin_Notices.php:556
-msgid "ClickSocial allows you to auto-schedule posts on Instagram, Facebook, Twitter and more with just a click."
 msgstr ""
 
 #: inc/Builder/SBI_Source.php:719
@@ -4433,6 +4441,7 @@ msgstr ""
 
 #: instagram-feed.php:542
 #: instagram-feed.php:555
+#, php-format
 msgid "<strong>There was an error when trying to update the database for connected accounts:</strong><br><br><code>%s</code><br>"
 msgstr ""
 
@@ -4440,24 +4449,20 @@ msgstr ""
 msgid "An elegant way to add your Instagram posts to your website. "
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1065
+#: admin/SBI_Global_Settings.php:1056
 msgid "Install WPConsent for GDPR"
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1066
+#: admin/SBI_Global_Settings.php:1057
 msgid "Manage cookie and privacy preference features from a single place."
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1067
+#: admin/SBI_Global_Settings.php:1058
 msgid "Smash Balloon plugins work great with WPConsent."
 msgstr ""
 
-#: admin/SBI_Global_Settings.php:1068
+#: admin/SBI_Global_Settings.php:1059
 msgid "Install WPConsent"
-msgstr ""
-
-#: admin/SBI_Global_Settings.php:1186
-msgid "ClickSocial by Smash Balloon lets you easily promote your blog and schedule social media posts. Automatically post to your Instagram Business account (and Facebook and Twitter too)."
 msgstr ""
 
 #: inc/admin/SBI_Onboarding_wizard.php:165

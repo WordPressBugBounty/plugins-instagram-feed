@@ -1035,8 +1035,9 @@ if (!sbi_js_exists) {
 
                         this.settings.consentGiven = (val === 'true');
                     }
-                } else if (typeof window.cookieconsent !== 'undefined') { // Complianz by Really Simple Plugins
-                    this.settings.consentGiven = sbiCmplzGetCookie('complianz_consent_status') === 'allow';
+                } else if (typeof window.cookieconsent !== 'undefined') { // Complianz by Really Simple Plugins (v5.x and earlier)
+                    // Use the correct cookie name for v5.x: cmplz_consent_status
+                    this.settings.consentGiven = sbiCmplzGetCookie('cmplz_consent_status') === 'allow';
                 } else if (typeof window.Cookiebot !== "undefined") { // Cookiebot by Cybot A/S
                     this.settings.consentGiven = Cookiebot.consented;
                 } else if (typeof window.BorlabsCookie !== 'undefined') { // Borlabs Cookie by Borlabs
@@ -1165,7 +1166,7 @@ if (!sbi_js_exists) {
             });
         });
 
-        // Complianz by Really Simple Plugins
+        // Complianz by Really Simple Plugins (v5.x and earlier)
         $(document).on('cmplzAcceptAll', function (event) {
             $.each(window.sbi.feeds, function (index) {
                 window.sbi.feeds[index].settings.consentGiven = true;
@@ -1173,7 +1174,7 @@ if (!sbi_js_exists) {
             });
         });
 
-        // Complianz by Really Simple Plugins
+        // Complianz by Really Simple Plugins (v5.x and earlier)
         $(document).on('cmplzRevoke', function (event) {
             $.each(window.sbi.feeds, function (index) {
                 window.sbi.feeds[index].settings.consentGiven = false;

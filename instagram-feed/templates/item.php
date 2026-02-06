@@ -31,18 +31,18 @@ $media_all_sizes_json = SB_Instagram_Parse::get_media_src_set($post, $resized_im
  *
  * @since 2.1.5
  */
-$img_alt = SB_Instagram_Parse::get_caption($post, sprintf(__('Instagram post %s', 'instagram-feed'), $post_id));
-$img_alt = apply_filters('sbi_img_alt', $img_alt, $post);
+$caption = SB_Instagram_Parse::get_caption($post, sprintf(__('Instagram post %s', 'instagram-feed'), $post_id));
+$img_alt = apply_filters('sbi_img_alt', $caption, $post);
 
 /**
  * Text that appears in the visually hidden screen reader element
  *
- * @param string $img_screenreader first 50 characters for post
+ * @param string $img_screenreader first 50 bytes in UTF-8.
  * @param array $post api data for the post
  *
  * @since 2.1.5
  */
-$img_screenreader = substr(SB_Instagram_Parse::get_caption($post, sprintf(__('Instagram post %s', 'instagram-feed'), $post_id)), 0, 50);
+$img_screenreader = mb_substr($caption, 0, 50, 'UTF-8');
 $img_screenreader = apply_filters('sbi_img_screenreader', $img_screenreader, $post);
 
 ?>

@@ -79,9 +79,6 @@ class Util
 			),
 			'feed_analytics' => array(
 				'free' => 'sb-analytics/sb-analytics-pro.php',
-			),
-			'clicksocial' => array(
-				'free' => 'click-social/click-social.php'
 			)
 		);
 
@@ -99,7 +96,6 @@ class Util
 			}
 		}
 
-		$active_plugins_info['clicksocial_path'] = 'https://downloads.wordpress.org/plugin/click-social.zip';
 		$active_plugins_info['installed_plugins'] = $installed_plugins;
 
 		return $active_plugins_info;

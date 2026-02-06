@@ -921,8 +921,13 @@ if (!sbi_js_exists) {
 
                         this.settings.consentGiven = (val === 'true');
                     }
-                } else if (typeof window.cookieconsent !== 'undefined') { // Complianz by Really Simple Plugins
-                    this.settings.consentGiven = sbiCmplzGetCookie('complianz_consent_status') === 'allow';
+                } else if (typeof window.cookieconsent !== 'undefined' || typeof window.cmplz_has_consent === 'function') { // Complianz by Really Simple Plugins
+                    // Check for Complianz v6+ using cmplz_has_consent function
+                    if (typeof window.cmplz_has_consent === 'function') {
+                        this.settings.consentGiven = cmplz_has_consent('marketing');
+                    } else {
+                        this.settings.consentGiven = sbiCmplzGetCookie('cmplz_consent_status') === 'allow';
+                    }
                 } else if (typeof window.Cookiebot !== "undefined") { // Cookiebot by Cybot A/S
                     this.settings.consentGiven = Cookiebot.consented;
                 } else if (typeof window.BorlabsCookie !== 'undefined') { // Borlabs Cookie by Borlabs
@@ -1054,7 +1059,7 @@ if (!sbi_js_exists) {
             });
         });
 
-        // Complianz by Really Simple Plugins
+        // Complianz by Really Simple Plugins - Legacy events (v5 and earlier)
         $(document).on('cmplzAcceptAll', function (event) {
             $.each(window.sbi.feeds, function (index) {
                 window.sbi.feeds[index].settings.consentGiven = true;
@@ -1062,12 +1067,23 @@ if (!sbi_js_exists) {
             });
         });
 
-        // Complianz by Really Simple Plugins
+        // Complianz by Really Simple Plugins - Legacy events (v5 and earlier)
         $(document).on('cmplzRevoke', function (event) {
             $.each(window.sbi.feeds, function (index) {
                 window.sbi.feeds[index].settings.consentGiven = false;
                 window.sbi.feeds[index].afterConsentToggled();
             });
+        });
+
+        // Complianz by Really Simple Plugins - v6+ using native event listener
+        document.addEventListener('cmplz_status_change', function (event) {
+            if (typeof window.cmplz_has_consent === 'function') {
+                $.each(window.sbi.feeds, function (index) {
+                    var hasMarketingConsent = cmplz_has_consent('marketing');
+                    window.sbi.feeds[index].settings.consentGiven = hasMarketingConsent;
+                    window.sbi.feeds[index].afterConsentToggled();
+                });
+            }
         });
 
         // Borlabs Cookie by Borlabs

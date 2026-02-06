@@ -12,12 +12,7 @@ var settings_data = {
     sourcesList: sbi_settings.sources,
     dialogBoxPopupScreen: sbi_settings.dialogBoxPopupScreen,
     selectSourceScreen: sbi_settings.selectSourceScreen,
-    clickSocialScreen: sbi_settings.clickSocialScreen,
     wpconsentScreen: sbi_settings.wpconsentScreen,
-    clickSocialBtnStatus: 'normal',
-    enableClickSocialSetup: sbi_settings.clickSocialScreen.enableSetupStep,
-    clickSocialActive: sbi_settings.clickSocialActive,
-    disableClickSocialBtn: false,
     socialWallActivated: sbi_settings.socialWallActivated,
     socialWallLinks: sbi_settings.socialWallLinks,
     stickyWidget: false,
@@ -94,7 +89,6 @@ var settings_data = {
         sourcePopupScreen: 'redirect_1',
         sourcePopupType: 'creation',
         instanceSourceActive: null,
-        clickSocialIntegrationModal: false,
     },
     //Add New Source
     newSourceData: sbi_settings.newSourceData ? sbi_settings.newSourceData : null,
@@ -634,95 +628,6 @@ var sbiSettings = new Vue({
                     }.bind(this), 3000);
                 });
         },
-        installclickSocialPlugin: function (ispluginInstalled, isPluginActive, pluginDownloadPath, clickSocialPlugin) {
-            var self = this;
-            self.clickSocialBtnStatus = 'loading';
-            self.disableClickSocialBtn = true;
-            let data = new FormData();
-            data.append('action', !ispluginInstalled ? 'sbi_install_addon' : 'sbi_activate_addon');
-            data.append('nonce', self.nonce);
-            data.append('type', 'plugin');
-            data.append('plugin', !ispluginInstalled ? pluginDownloadPath : clickSocialPlugin);
-            fetch(self.ajaxHandler, {
-                method: "POST",
-                credentials: 'same-origin',
-                body: data
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success === true) {
-                        self.clickSocialBtnStatus = 'success';
-                        self.enableClickSocialSetup = true;
-                        self.setupclickSocialPlugin();
-                    } else {
-                        self.clickSocialBtnStatus = 'normal';
-                        self.disableClickSocialBtn = false;
-                    }
-                });
-        },
-        dismissClickSocialNotice: function () {
-            var self = this;
-
-            // Remove the notice instantly from the UI for better user experience
-            self.clickSocialScreen.shouldHideClickSocialNotice = true;
-
-            let data = new FormData();
-            data.append('action', 'sbi_dismiss_clicksocial_notice');
-            data.append('nonce', self.nonce);
-            fetch(self.ajaxHandler, {
-                method: "POST",
-                credentials: 'same-origin',
-                body: data
-            })
-        },
-        clickSocialInstallBtnIcon: function () {
-            if (this.clickSocialBtnStatus == 'loading') {
-                return this.loaderSVG;
-            } else if (this.clickSocialBtnStatus == 'success') {
-                return this.checkmarCircleSVG;
-            } else if (this.clickSocialBtnStatus == 'error') {
-                return this.timesSVG;
-            }
-
-            if (this.clickSocialScreen.isPluginInstalled && this.clickSocialScreen.isPluginActive) {
-                return this.checkmarCircleSVG;
-            }
-
-            return this.clickSocialScreen.installSVG;
-        },
-        clickSocialInstallBtnText: function () {
-            if (this.clickSocialBtnStatus == 'loading') {
-                return 'Installing';
-            } else if (this.clickSocialBtnStatus == 'success') {
-                return 'Installed &amp; Activated Successfully';
-            }
-
-            if (this.clickSocialScreen.isPluginInstalled && !this.clickSocialScreen.isPluginActive) {
-                return 'Activate Plugin';
-            }
-            if (this.clickSocialScreen.isPluginInstalled && this.clickSocialScreen.isPluginActive) {
-                return 'Plugin Installed & Activated';
-            }
-
-            return 'Install Plugin';
-        },
-        setupclickSocialPlugin: function () {
-            var self = this;
-            let data = new FormData();
-            data.append('action', 'sbi_clicksocial_setup_source');
-            data.append('nonce', self.nonce);
-            fetch(self.ajaxHandler, {
-                method: "POST",
-                credentials: 'same-origin',
-                body: data
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success === true) {
-                        window.location.href = self.adminUrl + self.clickSocialScreen.setupPage;
-                    }
-                });
-        },
         showTooltip: function (tooltipName) {
             this.tooltipName = tooltipName;
         },
@@ -1236,7 +1141,7 @@ var sbiSettings = new Vue({
             } else if (this.wpconsentBtnStatus === 'success') {
                 return this.checkmarCircleSVG;
             }
-            return this.clickSocialScreen.installSVG;
+            return this.model.wpconsentScreen.installSVG;
         }
     }
 });

@@ -246,7 +246,7 @@ class SBI_Callout
 	 */
 	public function register_assets()
 	{
-		$should_show_dashboard = sizeof($this->plugins_list) !== 0 && $this->is_dashboad_screen();
+		$should_show_dashboard = sizeof($this->plugins_list) !== 0 && $this->is_dashboard_screen();
 		if ($this->should_show_callout || $should_show_dashboard) {
 			if (is_admin()) {
 				wp_enqueue_script(
@@ -267,17 +267,26 @@ class SBI_Callout
 		}
 	}
 
-	public function is_dashboad_screen()
+	public function is_dashboard_screen()
 	{
+		// Check if it's an AJAX request first.
+		if (wp_doing_ajax()) {
+			return false;
+		}
+
 		if (is_admin()) {
 			if (!function_exists('get_current_screen')) {
 				require_once ABSPATH . '/wp-admin/includes/screen.php';
 			}
+
 			$screen = get_current_screen();
-			if ($screen->id === "dashboard") {
+
+			// Check if $screen exists before accessing its properties.
+			if ($screen && $screen->id === "dashboard") {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -288,7 +297,7 @@ class SBI_Callout
 	 */
 	public function dashboard_widget()
 	{
-		$should_show_dashboard = sizeof($this->plugins_list) !== 0 && $this->is_dashboad_screen();
+		$should_show_dashboard = sizeof($this->plugins_list) !== 0 && $this->is_dashboard_screen();
 		if ($should_show_dashboard) {
 			wp_add_dashboard_widget(
 				'sb_dashboard_widget',

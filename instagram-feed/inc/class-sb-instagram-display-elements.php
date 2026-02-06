@@ -326,24 +326,7 @@ class SB_Instagram_Display_Elements
 			}
 		}
 
-		if (!class_exists('SB_Instagram_Single')) {
-			return trailingslashit(SBI_PLUGIN_URL) . 'img/thumb-placeholder.png';
-		}
-
-		$permalink = SB_Instagram_Parse::fix_permalink(SB_Instagram_Parse::get_permalink($post));
-		$single = new SB_Instagram_Single($permalink);
-		$single->init();
-		$post = $single->get_post();
-
-		if (isset($post['thumbnail_url'])) {
-			return $post['thumbnail_url'];
-		}
-
-		if (isset($post['media_url']) && strpos($post['media_url'], '.mp4') === false) {
-			return $post['media_url'];
-		}
-
-		return trailingslashit(SBI_PLUGIN_URL) . 'img/thumb-placeholder.png';
+		return SB_Instagram_Parse::fetch_single_media($post);
 	}
 
 	/**

@@ -148,19 +148,7 @@ class SB_Instagram_Parse
 						if (isset($carousel_item['thumbnail_url'])) {
 							$full_size = $carousel_item['thumbnail_url'];
 						} else {
-							$media = trailingslashit(SBI_PLUGIN_URL) . 'img/thumb-placeholder.png';
-							// attempt to get.
-							$permalink = self::fix_permalink(self::get_permalink($carousel_item));
-							$single = new SB_Instagram_Single($permalink);
-							$single->init();
-							$carousel_item_post = $single->get_post();
-
-							if (isset($carousel_item_post['thumbnail_url'])) {
-								$media = $carousel_item_post['thumbnail_url'];
-							} elseif (isset($carousel_item_post['media_url']) && strpos($carousel_item_post['media_url'], '.mp4') === false) {
-								$media = $carousel_item_post['media_url'];
-							}
-							$full_size = $media;
+							$full_size = self::fetch_carousel_item_media($carousel_item, $post);
 						}
 					}
 
@@ -168,45 +156,81 @@ class SB_Instagram_Parse
 				}
 				return $full_size;
 			} else {
-				if (!class_exists('SB_Instagram_Single')) {
-					return trailingslashit(SBI_PLUGIN_URL) . 'img/thumb-placeholder.png';
-				}
-				// attempt to get.
-				$permalink = self::fix_permalink(self::get_permalink($post));
-				$single = new SB_Instagram_Single($permalink);
-				$single->init();
-				$post = $single->get_post();
-
-				if (isset($post['thumbnail_url'])) {
-					return $post['thumbnail_url'];
-				} elseif (isset($post['media_url']) && strpos($post['media_url'], '.mp4') === false) {
-					return $post['media_url'];
-				}
-
-				return trailingslashit(SBI_PLUGIN_URL) . 'img/thumb-placeholder.png';
+				return self::fetch_single_media($post);
 			}
 		} else {
 			if (isset($post['media_url'])) {
 				return $post['media_url'];
 			}
 
-			$permalink = self::fix_permalink(self::get_permalink($post));
+			return self::fetch_single_media($post);
+		}
+	}
 
-			$permalink = self::fix_permalink($permalink);
-			$single = new SB_Instagram_Single($permalink);
-			$single->init();
-			$maybe_post = $single->get_post();
-
-			if (isset($maybe_post['media_url'])) {
-				return $maybe_post['media_url'];
-			}
-
-			if (isset($maybe_post['thumbnail_url'])) {
-				return $maybe_post['thumbnail_url'];
-			}
-
+	/**
+	 * Fetches media URL using SB_Instagram_Single (oEmbed or Media API).
+	 *
+	 * @param array|string $post_or_permalink Post data array or permalink string.
+	 *
+	 * @return string Media URL, thumbnail URL, or placeholder.
+	 *
+	 * @since 6.10.0
+	 */
+	public static function fetch_single_media($post_or_permalink)
+	{
+		if (!class_exists('SB_Instagram_Single')) {
 			return trailingslashit(SBI_PLUGIN_URL) . 'img/thumb-placeholder.png';
 		}
+
+		// Extract permalink and post_data
+		$permalink = is_array($post_or_permalink) ? self::fix_permalink(self::get_permalink($post_or_permalink)) : self::fix_permalink($post_or_permalink);
+		$post_data = is_array($post_or_permalink) ? $post_or_permalink : array();
+
+		$single = new SB_Instagram_Single($permalink, $post_data);
+		$single->init();
+		$fetched = $single->get_post();
+
+		// Return media_url (skip .mp4 files) or thumbnail_url
+		if (isset($fetched['media_url']) && !empty($fetched['media_url']) && strpos($fetched['media_url'], '.mp4') === false) {
+			return $fetched['media_url'];
+		}
+		if (isset($fetched['thumbnail_url']) && !empty($fetched['thumbnail_url'])) {
+			return $fetched['thumbnail_url'];
+		}
+
+		return trailingslashit(SBI_PLUGIN_URL) . 'img/thumb-placeholder.png';
+	}
+
+	/**
+	 * Fetches carousel item media with inherited parent context for Media API.
+	 *
+	 * Carousel children don't have username fields, so we inherit from parent
+	 * to enable Media API for user's own carousel posts.
+	 *
+	 * @param array $carousel_item Carousel child item data.
+	 * @param array $parent_post Parent carousel post data.
+	 *
+	 * @return string Media URL, thumbnail URL, or placeholder.
+	 *
+	 * @since 6.10.0
+	 */
+	protected static function fetch_carousel_item_media($carousel_item, $parent_post)
+	{
+		// Inherit parent context for Media API to work
+		$carousel_item_with_context = $carousel_item;
+
+		// Add username from parent post (enables Media API)
+		if (!empty($parent_post['username'])) {
+			$carousel_item_with_context['username'] = $parent_post['username'];
+		}
+
+		// Add parent ID for tracking
+		if (!empty($parent_post['id'])) {
+			$carousel_item_with_context['parent_id'] = $parent_post['id'];
+		}
+
+		// Fetch via Single class (oEmbed or Media API)
+		return self::fetch_single_media($carousel_item_with_context);
 	}
 
 	/**

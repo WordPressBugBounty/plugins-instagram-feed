@@ -18,8 +18,4 @@ do_action('sbi_header_notices');
 		 @mouseleave.prevent.default="hoverTooltip(false)">
 		<div class="sb-control-elem-tltp-txt" v-html="tooltip.text"></div>
 	</div>
-
-	<?php
-	include_once SBI_BUILDER_DIR . 'templates/sections/popup/clicksocial-integration.php';
-	?>
 </div>
