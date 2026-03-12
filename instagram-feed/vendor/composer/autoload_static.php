@@ -4,39 +4,60 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit2beef32bcbe6958c8d0c584a584660fb
+class ComposerStaticInitb2e3b3853ee8eef122f948f4c32012ac
 {
     public static $files = array (
         'sb_ig_b1eb330aa001ae4915f07005b4e993c2' => __DIR__ . '/..' . '/smashballoon/framework/Utilities/functions.php',
+        'sb_ig_a5f44a166aafa87e1c96130802135926' => __DIR__ . '/..' . '/smashballoon/framework/Packages/php-di/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'S' => 
+        'S' =>
         array (
             'Smashballoon\\Stubs\\' => 19,
         ),
-        'I' => 
+        'I' =>
         array (
             'InstagramFeed\\Vendor\\Smashballoon\\Framework\\' => 44,
-            'InstagramFeed\\Vendor\\Brumann\\Polyfill\\' => 38,
+            'InstagramFeed\\Vendor\\Psr\\Container\\' => 35,
+            'InstagramFeed\\Vendor\\PhpDocReader\\' => 34,
+            'InstagramFeed\\Vendor\\Laravel\\SerializableClosure\\' => 49,
+            'InstagramFeed\\Vendor\\Invoker\\' => 29,
+            'InstagramFeed\\Vendor\\DI\\' => 24,
             'InstagramFeed\\' => 14,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Smashballoon\\Stubs\\' => 
+        'Smashballoon\\Stubs\\' =>
         array (
             0 => __DIR__ . '/..' . '/smashballoon/stubs/src',
         ),
-        'InstagramFeed\\Vendor\\Smashballoon\\Framework\\' => 
+        'InstagramFeed\\Vendor\\Smashballoon\\Framework\\' =>
         array (
             0 => __DIR__ . '/..' . '/smashballoon/framework',
         ),
-        'InstagramFeed\\Vendor\\Brumann\\Polyfill\\' => 
+        'InstagramFeed\\Vendor\\Psr\\Container\\' =>
         array (
-            0 => __DIR__ . '/..' . '/brumann/polyfill-unserialize/src',
+            0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'InstagramFeed\\' => 
+        'InstagramFeed\\Vendor\\PhpDocReader\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-di/phpdoc-reader/src/PhpDocReader',
+        ),
+        'InstagramFeed\\Vendor\\Laravel\\SerializableClosure\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
+        ),
+        'InstagramFeed\\Vendor\\Invoker\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/php-di/invoker/src',
+        ),
+        'InstagramFeed\\Vendor\\DI\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/smashballoon/framework/Packages/php-di/src',
+        ),
+        'InstagramFeed\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc',
         ),
@@ -49,9 +70,9 @@ class ComposerStaticInit2beef32bcbe6958c8d0c584a584660fb
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit2beef32bcbe6958c8d0c584a584660fb::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit2beef32bcbe6958c8d0c584a584660fb::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit2beef32bcbe6958c8d0c584a584660fb::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb2e3b3853ee8eef122f948f4c32012ac::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb2e3b3853ee8eef122f948f4c32012ac::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitb2e3b3853ee8eef122f948f4c32012ac::$classMap;
 
         }, null, ClassLoader::class);
     }

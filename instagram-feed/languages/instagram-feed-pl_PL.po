@@ -3752,8 +3752,8 @@ msgid "An unknown error has occurred."
 msgstr "Wystąpił nieznany błąd."
 
 #: inc/class-sb-instagram-posts-manager.php:675
-#: instagram-feed.php:333
-#: instagram-feed.php:354
+#: instagram-feed.php:345
+#: instagram-feed.php:366
 msgid "There was an error creating the folder for storing resized images."
 msgstr "Podczas tworzenia katalogu do przechowywania obrazków o zmienionym rozmiarze wystąpił błąd."
 
@@ -3998,8 +3998,8 @@ msgstr "Wszystkie dane z Instagramu zostały usunięte"
 msgid "The page was not reconnected within the 7 day limit and all Instagram data was automatically deleted on %s due to Facebook data privacy rules."
 msgstr "Strona nie została ponownie połączona przed upływem 7-dniowego limitu i wszystkie dane z Instagramu zostały automatycznie usunięte %s ze względu na reguły ochrony danych obowiązujące na Facebooku."
 
-#: instagram-feed.php:481
-#: instagram-feed.php:508
+#: instagram-feed.php:493
+#: instagram-feed.php:520
 msgid "There was an error when trying to create the database tables used for resizing images."
 msgstr "Podczas próby utworzenia tabel bazy danych służących do zmiany rozmiaru obrazków wystąpił błąd."
 
@@ -4203,7 +4203,7 @@ msgstr ""
 msgid "YouTube Feeds is a highly customizable way to display tweets from your YouTube account. Promote your latest content and update your site content automatically."
 msgstr ""
 
-#: admin/SBI_Callout.php:395
+#: admin/SBI_Callout.php:412
 #: inc/Integrations/Divi/SBInstagramFeed.php:60
 msgid "Feed"
 msgstr ""
@@ -4282,43 +4282,43 @@ msgstr ""
 msgid "Update Sources"
 msgstr ""
 
-#: admin/SBI_Callout.php:364
+#: admin/SBI_Callout.php:381
 msgid "Only Visible to you"
 msgstr ""
 
-#: admin/SBI_Callout.php:366
+#: admin/SBI_Callout.php:383
 msgid "Smash Balloon Feeds"
 msgstr ""
 
-#: admin/SBI_Callout.php:385
+#: admin/SBI_Callout.php:402
 msgid "Setup is almost complete"
 msgstr ""
 
-#: admin/SBI_Callout.php:386
+#: admin/SBI_Callout.php:403
 msgid "Complete your Smash Balloon feed setup and increase engagment"
 msgstr ""
 
-#: admin/SBI_Callout.php:395
+#: admin/SBI_Callout.php:412
 msgid "Create an"
 msgstr ""
 
-#: admin/SBI_Callout.php:395
+#: admin/SBI_Callout.php:412
 msgid "Create a"
 msgstr ""
 
-#: admin/SBI_Callout.php:399
+#: admin/SBI_Callout.php:416
 msgid "Go to Plugin"
 msgstr ""
 
-#: admin/SBI_Callout.php:410
+#: admin/SBI_Callout.php:427
 msgid "Go to"
 msgstr ""
 
-#: admin/SBI_Callout.php:410
+#: admin/SBI_Callout.php:427
 msgid "Plugin"
 msgstr ""
 
-#: admin/SBI_Callout.php:413
+#: admin/SBI_Callout.php:430
 msgid "Skip this step"
 msgstr ""
 
@@ -4439,8 +4439,8 @@ msgstr ""
 msgid "Failed to update or insert the source data."
 msgstr ""
 
-#: instagram-feed.php:542
-#: instagram-feed.php:555
+#: instagram-feed.php:554
+#: instagram-feed.php:567
 #, php-format
 msgid "<strong>There was an error when trying to update the database for connected accounts:</strong><br><br><code>%s</code><br>"
 msgstr ""

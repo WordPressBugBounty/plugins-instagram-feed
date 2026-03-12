@@ -81,7 +81,13 @@ class SBI_Callout
 		foreach ($plugins_list as $key => $plugin) {
 			if (isset($installed_plugins[$plugin['plugin']]) && is_plugin_active($plugin['plugin'])) {
 				$feeds_number = self::feeds_number($plugin['table']);
-				if (intval($feeds_number) === 0) {
+				// If feeds_number returns null, the table doesn't exist yet (e.g., during activation)
+				// In this case, skip this plugin from the callout list
+				if ($feeds_number === null) {
+					unset($plugins_list[$key]);
+					continue;
+				}
+				if ($feeds_number === 0) {
 					$plugins_list[$key]['is_done'] = false;
 				} else {
 					$plugins_list[$key]['is_done'] = true;
@@ -155,7 +161,9 @@ class SBI_Callout
 	/**
 	 * SQL Query to get the number of created feeds
 	 *
-	 * @return int
+	 * @param string $table_name The table name without prefix
+	 *
+	 * @return int|null Number of feeds, or null if table doesn't exist yet
 	 *
 	 * @since X.X
 	 */
@@ -163,7 +171,16 @@ class SBI_Callout
 	{
 		global $wpdb;
 		$feeds_table_name = $wpdb->prefix . $table_name;
-		return $wpdb->get_var("SELECT COUNT(*) FROM $feeds_table_name");
+
+		// Check if table exists before querying to prevent errors during activation/migration
+		// This prevents database errors in the log when plugin is first activated
+		$table_exists = $wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $feeds_table_name));
+
+		if ($table_exists !== $feeds_table_name) {
+			return null;
+		}
+
+		return (int) $wpdb->get_var("SELECT COUNT(*) FROM $feeds_table_name");
 	}
 
 	/**

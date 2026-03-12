@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 6.9
-Stable tag: 6.10.0
+Stable tag: 6.10.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,7 +14,7 @@ Formerly "Instagram Feed". Display clean, customizable, and responsive Instagram
 
 As the most powerful and easiest to use Instagram plugin for WordPress, Smash Balloon Social Photo Feed helps you create, customize and embed Instagram feeds on your website in just a few clicks! Absolutely no coding needed.
 
-https://www.youtube.com/watch?v=517rApIqzbw
+https://vimeo.com/1166356243
 
 Designed for both WordPress beginners and advanced users, you can use Social Photo Feed to seamlessly integrate your Instagram widgets and keep your site effortlessly updated.
 
@@ -307,6 +307,10 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.10.1 =
+* Tweak - Added optional deactivation feedback survey to help us improve the plugin.
+* Tweak - Various PHP 8.4 compatibility enhancements.
 
 = 6.10.0 =
 * New - Added support for Instagram's Media API. This will future-proof the plugin and prevent issues with Instagram deprecating the 'thumbnail_url' from the oEmbed API.
