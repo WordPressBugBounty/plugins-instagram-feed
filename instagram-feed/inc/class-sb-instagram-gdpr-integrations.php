@@ -217,7 +217,7 @@ class SB_Instagram_GDPR_Integrations
 			$errors[] = __('Tables used for storing information about resized images were not successfully created.', 'instagram-feed');
 		}
 		if (!$sbi_statuses_option['gdpr']['image_editor']) {
-			$errors[] = sprintf(__('An image editor is not available on your server. Instagram Feed is unable to create local resized images. See %1$sthis FAQ%2$s for more information', 'instagram-feed'), '<a href="https://smashballoon.com/doc/the-images-in-my-feed-are-missing-or-showing-errors/" target="_blank" rel="noopener">', '</a>');
+			$errors[] = sprintf(__('An image editor is not available on your server. Instagram Feed is unable to create local resized images. See %1$sthis FAQ%2$s for more information', 'instagram-feed'), '<a href="https://smashballoon.com/doc/the-images-in-my-feed-are-missing-or-showing-errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs" target="_blank" rel="noopener">', '</a>');
 		}
 
 		if (isset($_GET['tab']) && $_GET['tab'] !== 'support') {

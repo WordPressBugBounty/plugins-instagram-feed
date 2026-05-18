@@ -25,6 +25,7 @@
     }));
 
     registerBlockType('sbi/sbi-feed-block', {
+        apiVersion: 3,
         title: 'Instagram Feed',
         icon: sbiIcon,
         category: 'widgets',

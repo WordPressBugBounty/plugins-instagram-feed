@@ -252,7 +252,7 @@ class SBI_New_User extends SBI_Notifications
 
 			switch ($type) {
 				case 'review':
-					$sbi_open_feedback_url = 'https://smashballoon.com/feedback/?plugin=instagram-free';
+					$sbi_open_feedback_url = 'https://smashballoon.com/feedback/?plugin=instagram-free&utm_campaign=instagram-free&utm_source=new-user&utm_medium=feedback';
 					// step 1 for the review notice.
 					if (!$review_consent) {
 						$error_args = array(

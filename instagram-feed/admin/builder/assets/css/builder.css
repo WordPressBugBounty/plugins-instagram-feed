@@ -617,16 +617,6 @@ body.jetpack-masterbar .sbi-csz-header-insider {
     }
 }
 
-.sbi-fb-extpp-lite-btn-texts {
-    display: flex;
-    flex-direction: column;
-}
-
-.sbi-fb-extpp-lite-btn .sbi-fb-extpp-lite-btn-discount-applied {
-    font-size: 12px;
-    font-weight: normal;
-}
-
 .sbi-fb-hd-btn {
     cursor: pointer;
     display: flex;
@@ -2198,258 +2188,263 @@ Source Screen
 }
 
 .sbi-fb-extensions-popup {
-
-}
-
-.sbi-fb-extpp-top {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 264px;
-    background: #F3F4F5;
-}
-
-.sbi-fb-extpp-img {
-    width: 50%;
-    float: left;
-    display: flex;
-    justify-content: center;
-}
-
-.sbi-fb-extensions-popup[data-getext-view="featuredpost"] .sbi-fb-extpp-img {
-    padding: 50px 0px;
-}
-
-.sbi-fb-extensions-popup[data-getext-view="singlealbum"] .sbi-fb-extpp-img {
-    padding: 65px 0px;
-}
-
-.sbi-fb-extpp-social-wall .sbi-fb-extpp-top {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    padding-top: 29px;
-}
-
-.sbi-fb-extensions-popup[data-getext-view="socialwall"] .sbi-fb-extpp-head {
-    margin: 0 0 12px;
-    padding-top: 14px;
-}
-
-.sbi-fb-extensions-popup[data-getext-view="socialwall"] .sbi-fb-extpp-head h2 {
-    font-size: 24px !important;
-    line-height: 120% !important;
-}
-
-.sbi-fb-extpp-info {
-    width: 50%;
-    float: left;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding-left: 40px;
-}
-
-.sbi-fb-extensions-popup[data-getext-view="socialwall"] .sbi-fb-extpp-info {
-    width: 40%;
-    padding-right: 50px;
-}
-
-.sbi-fb-extensions-popup[data-getext-view="socialwall"] .sbi-fb-extpp-lite-btn {
-    margin-top: 20px;
-    max-width: 270px;
-    box-sizing: border-box;
-    padding: 7px 11px;
-}
-
-.sbi-fb-extensions-popup[data-getext-view="socialwall"] .sbi-extension-bullet-list {
-    grid-template-columns: 33% 33% 33%;
-}
-
-#sbi-builder-app .sbi-fb-extensions-popup[data-getext-view="socialwall"] .sbi-fb-extpp-head {
-    margin: 0 0 9px;
-}
-
-#sbi-builder-app .sbi-fb-extpp-desc {
-    color: #475569;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.sbi-fb-extpp-social-wall .sbi-fb-extpp-top {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    padding-top: 29px;
-}
-
-.sbi-fb-extpp-info {
-    width: 50%;
-    float: left;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding-left: 40px;
-}
-
-.sbi-fb-extpp-info .sbi-fb-extpp-head,
-.sbi-fb-extpp-info .sbi-fb-extpp-desc {
-    width: 100%;
-}
-
-#sbi-builder-app .sbi-fb-extpp-head {
-    margin: 0 0 12px;
-}
-
-#sbi-builder-app .sbi-fb-extpp-desc {
-    color: #475569;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    width: 105%;
-}
-
-.sbi-fb-extpp-head span {
-    color: var(--cl-orange);
-}
-
-.sbi-fb-extpp-head span.sb-social-wall {
-    color: inherit;
-    font-size: 26px;
-    line-height: 120% !important;
-    display: inline-block;
-}
-
-.sbi-fb-extpp-desc .sb-social-wall {
-    width: 90%;
-}
-
-.sbi-fb-extpp-head span {
-    color: var(--cl-orange);
-}
-
-.sbi-fb-extpp-lite-btn {
-    float: left;
-    font-size: 15px;
-    font-weight: 500;
-    padding: 10px 20px;
-    color: #0068A0;
-    background: #fff;
-    border: 1px solid #DCDDE1;
-    margin-bottom: 14px;
-    margin-top: 12px;
-    align-items: center;
-}
-
-.sbi-fb-extpp-lite-btn svg {
-    fill: currentColor;
-    width: 20px;
-    float: left;
-    margin-right: 10px;
-}
-
-.sbi-fb-extpp-inc-list {
-    border: 1px solid #dcdde1;
-    margin-top: 10px;
-    margin-bottom: 30px;
-}
-
-.sbi-fb-extpp-bottom-strg {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.sbi-fb-extpp-inc-items {
-    display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
-}
-
-.sbi-fb-extpp-inc-item, .sbi-fb-extpp-inc-item-bottom {
     position: relative;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-right: 1px solid #dcdde1;
-    border-bottom: 1px solid #dcdde1;
-    font-size: 14px;
+    width: 520px;
+    max-width: calc(100% - 40px);
+    background: #FFFFFF;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow:
+        0px 1.77px 5.12px 0px rgba(0, 0, 0, 0.04),
+        0px 4.26px 12.3px 0px rgba(0, 0, 0, 0.06),
+        0px 8.01px 23.16px 0px rgba(0, 0, 0, 0.08),
+        0px 14.3px 41.32px 0px rgba(0, 0, 0, 0.09),
+        0px 26.74px 77.29px 0px rgba(0, 0, 0, 0.11);
 }
 
-.sbi-fb-extpp-inc-item-bottom {
-    border: 0px !important;
-}
-
-.sbi-fb-extpp-inc-item:last-of-type {
-    border-right: 0px;
-}
-
-.sbi-fb-extpp-inc-item svg, .sbi-fb-extpp-inc-item-bottom svg {
-    width: 17px;
-    margin-right: 10px;
-    fill: currentColor;
-    float: left;
-}
-
-.sbi-fb-extpp-bottom {
-    padding: 20px 40px;
-    background: #fff;
-}
-
-.sbi-extension-bullet-list {
-    display: grid;
-    grid-template-columns: 33% 33% 33%;
-    grid-column-gap: 2%;
-    margin-top: 12px;
-    margin-bottom: 40px;
-}
-
-.sbi-extension-single-bullet {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin: 4px 0;
-}
-
-#sbi-builder-app .sbi-extension-single-bullet span {
-    color: #434960;
-}
-
-.sbi-extension-single-bullet svg {
-    margin-right: 12px;
-}
-
-.sbi-fb-extpp-btns {
-    display: grid;
-    grid-template-columns: 100%;
-    grid-column-gap: 1%;
-}
-
-.sbi-fb-extpp-btns div {
-    height: 38px;
+.sbi-fb-extensions-popup .sbi-fb-popup-cls {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
     cursor: pointer;
-    position: relative;
-    border-radius: 3px;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 160%;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 8px;
+    transition: transform 0.15s ease, background 0.15s ease;
+    padding: 0;
+}
+
+.sbi-fb-extensions-popup .sbi-fb-popup-cls:hover {
+    background: #E8E8EB;
+    transform: scale(1.02);
+}
+
+.sbi-fb-extensions-popup .sbi-fb-popup-cls:active {
+    transform: scale(0.98);
+}
+
+.sbi-fb-extensions-popup .sbi-fb-popup-cls svg {
+    width: 14px;
+    height: 14px;
+}
+
+.sbi-fb-extpp-illustration {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    overflow: hidden;
+}
+
+.sbi-fb-extpp-illustration img {
+    width: auto;
+    height: 190px;
+}
+
+.sbi-fb-extpp-content {
+    padding: 16px 60px 0;
+    text-align: center;
+}
+
+.sbi-fb-extpp-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.sbi-fb-extpp-title-text {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #141B38;
+    letter-spacing: -0.24px;
+    line-height: 1.2;
+}
+
+.sbi-fb-extpp-pro-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #E6E6EB;
+    border-radius: 7px;
+    padding: 0 5px;
+    height: 25px;
+}
+
+.sbi-fb-extpp-pro-badge span {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #141B38;
+    letter-spacing: 0.72px;
+    text-transform: uppercase;
+    line-height: 1.4;
+}
+
+.sbi-fb-extpp-description {
+    font-family: InterVariable, Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #696D80;
+    line-height: 1.6;
+    text-wrap: balance;
+    margin: 0;
+}
+
+.sbi-fb-extpp-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0 70px;
+    margin-top: 21px;
+}
+
+.sbi-fb-extpp-upgrade-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #59AB46;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-family: InterVariable, Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.6;
+    text-decoration: none;
+    box-shadow:
+        0px 2px 5px 0px rgba(60, 66, 87, 0.12),
+        0px 1px 1px 0px rgba(0, 0, 0, 0.08),
+        inset 0px -1px 1px 0px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease, background 0.15s ease;
     box-sizing: border-box;
 }
 
-.sbi-fb-extpp-get-btn {
-    color: #fff;
-    background: var(--cl-orange);
+.sbi-fb-extpp-upgrade-btn:hover {
+    background: #4e9a3d;
+    transform: scale(1.02);
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.sbi-fb-extpp-upgrade-btn:active {
+    transform: scale(0.98);
+}
+
+.sbi-fb-extpp-upgrade-btn:focus {
+    outline: none;
+    box-shadow:
+        0px 2px 5px 0px rgba(60, 66, 87, 0.12),
+        0px 1px 1px 0px rgba(0, 0, 0, 0.08),
+        inset 0px -1px 1px 0px rgba(0, 0, 0, 0.12);
+}
+
+.sbi-fb-extpp-upgrade-btn:focus-visible {
+    outline: 2px solid #59AB46;
+    outline-offset: 2px;
+}
+
+.sbi-fb-extpp-upgrade-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 .sbi-fb-extpp-demo-btn {
-    border: 2px solid #DCDDE1;
-    background: #F3F4F5;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: InterVariable, Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #696D80;
+    line-height: 1.6;
+    padding: 2px 4px;
+    text-decoration: none;
+}
+
+.sbi-fb-extpp-demo-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.sbi-fb-extpp-demo-btn:focus-visible {
+    outline: 2px solid #696D80;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.sbi-fb-extpp-demo-btn:hover {
+    color: #525670;
+    text-decoration: underline;
+}
+
+.sbi-fb-extpp-footer {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF7E5 100%);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px 0 24px;
+    margin-top: 20px;
+    gap: 12px;
+}
+
+.sbi-fb-extpp-check-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+}
+
+.sbi-fb-extpp-footer-text {
+    display: flex;
+    flex-direction: column;
+    color: #663D00;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 316px;
+}
+
+.sbi-fb-extpp-footer-bold {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-weight: 600;
+}
+
+.sbi-fb-extpp-footer-regular {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-weight: 400;
+}
+
+.sbi-fb-extpp-highlight-pill {
+    display: inline-block;
+    background: linear-gradient(90deg, #A65D21 0%, #D4924A 50%, #A65D21 100%);
+    background-size: 200% 100%;
+    color: #FFFFFF;
+    padding: 0 4px;
+    border-radius: 4px;
+    font-weight: 700;
+    line-height: 1.35;
+    animation: sbi-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes sbi-shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
 }
 
 /*

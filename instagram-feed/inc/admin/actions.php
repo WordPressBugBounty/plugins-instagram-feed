@@ -39,7 +39,7 @@ function sb_instagram_menu()
 		__('Upgrade to Pro', 'instagram-feed'),
 		'<span class="sbi_get_pro">' . __('Upgrade to Pro', 'instagram-feed') . '</span>',
 		$cap,
-		'https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free&utm_source=menu-link&utm_medium=upgrade-link&utm_content=UpgradeToPro',
+		'https://smashballoon.com/instagram-feed/instagram-lite-upgrade/?utm_campaign=instagram-free&utm_source=menu-link&utm_medium=upgrade-link&utm_content=UpgradeToPro',
 		''
 	);
 
@@ -228,7 +228,7 @@ function sbi_formatted_error($response)
 	if (isset($response['error'])) {
 		$response['error']['message'] = str_replace('Please read the Graph API documentation at https://developers.facebook.com/docs/graph-api', '', $response['error']['message']);
 		$error = '<span>' . sprintf(__('API error %s:', 'instagram-feed'), esc_html($response['error']['code'])) . ' ' . esc_html($response['error']['message']) . '</span>';
-		$error .= '<div class="license-action-btns"><p class="sbi-error-directions"><a href="https://smashballoon.com/instagram-feed/docs/errors/" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a></p></div>';
+		$error .= '<div class="license-action-btns"><p class="sbi-error-directions"><a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=admin-notice&utm_medium=docs" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a></p></div>';
 
 		return $error;
 	} else {
@@ -238,7 +238,7 @@ function sbi_formatted_error($response)
 				$message .= '<span>' . esc_html($key) . ' - ' . esc_html($item[0]) . '</span>';
 			}
 		}
-		$message .= '<div class="license-action-btns"><p class="sbi-error-directions"><a href="https://smashballoon.com/instagram-feed/docs/errors/" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a></p></div>';
+		$message .= '<div class="license-action-btns"><p class="sbi-error-directions"><a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=admin-notice&utm_medium=docs" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a></p></div>';
 
 		return $message;
 	}
@@ -295,7 +295,7 @@ function sbi_admin_error_notices()
 				$buttons = array(
 					array(
 						'text' => __('Visit our FAQ page for help', 'instagram-feed'),
-						'url' => 'https://smashballoon.com/docs/instagram/',
+						'url' => 'https://smashballoon.com/docs/instagram/?utm_campaign=instagram-free&utm_source=admin-notice&utm_medium=docs',
 						'class' => 'sbi-license-btn sbi-btn-blue sbi-notice-btn',
 						'target' => '_blank',
 						'tag' => 'a',
@@ -349,7 +349,7 @@ function sbi_admin_error_notices()
 					array(
 						array(
 							'text' => __('Visit our FAQ page for help', 'instagram-feed'),
-							'url' => 'https://smashballoon.com/doc/instagram-api-error-message-reference/',
+							'url' => 'https://smashballoon.com/doc/instagram-api-error-message-reference/?utm_campaign=instagram-free&utm_source=admin-notice&utm_medium=docs',
 							'class' => 'sbi-license-btn sbi-btn-blue sbi-notice-btn',
 							'target' => '_blank',
 							'tag' => 'a',

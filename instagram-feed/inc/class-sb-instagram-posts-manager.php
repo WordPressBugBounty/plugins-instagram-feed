@@ -337,7 +337,7 @@ class SB_Instagram_Posts_Manager
 			$error_message_return['error_message'] = __('HTTP Error. Unable to connect to the Instagram API.', 'instagram-feed') . ' ' . __('Feed will not update.', 'instagram-feed');
 			$error_message_return['admin_only'] = sprintf(__('Error connecting to %s.', 'instagram-feed'), $response['url']);
 
-			$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+			$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 
 			if (isset($response['response']) && isset($response['response']->errors)) {
 				$num = count($response['response']->errors);
@@ -359,23 +359,23 @@ class SB_Instagram_Posts_Manager
 			if ((int)$response['error']['code'] === 100) {
 				$error_message_return['error_message'] = __('Error: Access Token is not valid or has expired.', 'instagram-feed') . ' ' . __('Feed will not update.', 'instagram-feed');
 				$error_message_return['admin_only'] = sprintf(__('API error %s:', 'instagram-feed'), $response['error']['code']) . ' ' . $response['error']['message'];
-				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 			} elseif ((int)$response['error']['code'] === 18) {
 				$error_message_return['error_message'] = __('Error: Hashtag limit of 30 unique hashtags per week has been reached.', 'instagram-feed');
 				$error_message_return['admin_only'] = __('If you need to display more than 30 hashtag feeds on your site, consider connecting an additional business account from a separate Instagram Identity and Facebook page. Connecting an additional Instagram business account from the same Facebook page will not raise the limit.', 'instagram-feed');
-				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 			} elseif ((int)$response['error']['code'] === 10) {
 				$error_message_return['error_message'] = sprintf(__('Error: Connected account for the user %s does not have permission to use this feed type.', 'instagram-feed'), $connected_account['username']);
 				$error_message_return['admin_only'] = __('Try using the big blue button on the "Configure" tab to reconnect the account and update its permissions.', 'instagram-feed');
-				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 			} elseif ((int)$response['error']['code'] === 24) {
 				$error_message_return['error_message'] = __('Error: Cannot retrieve posts for this hashtag.', 'instagram-feed');
 				$error_message_return['admin_only'] = $response['error']['error_user_msg'];
-				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 			} else {
 				$error_message_return['error_message'] = __('There has been a problem with your Instagram Feed.', 'instagram-feed');
 				$error_message_return['admin_only'] = sprintf(__('API error %s:', 'instagram-feed'), $response['error']['code']) . ' ' . $response['error']['message'];
-				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 			}
 		} else {
 			$error_message_return['error_message'] = __('An unknown error has occurred.', 'instagram-feed');
@@ -1059,7 +1059,7 @@ class SB_Instagram_Posts_Manager
 						$retry = '<button data-url="' . get_the_permalink($this->errors['connection']['post_id']) . '" class="sbi-clear-errors-visit-page sbi-space-left sbi-btn sbi-notice-btn sbi-btn-grey">' . __('View Feed and Retry', 'instagram-feed') . '</button>';
 					}
 					$hash = isset($errors['connection']['error_id']) ? '#' . (int)$errors['connection']['error_id'] : '';
-					$error_message .= '<div class="license-action-btns"><p class="sbi-error-directions"><a class="sbi-license-btn sbi-btn-blue sbi-notice-btn" href="https://smashballoon.com/instagram-feed/docs/errors/' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>' . $retry . '</p></div>';
+					$error_message .= '<div class="license-action-btns"><p class="sbi-error-directions"><a class="sbi-license-btn sbi-btn-blue sbi-notice-btn" href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>' . $retry . '</p></div>';
 				}
 			}
 		} else {
@@ -1074,7 +1074,7 @@ class SB_Instagram_Posts_Manager
 					$error_message_array = array(
 						'error_message' => __('Error: Private Instagram Account.', 'instagram-feed'),
 						'admin_only' => sprintf(__('It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %1$smake your Instagram account public%2$s.', 'instagram-feed'), $link_1, $link_2),
-						'frontend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>',
+						'frontend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs#10">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>',
 						'backend_directions' => '',
 					);
 				}
@@ -1095,7 +1095,7 @@ class SB_Instagram_Posts_Manager
 						if (is_admin()) {
 							$retry = '<button data-url="' . get_the_permalink($this->errors['connection']['post_id']) . '" class="sbi-clear-errors-visit-page sbi-space-left sbi-btn sbi-notice-btn sbi-btn-grey">' . __('View Feed and Retry', 'instagram-feed') . '</button>';
 						}
-						$error_message .= '<p class="sbi-error-directions"><a class="sbi-license-btn sbi-btn-blue sbi-notice-btn" href="https://smashballoon.com/instagram-feed/docs/errors/" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>' . $retry . '</p>';
+						$error_message .= '<p class="sbi-error-directions"><a class="sbi-license-btn sbi-btn-blue sbi-notice-btn" href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>' . $retry . '</p>';
 					}
 				}
 			}

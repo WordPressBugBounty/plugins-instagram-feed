@@ -163,7 +163,7 @@ class SBI_Support
 			'nonce' => wp_create_nonce('sbi-admin'),
 			'links' => SBI_Feed_Builder::get_links_with_utm(),
 			'supportPageUrl' => admin_url('admin.php?page=sbi-support'),
-			'siteSearchUrl' => 'https://smashballoon.com/search/',
+			'siteSearchUrl' => 'https://smashballoon.com/search/?utm_campaign=instagram-free&utm_source=support&utm_medium=support',
 			'system_info' => $this->get_system_info(),
 			'system_info_n' => str_replace('</br>', "\n", $this->get_system_info()),
 			'feeds' => $feeds,
@@ -806,7 +806,7 @@ class SBI_Support
 	 */
 	public function get_support_url()
 	{
-		$url = 'https://smashballoon.com/instagram-feed/support/';
+		$url = 'https://smashballoon.com/instagram-feed/support/?utm_campaign=instagram-free&utm_source=support&utm_medium=support';
 		$license_type = sbi_is_pro_version() ? 'pro' : 'free';
 
 		$args = array();

@@ -1168,6 +1168,35 @@ function sbi_clear_caches()
 }
 
 /**
+ * Full sitewide cache clear — mirrors the "Clear All Caches" admin button.
+ */
+function sbi_clear_all_feed_caches()
+{
+	global $wpdb;
+
+	$cache_table_name = $wpdb->prefix . 'sbi_feed_caches';
+	$wpdb->query(
+		"UPDATE $cache_table_name
+		 SET cache_value = ''
+		 WHERE cache_key NOT IN ( 'posts_backup', 'header_backup' );"
+	);
+
+	$options_table = $wpdb->prefix . 'options';
+	$wpdb->query("DELETE FROM $options_table WHERE `option_name` LIKE ('%\_transient\_sbi\_%')");
+	$wpdb->query("DELETE FROM $options_table WHERE `option_name` LIKE ('%\_transient\_timeout\_sbi\_%')");
+	$wpdb->query("DELETE FROM $options_table WHERE `option_name` LIKE ('%\_transient\_&sbi\_%')");
+	$wpdb->query("DELETE FROM $options_table WHERE `option_name` LIKE ('%\_transient\_timeout\_&sbi\_%')");
+	$wpdb->query("DELETE FROM $options_table WHERE `option_name` LIKE ('%\_transient\_\$sbi\_%')");
+	$wpdb->query("DELETE FROM $options_table WHERE `option_name` LIKE ('%\_transient\_timeout\_\$sbi\_%')");
+
+	SB_Instagram_Cache::clear_legacy(true);
+
+	sb_instagram_clear_page_caches();
+
+	do_action('sbi_after_clear_all_feed_caches');
+}
+
+/**
  * When certain events occur, page caches need to
  * clear or errors occur or changes will not be seen
  */

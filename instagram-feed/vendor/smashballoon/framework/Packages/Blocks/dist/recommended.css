@@ -1,0 +1,89 @@
+/*!****************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/recommended/editor.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************************/
+.am-recommended-block-modal {
+  width: 580px;
+  min-height: 290px;
+  position: relative;
+}
+.am-recommended-block-modal .am-modal-header {
+  padding: 20px 0 10px 20px;
+  position: relative;
+  background: #F3F4F5;
+}
+.am-recommended-block-modal .am-modal-title-wrap {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+}
+.am-recommended-block-modal .am-modal-title-wrap .am-modal-title {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.am-recommended-block-modal .am-modal-title-wrap .am-modal-title .am-requires {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 19px;
+  color: #434960;
+}
+.am-recommended-block-modal .am-modal-title-wrap .am-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.am-recommended-block-modal .am-modal-title-wrap .am-title h2 {
+  font-size: 18px;
+  line-height: 25px;
+  font-weight: 600;
+  margin: 0;
+  color: #141B38;
+}
+.am-recommended-block-modal .am-modal-title-wrap .am-title .am-plugin-tag {
+  font-size: 10px;
+  font-weight: 700;
+  background-color: #59AB46;
+  color: white;
+  padding: 0 2px;
+  border-radius: 2px;
+  margin-top: -5px;
+}
+.am-recommended-block-modal .am-modal-content {
+  margin-left: 86px;
+  padding: 20px 20px 20px 20px;
+}
+.am-recommended-block-modal .am-modal-content p {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #434960;
+  margin: 0;
+  padding: 0 20px 20px 0;
+}
+.am-recommended-block-modal .am-modal-content .am-modal-cta-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  width: 100%;
+}
+.am-recommended-block-modal .am-modal-close {
+  position: absolute;
+  top: 1%;
+  right: 1%;
+}
+.am-recommended-block-modal .components-modal__content,
+.am-recommended-block-modal .components-modal__content.hide-header {
+  padding: 0;
+}
+.am-recommended-block-modal .components-spinner {
+  display: none;
+  height: 14px;
+  width: 14px;
+  margin-top: 0;
+}
+
+/*# sourceMappingURL=recommended.css.map*/

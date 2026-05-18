@@ -611,7 +611,7 @@ class SBI_Notifications
 
 			switch ($type) {
 				case 'review':
-					$sbi_open_feedback_url = 'https://smashballoon.com/feedback/?plugin=instagram-lite';
+					$sbi_open_feedback_url = 'https://smashballoon.com/feedback/?plugin=instagram-lite&utm_campaign=instagram-free&utm_source=notifications&utm_medium=feedback';
 					$review_consent = get_option('sbi_review_consent');
 					if (!$review_consent) {
 						$error_args = array(

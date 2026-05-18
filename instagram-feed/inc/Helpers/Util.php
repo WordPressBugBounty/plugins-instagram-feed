@@ -21,7 +21,17 @@ class Util
 
 	public static function isIFPage()
 	{
-		return get_current_screen() !== null && !empty($_GET['page']) && strpos($_GET['page'], 'sbi-') !== false;
+		$plugin_pages = array(
+			'sb-instagram-feed',
+			'sbi-feed-builder',
+			'sbi-settings',
+			'sbi-oembeds-manager',
+			'sbi-extensions-manager',
+			'sbi-about-us',
+			'sbi-support',
+		);
+		$current_page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
+		return in_array($current_page, $plugin_pages, true);
 	}
 
 	/**

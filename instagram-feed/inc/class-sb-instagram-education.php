@@ -104,13 +104,13 @@ class SB_Instagram_Education
 			array(
 				'title' => esc_html__('Automated YouTube Live Streaming', 'instagram-feed'),
 				'content' => esc_html__('You can automatically feed live YouTube videos to your website using our Feeds For YouTube Pro plugin. It takes all the hassle out of publishing live videos to your site by automating the process.', 'instagram-feed'),
-				'more' => 'https://smashballoon.com/youtube-feed/',
+				'more' => 'https://smashballoon.com/youtube-feed/?utm_campaign=instagram-free&utm_source=education&utm_medium=marketing',
 				'item' => 1,
 			),
 			array(
 				'title' => esc_html__('Display Facebook Pages and Groups', 'instagram-feed'),
 				'content' => esc_html__('Have a Facebook Page or Group? Easily embed a feed of posts into your website, delivering fresh content automatically to your site from Facebook. Posts, Photos, Events, Videos, Albums, Reviews, and more!', 'instagram-feed'),
-				'more' => 'https://smashballoon.com/custom-facebook-feed/',
+				'more' => 'https://smashballoon.com/custom-facebook-feed/?utm_campaign=instagram-free&utm_source=education&utm_medium=marketing',
 				'item' => 2,
 			),
 			array(

@@ -361,6 +361,22 @@ class SBI_Db
 		return $feeds_elementor;
 	}
 
+	/**
+	 * Query feeds list for the modern Elementor widget.
+	 *
+	 * Returns feed objects with id and feed_name properties,
+	 * suitable for localized script data.
+	 *
+	 * @since 6.5.0
+	 *
+	 * @return array
+	 */
+	public static function elementor_feeds_list() {
+		global $wpdb;
+		$feeds_table_name = $wpdb->prefix . 'sbi_feeds';
+		return $wpdb->get_results( "SELECT id, feed_name FROM $feeds_table_name" );
+	}
+
 
 	/**
 	 * Count the sbi_feeds table

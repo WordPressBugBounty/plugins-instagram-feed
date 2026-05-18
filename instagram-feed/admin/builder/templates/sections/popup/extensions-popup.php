@@ -1,59 +1,50 @@
 <div class="sbi-fb-extensions-pp-ctn sb-fs-boss sbi-fb-center-boss"
-     v-if="viewsActive.extensionsPopupElement != null && viewsActive.extensionsPopupElement != false">
+     v-if="viewsActive.extensionsPopupElement != null && viewsActive.extensionsPopupElement != false"
+     @click.self="activateView('extensionsPopupElement')">
     <div class="sbi-fb-extensions-popup sbi-fb-popup-inside"
          v-if="viewsActive.extensionsPopupElement != null && viewsActive.extensionsPopupElement != false"
          :data-getext-view="viewsActive.extensionsPopupElement">
 
-        <div class="sbi-fb-popup-cls" @click.prevent.default="activateView('extensionsPopupElement')">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
-                      fill="#141B38"/>
+        <button class="sbi-fb-popup-cls" @click.prevent.default="activateView('extensionsPopupElement')" aria-label="Close">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L13 13M1 13L13 1" stroke="#696D80" stroke-width="2" stroke-linecap="round"/>
             </svg>
+        </button>
+
+        <div class="sbi-fb-extpp-illustration">
+            <img :src="extensionsPopup[viewsActive.extensionsPopupElement].imgUrl"
+                 :alt="extensionsPopup[viewsActive.extensionsPopupElement].featureName">
         </div>
-        <div>
-            <div class="sbi-fb-extpp-top sbi-fb-fs">
-                <div class="sbi-fb-extpp-info">
-                    <div class="sbi-fb-extpp-head sbi-fb-fs">
-                        <h2 v-html="extensionsPopup[viewsActive.extensionsPopupElement].heading"></h2>
-                    </div>
-                    <div class="sbi-fb-extpp-desc sbi-fb-fs sb-caption"
-                         v-html="extensionsPopup[viewsActive.extensionsPopupElement].description"></div>
-                    <div class="sbi-fb-fs">
-                        <div class="sbi-fb-extpp-lite-btn" href="" target="_blank"
-                             v-if="customizerScreens.popupBackButton.includes(viewsActive.extensionsPopupElement)">
-                            <svg width="18" height="17" viewBox="0 0 18 17" fill="none">
-                                <path d="M16.843 8.15001L9.34297 0.650006C9.03048 0.340071 8.60809 0.166321 8.16797 0.166672H2.33464C1.89261 0.166672 1.46869 0.342267 1.15612 0.654828C0.843564 0.967388 0.667969 1.39131 0.667969 1.83334V7.66667C0.667795 7.8866 0.711149 8.10439 0.795533 8.30748C0.879917 8.51057 1.00366 8.69496 1.15964 8.85001L8.65964 16.35C8.97212 16.6599 9.39452 16.8337 9.83464 16.8333C10.276 16.8315 10.6985 16.6547 11.0096 16.3417L16.843 10.5083C17.156 10.1972 17.3328 9.77465 17.3346 9.33334C17.3348 9.11341 17.2915 8.89563 17.2071 8.69253C17.1227 8.48944 16.9989 8.30505 16.843 8.15001ZM9.83464 15.1667L2.33464 7.66667V1.83334H8.16797L15.668 9.33334L9.83464 15.1667ZM4.41797 2.66667C4.6652 2.66667 4.90687 2.73998 5.11243 2.87734C5.31799 3.01469 5.47821 3.20991 5.57282 3.43832C5.66743 3.66673 5.69218 3.91806 5.64395 4.16054C5.59572 4.40301 5.47667 4.62574 5.30185 4.80056C5.12704 4.97537 4.90431 5.09442 4.66183 5.14265C4.41936 5.19089 4.16802 5.16613 3.93962 5.07152C3.71121 4.97691 3.51598 4.8167 3.37863 4.61114C3.24128 4.40557 3.16797 4.1639 3.16797 3.91667C3.16797 3.58515 3.29967 3.26721 3.53409 3.03279C3.76851 2.79837 4.08645 2.66667 4.41797 2.66667Z"
-                                      fill="#0068A0"/>
-                            </svg>
-                            <div class="sbi-fb-extpp-lite-btn-texts">
-                                <span>{{genericText.liteFeedUsersSimpleText}}</span>
-                                <span class="sbi-fb-extpp-lite-btn-discount-applied">{{genericText.liteFeedUsersAutoCheckout}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="sbi-fb-extpp-img" v-html="svgIcons['extensions-popup'][viewsActive.extensionsPopupElement]">
-                </div>
+
+        <div class="sbi-fb-extpp-content">
+            <div class="sbi-fb-extpp-title">
+                <span class="sbi-fb-extpp-title-text">{{extensionsPopup[viewsActive.extensionsPopupElement].featureName}} {{genericText.isA}}</span>
+                <div class="sbi-fb-extpp-pro-badge"><span>{{genericText.pro}}</span></div>
+                <span class="sbi-fb-extpp-title-text">{{genericText.proFeature}}</span>
             </div>
-            <div class="sbi-fb-extpp-bottom sbi-fb-fs">
-                <div v-if="typeof extensionsPopup[viewsActive.extensionsPopupElement].bullets !== 'undefined'"
-                     class="sbi-extension-bullets">
-                    <h4>{{extensionsPopup[viewsActive.extensionsPopupElement].bullets.heading}}</h4>
-                    <div class="sbi-extension-bullet-list">
-                        <div class="sbi-extension-single-bullet"
-                             v-for="bullet in extensionsPopup[viewsActive.extensionsPopupElement].bullets.content">
-                            <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="4" height="4" fill="#0096CC"/>
-                            </svg>
-                            <span class="sb-small-p">{{bullet}}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="sbi-fb-extpp-btns sbi-fb-fs">
-                    <a class="sbi-fb-extpp-get-btn sbi-btn-orange"
-                       :href="extensionsPopup[viewsActive.extensionsPopupElement].buyUrl" target="_blank"
-                       class="sbi-fb-fs-link">{{genericText.upgrade}}</a>
-                </div>
+            <p class="sbi-fb-extpp-description">{{extensionsPopup[viewsActive.extensionsPopupElement].description}}</p>
+        </div>
+
+        <div class="sbi-fb-extpp-buttons">
+            <a class="sbi-fb-extpp-upgrade-btn"
+               :href="extensionsPopup[viewsActive.extensionsPopupElement].buyUrl" target="_blank">
+                <span>{{genericText.upgradeToPro}}</span>
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 5L12.5 10L7.5 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <a class="sbi-fb-extpp-demo-btn"
+               :href="extensionsPopup[viewsActive.extensionsPopupElement].demoUrl" target="_blank">{{genericText.tryDemo}}</a>
+        </div>
+
+        <div class="sbi-fb-extpp-footer">
+            <svg class="sbi-fb-extpp-check-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.8075 25.1925C5.6575 24.0425 6.42 21.6263 5.835 20.2113C5.2275 18.75 3 17.5625 3 16C3 14.4375 5.2275 13.25 5.835 11.7887C6.42 10.375 5.6575 7.9575 6.8075 6.8075C7.9575 5.6575 10.375 6.42 11.7887 5.835C13.2562 5.2275 14.4375 3 16 3C17.5625 3 18.75 5.2275 20.2113 5.835C21.6263 6.42 24.0425 5.6575 25.1925 6.8075C26.3425 7.9575 25.58 10.3737 26.165 11.7887C26.7725 13.2562 29 14.4375 29 16C29 17.5625 26.7725 18.75 26.165 20.2113C25.58 21.6263 26.3425 24.0425 25.1925 25.1925C24.0425 26.3425 21.6263 25.58 20.2113 26.165C18.75 26.7725 17.5625 29 16 29C14.4375 29 13.25 26.7725 11.7887 26.165C10.375 25.58 7.9575 26.3425 6.8075 25.1925Z" stroke="#663D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M11 17L14 20L21 13" stroke="#663D00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="sbi-fb-extpp-footer-text">
+                <span class="sbi-fb-extpp-footer-bold">{{genericText.liteFeedUsersGet50Off}} <span class="sbi-fb-extpp-highlight-pill">{{genericText.fiftyPercentOff}}</span> {{genericText.appliedAutomatically}}</span>
+                <span class="sbi-fb-extpp-footer-regular">{{genericText.moneyBackGuarantee}}</span>
             </div>
         </div>
     </div>

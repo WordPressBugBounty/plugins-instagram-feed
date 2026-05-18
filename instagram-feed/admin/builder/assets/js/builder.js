@@ -3139,6 +3139,8 @@ sbiBuilder = new Vue({
                     self.onboardingSuccessMessagesDisplay.push(self.onboardingSuccessMessages.feedPlugins.replace('#', settingsKeys[stInd]));
                 } else if (st?.id === 'reviews') {
                     self.onboardingSuccessMessagesDisplay.push('Reviews Feed ' + self.genericText.installed);
+                } else if (st?.id === 'wpchat') {
+                    self.onboardingSuccessMessagesDisplay.push('WPChat ' + self.genericText.installed);
                 } else if (st?.type === 'install_plugins') {
                     self.onboardingSuccessMessagesDisplay.push('<span class="sb-onboarding-wizard-succes-name"> ' + st?.pluginName + '</span> ' + self.genericText.installed);
                 }
@@ -3222,6 +3224,14 @@ sbiBuilder = new Vue({
                 return self.currentOnboardingWizardActiveSettings[elem?.data?.id] !== undefined ? 'true' : 'false'
             }
 
+        },
+
+        hasActiveInstallPlugins: function () {
+            const self = this,
+                pluginsList = self.onboardingWizardStepContent['install-plugins']?.pluginsList || [];
+            return pluginsList.some(function (plugin) {
+                return plugin?.uncheck !== true && self.currentOnboardingWizardActiveSettings[plugin?.data?.id] !== undefined;
+            });
         },
 
         checkActiveOnboardingWizardSettings: function () {

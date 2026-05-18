@@ -2,8 +2,8 @@
 Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
-Tested up to: 6.9
-Stable tag: 6.10.1
+Tested up to: 7.0
+Stable tag: 6.11.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,13 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.11.0 =
+* New - Added a modern Gutenberg block and Elementor widget for the Instagram feed. Existing feeds using the legacy block continue to render without reconfiguration.
+* Tweak - Compatibility with WP 7.
+* Fix - Plugin no longer removes the WordPress footer on plugin admin pages.
+* Fix - Captions with multiple paragraphs no longer render duplicate anchor tags in screen-reader text.
+* Fix - Instagram Trial Reels (test posts shown only to non-followers) are no longer included in feeds.
 
 = 6.10.1 =
 * Tweak - Added optional deactivation feedback survey to help us improve the plugin.

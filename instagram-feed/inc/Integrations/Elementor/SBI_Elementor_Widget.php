@@ -2,9 +2,11 @@
 
 namespace InstagramFeed\Integrations\Elementor;
 
+use Elementor\Controls_Manager;
 use Elementor\Widget_Base;
 use InstagramFeed\Builder\SBI_Db;
 use InstagramFeed\Integrations\SBI_Integration;
+use InstagramFeed\Vendor\Smashballoon\Framework\Packages\Blocks\SB_Block_Utils;
 
 // Exit if accessed directly.
 if (!defined('ABSPATH')) {
@@ -71,13 +73,36 @@ class SBI_Elementor_Widget extends Widget_Base
 	 */
 	public function get_categories()
 	{
-		return array('smash-balloon');
+		return array( SB_Block_Utils::CATEGORY_SLUG );
+	}
+
+	/**
+	 * Hide this legacy widget from the Elementor panel.
+	 *
+	 * @return bool
+	 */
+	public function show_in_panel()
+	{
+		return false;
+	}
+
+	/**
+	 * Hide this legacy widget from Elementor search results.
+	 *
+	 * @return bool
+	 */
+	public function hide_on_search()
+	{
+		return true;
 	}
 
 	/**
 	 * Script dependencies.
 	 *
-	 * Load the widget scripts.
+	 * Declares the script handles this legacy widget depends on. The modern
+	 * `SBI_Elementor_Base::register_frontend_scripts()` registers `sbi_scripts`
+	 * via `sb_instagram_scripts_enqueue()`; the old `sbiscripts` / `elementor-preview`
+	 * handles are no longer registered by this plugin.
 	 *
 	 * @return array Widget scripts dependencies.
 	 * @since 6.2.9
@@ -85,7 +110,7 @@ class SBI_Elementor_Widget extends Widget_Base
 	 */
 	public function get_script_depends()
 	{
-		return array('sbiscripts', 'elementor-preview');
+		return array( 'sbi_scripts' );
 	}
 
 	/**
@@ -100,22 +125,22 @@ class SBI_Elementor_Widget extends Widget_Base
 	{
 		$this->start_controls_section(
 			'section_content',
-			[
-				'label' => esc_html__('Instagram Feed Settings', 'instagram-feed'),
-			]
+			array(
+				'label' => esc_html__( 'Instagram Feed Settings', 'instagram-feed' ),
+			)
 		);
 
 		$this->add_control(
 			'feed_id',
-			[
-				'label' => esc_html__('Select a Feed', 'instagram-feed'),
-				'type' => 'sbi_feed_control',
+			array(
+				'label'       => esc_html__( 'Select a Feed', 'instagram-feed' ),
+				'type'        => Controls_Manager::SELECT,
 				'label_block' => true,
-				'dynamic' => ['active' => true],
-				'options' => SBI_Db::elementor_feeds_query($default = true),
-				'default' => 0,
-				'description' => esc_html__('Select a feed to display. If you don\'t have any feeds yet then you can create one in the Instagram Feed settings page.', 'instagram-feed'),
-			]
+				'dynamic'     => array( 'active' => true ),
+				'options'     => SBI_Db::elementor_feeds_query( true ),
+				'default'     => 0,
+				'description' => esc_html__( 'Select a feed to display. If you don\'t have any feeds yet then you can create one in the Instagram Feed settings page.', 'instagram-feed' ),
+			)
 		);
 
 		$this->end_controls_section();

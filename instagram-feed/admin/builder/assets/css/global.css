@@ -524,8 +524,7 @@
 }
 
 .sbi-fb-extensions-pp-ctn .sbi-fb-popup-inside {
-    max-width: 880px !important;
-
+    max-width: 520px !important;
 }
 
 
@@ -1216,95 +1215,6 @@
 }
 
 
-/* Social Wall Popup */
-
-.sbi-fb-extpp-social-wall-graphic {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 78px
-}
-
-.sbi-graphic-row,
-.sbi-fb-social-wall-between {
-    position: relative;
-}
-
-.sbi-graphic-row-main {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-}
-
-.sbi-fb-social-wall-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 13%;
-    margin: 1.5%;
-}
-
-.sbi-fb-social-wall-group p {
-    margin: 0;
-    text-align: center;
-}
-
-.sbi-fb-social-wall-between.sbi-fb-social-wall-between-instagram svg {
-    margin-top: 120%;
-}
-
-.sbi-fb-social-wall-between.sbi-fb-social-wall-between-facebook svg {
-    margin-top: 40%;
-}
-
-.sbi-fb-social-wall-between.sbi-fb-social-wall-between-twitter svg {
-    margin-top: 60%;
-}
-
-.sbi-fb-social-wall-end {
-    position: absolute;
-    right: -1%;
-    top: 40%;
-}
-
-.sbi-graphic-bottom {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 3%;
-}
-
-.sbi-all-in-same {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-    height: 38px;
-    width: 72.5%;
-    /*background: #FFFFFF;*/
-    /*box-shadow: 0px 6px 7px rgba(0, 26, 119, 0.07), 0px 3px 4px rgba(0, 26, 119, 0.06), 0px 1.80196px 2.25245px rgba(0, 26, 119, 0.05), 0px 0.749837px 0.937296px rgba(0, 26, 119, 0.1137);*/
-    /*border-radius: 3px;*/
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-}
-
-.sbi-fb-extpp-social-wall .sbi-fb-extpp-bottom {
-    background: #F3F4F5;
-}
-
-.sbi-fb-social-wall-end-arrow {
-    position: relative;
-}
-
-.sbi-arrow-head {
-    position: absolute;
-    bottom: 1%;
-    left: 39%;
-}
-
 /* To Builder */
 .sbi-fb-type-el[data-active="true"]:before {
     content: '';
@@ -1356,41 +1266,6 @@
     padding: 0 54px 65px;
 }
 
-.sbi-fb-extpp-btns a {
-    height: 38px;
-    cursor: pointer;
-    position: relative;
-    border-radius: 3px;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 160%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-}
-
-.sbi-fb-extpp-lite-btn {
-    display: flex;
-    align-items: self-start;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 6px 11px;
-    color: #0068A0;
-    background: #fff;
-    border: 1px solid #DCDDE1;
-    margin-bottom: 14px;
-}
-
-.sbi-fb-extpp-lite-btn svg {
-    fill: currentColor;
-    width: 17px;
-    height: 16px;
-    float: left;
-    margin-right: 8px;
-    margin-top: 4px;
-}
 
 .sbi-fb-stp-src-type .sbi-fb-chbx-round {
     margin-right: 8px;
@@ -2801,26 +2676,21 @@
         top: 50px;
     }
 
-    .sbi-extension-bullet-list {
-        grid-template-columns: 100%;
+    .sbi-fb-extpp-illustration {
+        height: 180px;
+        padding-top: 10px;
     }
 
-    .sbi-fb-extpp-bottom {
-        padding: 20px;
+    .sbi-fb-extpp-illustration img {
+        height: 160px;
     }
 
-    .sbi-fb-extpp-info {
-        width: 100%;
-        padding-right: 20px;
-        padding-left: 20px;
+    .sbi-fb-extpp-content {
+        padding: 12px 30px 0;
     }
 
-    .sbi-fb-extpp-img {
-        display: none;
-    }
-
-    .sbi-fb-extpp-top {
-        height: 195px;
+    .sbi-fb-extpp-buttons {
+        padding: 0 30px;
     }
 
     .sbi-fb-source-pp-customizer .sbi-fb-srcslist-ctn {

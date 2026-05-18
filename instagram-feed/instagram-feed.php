@@ -4,7 +4,7 @@
 Plugin Name: Smash Balloon Instagram Feed
 Plugin URI: https://smashballoon.com/instagram-feed
 Description: Display beautifully clean, customizable, and responsive Instagram feeds.
-Version: 6.10.1
+Version: 6.11.0
 Requires PHP: 7.4
 Author: Smash Balloon
 Author URI: https://smashballoon.com/
@@ -54,11 +54,15 @@ if (!defined('SBI_PLUGIN_NAME')) {
 	define('SBI_PLUGIN_NAME', 'Instagram Feed Free');
 }
 if (!defined('SBIVER')) {
-	define('SBIVER', '6.10.1');
+	define('SBIVER', '6.11.0');
 }
 // Db version.
 if (!defined('SBI_DBVERSION')) {
 	define('SBI_DBVERSION', '2.4');
+}
+// Bump when a release invalidates cached feed data. See sbi_cache_invalidation_registry().
+if (!defined('SBI_CACHE_VERSION')) {
+	define('SBI_CACHE_VERSION', '1');
 }
 
 // Upload folder name for local image files for posts.
@@ -144,8 +148,8 @@ if (!function_exists('sb_instagram_feed_init')) {
 		require SBI_PLUGIN_DIR . 'vendor/autoload.php';
 
 		// Initialize the deactivation feedback survey.
-		if (class_exists('InstagramFeed\Vendor\Smashballoon\Framework\Packages\Feedback\FeedbackManager')) {
-			InstagramFeed\Vendor\Smashballoon\Framework\Packages\Feedback\FeedbackManager::init([
+		if (class_exists('\InstagramFeed\Vendor\Smashballoon\Framework\Packages\Feedback\FeedbackManager')) {
+			\InstagramFeed\Vendor\Smashballoon\Framework\Packages\Feedback\FeedbackManager::init([
 				'plugin_slug'    => 'instagram-feed',
 				'plugin_name'    => 'Smash Balloon Instagram Feed',
 				'plugin_version' => SBIVER,
@@ -258,7 +262,7 @@ if (!function_exists('sb_instagram_feed_init')) {
 
 		$sbi_support_tool = new InstagramFeed\Admin\SBI_Support_Tool();
 
-		InstagramFeed\Integrations\Elementor\SBI_Elementor_Base::instance();
+		InstagramFeed\Integrations\Elementor\SBI_Elementor_Base::register();
 		$sbi_divi_handler = new InstagramFeed\Integrations\Divi\SBI_Divi_Handler();
 
 		require_once trailingslashit(SBI_PLUGIN_DIR) . 'admin/SBI_Callout.php';
@@ -985,6 +989,78 @@ if (!function_exists('sb_instagram_feed_init')) {
 	}
 
 	add_action('wp_loaded', 'sbi_check_for_db_updates');
+
+	/**
+	 * Keyed by cache version. Reasons are surfaced in the action log when a clear fires.
+	 */
+	function sbi_cache_invalidation_registry()
+	{
+		return apply_filters('sbi_cache_invalidation_registry', array(
+			'1' => 'SMASH-1105: trial-reel filter needs fresh is_shared_to_feed field',
+		));
+	}
+
+	/**
+	 * Auto-clears feed caches on upgrade. Hooked to wp_loaded; short-circuits on version match.
+	 */
+	function sbi_check_for_cache_invalidations()
+	{
+		$stored_version = get_option('sbi_cache_version', null);
+
+		// Null = fresh install OR pre-this-release upgrade. Probe the cache table to disambiguate.
+		if ($stored_version === null) {
+			global $wpdb;
+			$cache_table   = $wpdb->prefix . 'sbi_feed_caches';
+			$has_any_cache = (bool) $wpdb->get_var("SELECT 1 FROM $cache_table LIMIT 1");
+
+			if (!$has_any_cache) {
+				update_option('sbi_cache_version', SBI_CACHE_VERSION);
+				return;
+			}
+
+			$stored_version = '0';
+		}
+
+		if (version_compare((string) $stored_version, SBI_CACHE_VERSION, '>=')) {
+			return;
+		}
+
+		if (!apply_filters('sbi_auto_clear_cache_on_upgrade', true, (string) $stored_version, SBI_CACHE_VERSION)) {
+			update_option('sbi_cache_version', SBI_CACHE_VERSION);
+			return;
+		}
+
+		// Concurrent-request guard.
+		if (get_transient('sbi_cache_invalidation_lock')) {
+			return;
+		}
+		set_transient('sbi_cache_invalidation_lock', time(), 60);
+
+		// Bump before clear so a mid-flight fatal doesn't loop on every page load.
+		update_option('sbi_cache_version', SBI_CACHE_VERSION);
+
+		sbi_clear_all_feed_caches();
+
+		global $sb_instagram_posts_manager;
+		if (isset($sb_instagram_posts_manager) && method_exists($sb_instagram_posts_manager, 'add_action_log')) {
+			$registry = sbi_cache_invalidation_registry();
+			$reasons  = array();
+			if (is_array($registry)) {
+				foreach ($registry as $ver => $reason) {
+					if (version_compare((string) $stored_version, (string) $ver, '<')) {
+						$reasons[] = $ver . ': ' . $reason;
+					}
+				}
+			}
+			$sb_instagram_posts_manager->add_action_log(
+				'Auto-cleared caches on upgrade (' . $stored_version . ' → ' . SBI_CACHE_VERSION . '). '
+				. implode(' | ', $reasons)
+			);
+		}
+
+		delete_transient('sbi_cache_invalidation_lock');
+	}
+	add_action('wp_loaded', 'sbi_check_for_cache_invalidations');
 
 	/**
 	 * Deletes saved data for the plugin unless setting to preserve

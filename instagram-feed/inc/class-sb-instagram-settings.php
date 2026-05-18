@@ -1338,7 +1338,7 @@ class SB_Instagram_Settings
 				$error_message_return = array(
 					'error_message' => __('Error: Private Instagram Account.', 'instagram-feed'),
 					'admin_only' => sprintf(__('It looks like your Instagram account is private. Instagram requires private accounts to be reauthenticated every 60 days. Refresh your account to allow it to continue updating, or %smake your Instagram account public%s.', 'instagram-feed'), $link_1, $link_2),
-					'frontend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/#10">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>',
+					'frontend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs#10">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>',
 					'backend_directions' => ''
 				);
 

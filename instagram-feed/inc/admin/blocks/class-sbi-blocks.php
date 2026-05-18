@@ -40,6 +40,10 @@ class SB_Instagram_Blocks
 	public function load()
 	{
 		$this->hooks();
+
+		require_once trailingslashit( SBI_PLUGIN_DIR ) . 'inc/admin/blocks/SBI_Modern_Feed_Block.php';
+		$modern_block = new \InstagramFeed\Admin\Blocks\SBI_Modern_Feed_Block();
+		$modern_block->register_hooks();
 	}
 
 	/**
@@ -50,7 +54,8 @@ class SB_Instagram_Blocks
 	protected function hooks()
 	{
 		add_action('init', array($this, 'register_block'), 99);
-		add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'));
+		add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'), 25);
+		add_action('enqueue_block_assets', array($this, 'enqueue_block_content_assets'));
 	}
 
 	/**
@@ -80,10 +85,26 @@ class SB_Instagram_Blocks
 		register_block_type(
 			'sbi/sbi-feed-block',
 			array(
+				'api_version' => 3,
 				'attributes' => $attributes,
 				'render_callback' => array($this, 'get_feed_html'),
+				'supports' => array( 'inserter' => false ),
 			)
 		);
+	}
+
+	/**
+	 * Enqueue feed frontend assets so the legacy block preview renders inside
+	 * the WP 6.7+ iframe block editor. Mirrors SB_Feed_Block::enqueue_block_content_assets().
+	 *
+	 * @since 6.11.0
+	 */
+	public function enqueue_block_content_assets()
+	{
+		if ( ! is_admin() ) {
+			return;
+		}
+		sb_instagram_scripts_enqueue( true );
 	}
 
 	/**
@@ -94,8 +115,6 @@ class SB_Instagram_Blocks
 	public function enqueue_block_editor_assets()
 	{
 		$db = sbi_get_database_settings();
-
-		sb_instagram_scripts_enqueue(true);
 
 		wp_enqueue_style('sbi-blocks-styles');
 		wp_enqueue_script(

@@ -49,7 +49,7 @@
 
 
 
-	<div class="sb-onboarding-wizard-clicking">
+	<div class="sb-onboarding-wizard-clicking" v-if="hasActiveInstallPlugins()">
 		<span v-html="svgIcons['info']"></span>
 		<span>
 			<?php echo __('Clicking Next will install ', 'instagram-feed') ?>
@@ -63,6 +63,7 @@
 <div class="sb-onboarding-wizard-step-pag-btns sb-fs">
 	<button class="sb-btn sbi-btn-grey sb-btn-wizard-back" v-html="'Back'"
 			@click.prevent.default="previousWizardStep"></button>
-	<button class="sb-btn sbi-btn-blue sb-btn-wizard-next sb-btn-wizard-install" v-html="'Install Selected Plugins'"
+	<button class="sb-btn sbi-btn-blue sb-btn-wizard-next sb-btn-wizard-install"
+			v-html="hasActiveInstallPlugins() ? 'Install Selected Plugins' : 'Next'"
 			@click.prevent.default="nextWizardStep('submit')"></button>
 </div>

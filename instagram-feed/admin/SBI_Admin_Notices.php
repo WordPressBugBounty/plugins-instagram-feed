@@ -61,14 +61,17 @@ class SBI_Admin_Notices
 
 		$output = '';
 
-		$upgrade_url = 'https://smashballoon.com/instagram-feed/demo/?utm_campaign=instagram-free&utm_source=lite-upgrade-bar';
+		$upgrade_url = 'https://smashballoon.com/instagram-feed/instagram-lite-upgrade/?utm_campaign=instagram-free&utm_source=lite-upgrade-bar&utm_medium=upgrade-link';
 		$output .= '<div id="sbi-notice-bar" class="sbi-header-notice">';
-		$output .= sprintf(
-			'<span class="sbi-notice-bar-message">%s <a href="%s" target="_blank" rel="noopener">%s</a></span>',
-			__('You\'re using Instagram Feed Lite. To unlock more features consider', 'instagram-feed'),
-			$upgrade_url,
-			__('upgrading to Pro', 'instagram-feed')
-		);
+		$output .= '<span class="sbi-notice-bar-message">' . sprintf(
+			/* translators: %s is the upgrade link with discount text */
+			__( 'You\'re using Instagram Feed Lite. %s to unlock more features.', 'instagram-feed' ),
+			sprintf(
+				'<a href="%s" target="_blank" rel="noopener">%s</a>',
+				esc_url( $upgrade_url ),
+				esc_html__( 'Upgrade for 50% OFF', 'instagram-feed' )
+			)
+		) . '</span>';
 
 		$output .= sprintf(
 			'<button type="button" class="sbi-dismiss" id="sbi-dismiss-header-notice" title="%s" data-page="overview">%s</button>',
@@ -311,19 +314,8 @@ class SBI_Admin_Notices
 	 */
 	public function sbi_admin_notices()
 	{
-		$allowed_screens = array(
-			'sbi-feed-builder',
-			'sbi-settings',
-			'sbi-oembeds-manager',
-			'sbi-extensions-manager',
-			'sbi-about-us',
-			'sbi-support',
-		);
-		$current_screen = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
-		$is_allowed = in_array($current_screen, $allowed_screens);
-
-		// We will display the notice only on those allowed screens.
-		if (!$current_screen || !$is_allowed) {
+		// We will display the notice only on plugin screens.
+		if (!Util::isIFPage()) {
 			return;
 		}
 

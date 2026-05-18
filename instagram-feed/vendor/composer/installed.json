@@ -220,17 +220,17 @@
         },
         {
             "name": "smashballoon\/framework",
-            "version": "dev-master",
-            "version_normalized": "dev-master",
+            "version": "dev-SMASH-836-feed-blocks-imp",
+            "version_normalized": "dev-SMASH-836-feed-blocks-imp",
             "source": {
                 "type": "git",
                 "url": "git@github.com:awesomemotive\/sb-common.git",
-                "reference": "77aa1314e55e645ff8c79e17b2f2f4de382facbd"
+                "reference": "8527b8f47cab68d643d4f59d2eef7ff443816a9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https:\/\/api.github.com\/repos\/awesomemotive\/sb-common\/zipball\/77aa1314e55e645ff8c79e17b2f2f4de382facbd",
-                "reference": "77aa1314e55e645ff8c79e17b2f2f4de382facbd",
+                "url": "https:\/\/api.github.com\/repos\/awesomemotive\/sb-common\/zipball\/8527b8f47cab68d643d4f59d2eef7ff443816a9f",
+                "reference": "8527b8f47cab68d643d4f59d2eef7ff443816a9f",
                 "shasum": ""
             },
             "require": {
@@ -247,8 +247,7 @@
                 "phpcompatibility\/php-compatibility": "^9.3",
                 "squizlabs\/php_codesniffer": "^3.7"
             },
-            "time": "2026-02-11T20:26:46+00:00",
-            "default-branch": true,
+            "time": "2026-05-15T11:33:00+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -277,7 +276,7 @@
             ],
             "description": "WordPress plugin framework. Developed by SmashBalloon Team.",
             "support": {
-                "source": "https:\/\/github.com\/awesomemotive\/sb-common\/tree\/master",
+                "source": "https:\/\/github.com\/awesomemotive\/sb-common\/tree\/SMASH-836-feed-blocks-imp",
                 "issues": "https:\/\/github.com\/awesomemotive\/sb-common\/issues"
             },
             "install-path": "..\/smashballoon\/framework"

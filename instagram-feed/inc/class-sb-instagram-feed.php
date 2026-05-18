@@ -910,6 +910,10 @@ class SB_Instagram_Feed
 	{
 		// array_unique( $post_set, SORT_REGULAR);
 
+		// SMASH-1105: strip Instagram Trial Reels (posts with is_shared_to_feed: false)
+		// before any other filtering so they're never shown regardless of media/video settings.
+		$post_set = SB_Instagram_Parse::filter_out_trial_reels($post_set);
+
 		if ($settings['media'] === 'all') {
 			return $post_set;
 		}
@@ -1604,8 +1608,8 @@ class SB_Instagram_Feed
 		$error_message_return = array(
 			'error_message' => __('Error: No posts found.', 'instagram-feed'),
 			'admin_only' => __('Make sure this account has posts available on instagram.com.', 'instagram-feed'),
-			'frontend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>',
-			'backend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>'
+			'frontend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>',
+			'backend_directions' => '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs">' . __('Click here to troubleshoot', 'instagram-feed') . '</a>'
 		);
 		$sb_instagram_posts_manager->maybe_set_display_error('configuration', $error_message_return);
 	}

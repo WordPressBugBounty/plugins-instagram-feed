@@ -509,4 +509,47 @@ class SB_Instagram_Parse
 
 		return strtolower(str_replace('_ALBUM', '', $post['media_type']));
 	}
+
+	/**
+	 * Whether the post is an Instagram Trial Reel.
+	 *
+	 * Trial Reels are shown only to non-followers and are excluded from the
+	 * creator's own profile grid. The API returns them with
+	 * `is_shared_to_feed: false`. Cached posts from before this field was
+	 * requested won't have the key — treat missing as "not a trial reel" so
+	 * existing caches degrade gracefully until they refresh.
+	 *
+	 * @param array $post A single post from the Instagram Graph API.
+	 *
+	 * @return bool
+	 */
+	public static function is_trial_reel($post)
+	{
+		return isset($post['is_shared_to_feed']) && false === $post['is_shared_to_feed'];
+	}
+
+	/**
+	 * Strip trial reels from a post set.
+	 *
+	 * Runs unconditionally; gated by the `sbi_hide_trial_reels` filter for
+	 * advanced users who want to opt back in.
+	 *
+	 * @param array $posts Raw post set from an API response.
+	 *
+	 * @return array
+	 */
+	public static function filter_out_trial_reels($posts)
+	{
+		if (!apply_filters('sbi_hide_trial_reels', true)) {
+			return $posts;
+		}
+
+		$filtered = [];
+		foreach ($posts as $post) {
+			if (!self::is_trial_reel($post)) {
+				$filtered[] = $post;
+			}
+		}
+		return $filtered;
+	}
 }

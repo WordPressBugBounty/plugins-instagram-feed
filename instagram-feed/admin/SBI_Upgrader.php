@@ -35,7 +35,7 @@ class SBI_Upgrader
 
 	const REDIRECT = 'sbi-settings';
 
-	const INSTALL_INSTRUCTIONS = 'https://smashballoon.com/doc/setting-up-the-instagram-feed-pro-wordpress-plugin/?instagram';
+	const INSTALL_INSTRUCTIONS = 'https://smashballoon.com/doc/setting-up-the-instagram-feed-pro-wordpress-plugin/?instagram&utm_campaign=instagram-free&utm_source=upgrader&utm_medium=docs';
 
 
 	/**

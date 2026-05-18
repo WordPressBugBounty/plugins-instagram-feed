@@ -43,6 +43,12 @@ $img_alt = apply_filters('sbi_img_alt', $caption, $post);
  * @since 2.1.5
  */
 $img_screenreader = mb_substr($caption, 0, 50, 'UTF-8');
+$img_screenreader = str_replace(
+	array( "\r\n", "\r", "\n" ),
+	' ',
+	$img_screenreader
+);
+$img_screenreader = trim( $img_screenreader );
 $img_screenreader = apply_filters('sbi_img_screenreader', $img_screenreader, $post);
 
 ?>

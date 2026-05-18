@@ -363,7 +363,7 @@ class SB_Instagram_API_Connect
 		$num = !empty($params['num']) ? (int)$params['num'] : 33;
 
 		$fields = ($connect_type === 'business_basic') ? 'user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count,biography' : 'id,username,media_count,account_type';
-		$media_fields = ($connect_type === 'business_basic') ? 'media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D' : 'media_url,thumbnail_url,caption,id,media_type,timestamp,username,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D';
+		$media_fields = ($connect_type === 'business_basic') ? 'media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,is_shared_to_feed,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D' : 'media_url,thumbnail_url,caption,id,media_type,timestamp,username,permalink,is_shared_to_feed,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D';
 
 		$base_url = 'https://graph.instagram.com/';
 
@@ -398,7 +398,7 @@ class SB_Instagram_API_Connect
 		$num = !empty($params['num']) ? (int)$params['num'] : 33;
 
 		$header_fields = 'biography,id,username,website,followers_count,media_count,profile_picture_url,name';
-		$media_fields = 'media_url,media_product_type,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D';
+		$media_fields = 'media_url,media_product_type,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,is_shared_to_feed,children%7Bmedia_url,id,media_type,timestamp,permalink,thumbnail_url%7D';
 
 		$base_url = 'https://graph.facebook.com/';
 
