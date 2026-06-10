@@ -2,4 +2,4 @@
 
 namespace InstagramFeed\Vendor;
 
-return array('dependencies' => array('react', 'react-dom', 'wp-components', 'wp-i18n'), 'version' => '58f662d5f938e9d3f65e');
+return array('dependencies' => array('react', 'react-dom', 'wp-components', 'wp-i18n'), 'version' => 'fa3f524a77b507575dff');

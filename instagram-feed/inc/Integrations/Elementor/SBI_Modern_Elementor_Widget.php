@@ -20,7 +20,7 @@ class SBI_Modern_Elementor_Widget extends SB_Elementor_Feed_Widget {
 	}
 
 	protected function get_widget_title() {
-		return 'Instagram Feed';
+		return __( 'Instagram Feed', 'instagram-feed' );
 	}
 
 	protected function get_widget_icon() {

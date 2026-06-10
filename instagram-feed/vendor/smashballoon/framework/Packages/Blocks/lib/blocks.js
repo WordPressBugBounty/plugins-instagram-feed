@@ -2444,18 +2444,23 @@ var getElementorWidgetConfig = function getElementorWidgetConfig(blockId) {
     return w.blockId === blockId;
   }) || null;
 };
-var enablePreviewLinks = function enablePreviewLinks(container) {
-  if (!container || container.dataset.sbcLinksEnabled) return;
-  container.dataset.sbcLinksEnabled = 'true';
-  container.addEventListener('click', function (e) {
-    var link = e.target.closest('a[href]');
-    var href = link === null || link === void 0 ? void 0 : link.getAttribute('href');
-    if (href && href !== '#' && !href.startsWith('javascript:')) {
-      e.preventDefault();
-      e.stopPropagation();
-      window.open(link.href, '_blank', 'noopener');
-    }
-  });
+var addEditorPreviewOverlay = function addEditorPreviewOverlay(container) {
+  if (!container) return;
+  if (container.querySelector('#sbc-elementor-cta-root')) return;
+  var target = container.querySelector('.elementor-widget-container') || container;
+  if (container.dataset.sbcOverlayInjected && !target.querySelector('.sbc-elementor-preview-overlay')) {
+    delete container.dataset.sbcOverlayInjected;
+  }
+  if (container.dataset.sbcOverlayInjected) return;
+  if (getComputedStyle(target).position === 'static') {
+    target.style.position = 'relative';
+  }
+  var overlay = document.createElement('div');
+  overlay.className = 'sbc-elementor-preview-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.style.cssText = 'position:absolute;inset:0;z-index:999;cursor:default;';
+  target.appendChild(overlay);
+  container.dataset.sbcOverlayInjected = 'true';
 };
 var elementorPreviewInit = function elementorPreviewInit(widgetName, initCallback) {
   if (typeof window !== 'undefined' && window.elementorFrontend && window.elementorFrontend.hooks) {
@@ -2483,18 +2488,19 @@ var injectFeedLinks = function injectFeedLinks(panel, feedUrl) {
   if (!$control.length || !feedUrl) return;
   var parentJQuery = (_window$parent = window.parent) === null || _window$parent === void 0 ? void 0 : _window$parent.jQuery;
   if (!parentJQuery) return;
-  var $wrapper = $control.find('.elementor-control-input-wrapper');
-  $wrapper.find('.sbc-elementor-feed-links').remove();
+  var $field = $control.find('.elementor-control-field');
+  var $wrapper = $field.find('.elementor-control-input-wrapper');
+  $field.find('.sbc-elementor-feed-links').remove();
   var $select = $control.find('select');
   var selectedValue = $select.val();
   var editDisplay = selectedValue ? '' : 'display:none;';
   var separatorDisplay = selectedValue ? 'inline-block' : 'none';
   var $links = parentJQuery('<div class="sbc-elementor-feed-links" style="font-weight:700; color:#a73061; margin-top:10px;">' + '<a class="sbc-edit-feed-link" href="' + feedUrl + '&feed_id=' + selectedValue + '" target="_blank" style="color:#a73061;' + editDisplay + '">' + i18n.__('Edit this Feed', 'sb-common') + '</a>' + '<span class="sbc-feed-links-separator" style="color:#aaa; display:' + separatorDisplay + '; margin:0 5px;">|</span>' + '<a class="sbc-create-feed-link" href="' + feedUrl + '" target="_blank" style="color:#a73061;">' + i18n.__('Create New Feed', 'sb-common') + '</a>' + '</div>');
-  $wrapper.append($links);
+  $wrapper.after($links);
   $select.off('change.sbcFeedLinks').on('change.sbcFeedLinks', function () {
     var val = this.value;
-    var $editLink = $wrapper.find('.sbc-edit-feed-link');
-    var $separator = $wrapper.find('.sbc-feed-links-separator');
+    var $editLink = $field.find('.sbc-edit-feed-link');
+    var $separator = $field.find('.sbc-feed-links-separator');
     if (val) {
       $editLink.attr('href', feedUrl + '&feed_id=' + val).show();
       $separator.css('display', 'inline-block');
@@ -2504,14 +2510,31 @@ var injectFeedLinks = function injectFeedLinks(panel, feedUrl) {
     }
   });
 };
+var applyCffChromiumMasonryFix = function applyCffChromiumMasonryFix() {
+  if (!window.chrome) return;
+  var wraps = document.querySelectorAll('.cff-masonry-js .cff-posts-wrap');
+  wraps.forEach(function (wrap) {
+    wrap.style.height = 'auto';
+    wrap.style.minHeight = '500px';
+    wrap.style.overflow = 'hidden';
+  });
+  var items = document.querySelectorAll('.cff-masonry-js .cff-album-item, .cff-masonry-js .cff-item, .cff-masonry-js .cff-likebox');
+  items.forEach(function (item) {
+    item.style.position = 'static';
+    item.style.left = 'auto';
+    item.style.top = 'auto';
+  });
+};
 var initElementorFeedWidget = function initElementorFeedWidget(_ref) {
-  var _window$elementorFron, _window$parent4, _window$parent4$eleme;
+  var _window$elementorFron3, _window$parent4, _window$parent4$eleme;
   var blockId = _ref.blockId,
     widgetName = _ref.widgetName,
     globalVar = _ref.globalVar,
     feedInitFn = _ref.feedInitFn,
     _ref$ctaRootId = _ref.ctaRootId,
-    ctaRootId = _ref$ctaRootId === void 0 ? 'sbc-elementor-cta-root' : _ref$ctaRootId;
+    ctaRootId = _ref$ctaRootId === void 0 ? 'sbc-elementor-cta-root' : _ref$ctaRootId,
+    _ref$cffChromiumMason = _ref.cffChromiumMasonryFix,
+    cffChromiumMasonryFix = _ref$cffChromiumMason === void 0 ? false : _ref$cffChromiumMason;
   var mountCTA = function mountCTA(container) {
     var _ref2 = window[globalVar] || {},
       _ref2$feeds = _ref2.feeds,
@@ -2553,18 +2576,45 @@ var initElementorFeedWidget = function initElementorFeedWidget(_ref) {
   };
   var initWidget = function initWidget() {
     elementorPreviewInit(widgetName, function (container) {
-      var _container$querySelec;
+      var _container$querySelec, _window$elementorFron, _window$elementorFron2;
       if (typeof feedInitFn === 'function') {
         feedInitFn();
+      }
+      if (cffChromiumMasonryFix) {
+        applyCffChromiumMasonryFix();
       }
       var ctaRoot = (_container$querySelec = container.querySelector) === null || _container$querySelec === void 0 ? void 0 : _container$querySelec.call(container, "#" + ctaRootId);
       if (ctaRoot) {
         mountCTA(ctaRoot);
       }
-      enablePreviewLinks(container);
+      if (!((_window$elementorFron = window.elementorFrontend) !== null && _window$elementorFron !== void 0 && (_window$elementorFron2 = _window$elementorFron.isEditMode) !== null && _window$elementorFron2 !== void 0 && _window$elementorFron2.call(_window$elementorFron))) return;
+      addEditorPreviewOverlay(container);
+      if (container.dataset.sbcOverlayObserved) return;
+      container.dataset.sbcOverlayObserved = 'true';
+      var observer = new MutationObserver(function () {
+        return addEditorPreviewOverlay(container);
+      });
+      observer.observe(container, {
+        childList: true,
+        subtree: true
+      });
+      var doc = container.ownerDocument || document;
+      var root = doc.body || doc.documentElement;
+      var cleanup = new MutationObserver(function () {
+        if (!doc.contains(container)) {
+          observer.disconnect();
+          cleanup.disconnect();
+        }
+      });
+      if (root) {
+        cleanup.observe(root, {
+          childList: true,
+          subtree: true
+        });
+      }
     });
   };
-  if ((_window$elementorFron = window.elementorFrontend) !== null && _window$elementorFron !== void 0 && _window$elementorFron.hooks) {
+  if ((_window$elementorFron3 = window.elementorFrontend) !== null && _window$elementorFron3 !== void 0 && _window$elementorFron3.hooks) {
     initWidget();
   } else {
     jQuery(window).on('elementor/frontend/init', initWidget);
@@ -2580,8 +2630,17 @@ var initElementorFeedWidget = function initElementorFeedWidget(_ref) {
       injectFeedLinks(panel, feedUrl);
       panel.$el.find('.elementor-control-feed_id select').off('change.sbcFeedInit').on('change.sbcFeedInit', function () {
         setTimeout(function () {
+          var _window$elementor, _window$elementor$$pr, _window$elementor$$pr2, _previewWin$document, _previewWin$elementor, _previewWin$elementor2;
           if (typeof feedInitFn === 'function') {
             feedInitFn();
+          }
+          if (cffChromiumMasonryFix) {
+            applyCffChromiumMasonryFix();
+          }
+          var previewWin = (_window$elementor = window.elementor) === null || _window$elementor === void 0 ? void 0 : (_window$elementor$$pr = _window$elementor.$preview) === null || _window$elementor$$pr === void 0 ? void 0 : (_window$elementor$$pr2 = _window$elementor$$pr[0]) === null || _window$elementor$$pr2 === void 0 ? void 0 : _window$elementor$$pr2.contentWindow;
+          var widget = previewWin === null || previewWin === void 0 ? void 0 : (_previewWin$document = previewWin.document) === null || _previewWin$document === void 0 ? void 0 : _previewWin$document.querySelector("[data-widget_type=\"" + widgetName + ".default\"]");
+          if (widget && previewWin !== null && previewWin !== void 0 && (_previewWin$elementor = previewWin.elementorFrontend) !== null && _previewWin$elementor !== void 0 && (_previewWin$elementor2 = _previewWin$elementor.isEditMode) !== null && _previewWin$elementor2 !== void 0 && _previewWin$elementor2.call(_previewWin$elementor)) {
+            addEditorPreviewOverlay(widget);
           }
         }, 4000);
       });

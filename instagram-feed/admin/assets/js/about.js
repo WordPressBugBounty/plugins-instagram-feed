@@ -5,7 +5,6 @@ var extensions_data = {
     supportPageUrl: sbi_about.supportPageUrl,
     plugins: sbi_about.pluginsInfo,
     proPlugins: sbi_about.proPluginsInfo,
-    stickyWidget: false,
     socialWallActivated: sbi_about.socialWallActivated,
     socialWallLinks: sbi_about.socialWallLinks,
     recommendedPlugins: sbi_about.recommendedPlugins,
@@ -133,15 +132,6 @@ var sbiAbout = new Vue({
             if (this.btnStatus == 'loading') {
                 return this.icons.loaderSVG
             }
-        },
-
-        /**
-         * Toggle Sticky Widget view
-         *
-         * @since 4.0
-         */
-        toggleStickyWidget: function () {
-            this.stickyWidget = !this.stickyWidget;
         },
     }
 })

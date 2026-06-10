@@ -7,7 +7,6 @@ var sbioembeds_data = {
     supportPageUrl: sbi_oembeds.supportPageUrl,
     socialWallActivated: sbi_oembeds.socialWallActivated,
     socialWallLinks: sbi_oembeds.socialWallLinks,
-    stickyWidget: false,
     facebook: sbi_oembeds.facebook,
     instagram: sbi_oembeds.instagram,
     connectionURL: sbi_oembeds.connectionURL,
@@ -203,15 +202,6 @@ var sbioEmbeds = new Vue({
             } else if (this.installerStatus == 'error') {
                 return this.timesCircleSVG;
             }
-        },
-
-        /**
-         * Toggle Sticky Widget view
-         *
-         * @since 4.0
-         */
-        toggleStickyWidget: function () {
-            this.stickyWidget = !this.stickyWidget;
         },
     },
     created() {

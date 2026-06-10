@@ -4,7 +4,7 @@
 Plugin Name: Smash Balloon Instagram Feed
 Plugin URI: https://smashballoon.com/instagram-feed
 Description: Display beautifully clean, customizable, and responsive Instagram feeds.
-Version: 6.11.0
+Version: 6.11.1
 Requires PHP: 7.4
 Author: Smash Balloon
 Author URI: https://smashballoon.com/
@@ -54,7 +54,7 @@ if (!defined('SBI_PLUGIN_NAME')) {
 	define('SBI_PLUGIN_NAME', 'Instagram Feed Free');
 }
 if (!defined('SBIVER')) {
-	define('SBIVER', '6.11.0');
+	define('SBIVER', '6.11.1');
 }
 // Db version.
 if (!defined('SBI_DBVERSION')) {
@@ -150,11 +150,13 @@ if (!function_exists('sb_instagram_feed_init')) {
 		// Initialize the deactivation feedback survey.
 		if (class_exists('\InstagramFeed\Vendor\Smashballoon\Framework\Packages\Feedback\FeedbackManager')) {
 			\InstagramFeed\Vendor\Smashballoon\Framework\Packages\Feedback\FeedbackManager::init([
-				'plugin_slug'    => 'instagram-feed',
-				'plugin_name'    => 'Smash Balloon Instagram Feed',
-				'plugin_version' => SBIVER,
-				'plugin_file'    => SBI_PLUGIN_DIR . 'instagram-feed.php',
-				'support_url'    => 'https://smashballoon.com/support/',
+				'plugin_slug'        => 'instagram-feed',
+				'plugin_name'        => 'Smash Balloon Instagram Feed',
+				'plugin_version'     => SBIVER,
+				'plugin_file'        => SBI_PLUGIN_DIR . 'instagram-feed.php',
+				'support_url'        => 'https://smashballoon.com/support/?utm_campaign=instagram-free&utm_source=settings&utm_medium=support',
+				'enable_help_widget' => true,
+				'help_url'           => 'https://smashballoon.com/docs/instagram/',
 			]);
 		}
 

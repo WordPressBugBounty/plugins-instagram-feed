@@ -15,7 +15,6 @@ var settings_data = {
     wpconsentScreen: sbi_settings.wpconsentScreen,
     socialWallActivated: sbi_settings.socialWallActivated,
     socialWallLinks: sbi_settings.socialWallLinks,
-    stickyWidget: false,
     exportFeed: 'none',
     locales: sbi_settings.locales,
     timezones: sbi_settings.timezones,
@@ -774,15 +773,6 @@ var sbiSettings = new Vue({
             } else if (this.dpaResetStatus == 'error') {
                 return this.timesCircleSVG;
             }
-        },
-
-        /**
-         * Toggle Sticky Widget view
-         *
-         * @since 4.0
-         */
-        toggleStickyWidget: function () {
-            this.stickyWidget = !this.stickyWidget;
         },
 
         printUsedInText: function (usedInNumber) {

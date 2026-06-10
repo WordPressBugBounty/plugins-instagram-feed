@@ -57,7 +57,13 @@ class SB_Feed_Blocks_Registry
         $asset_file = plugin_dir_path(__FILE__) . 'dist/sb-feed-blocks.asset.php';
         $asset = file_exists($asset_file) ? require $asset_file : array('dependencies' => array('wp-blocks', 'wp-i18n', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-server-side-render'), 'version' => '1.0.0');
         wp_enqueue_script('sb-feed-blocks', plugin_dir_url(__FILE__) . 'dist/sb-feed-blocks.js', $asset['dependencies'], $asset['version'], \true);
-        wp_localize_script('sb-feed-blocks', 'sbFeedBlocksRegistry', array_values($this->feed_blocks));
+        // Each scoped plugin (e.g. Twitter, Instagram) compiles its own copy of this
+        // registry under a different prefixed namespace, so each holds a separate
+        // singleton with only its own block. wp_localize_script would have each call
+        // overwrite the previous one — the last plugin loaded wins and the others
+        // vanish from the editor. Merge into the existing global instead.
+        $json = wp_json_encode(array_values($this->feed_blocks));
+        wp_add_inline_script('sb-feed-blocks', 'window.sbFeedBlocksRegistry = (window.sbFeedBlocksRegistry || []).concat(' . $json . ');', 'before');
     }
     /**
      * Enqueue editor styles via enqueue_block_assets so they load inside the
@@ -123,7 +129,10 @@ class SB_Feed_Blocks_Registry
         $asset_file = plugin_dir_path(__FILE__) . 'dist/sb-elementor-editor.asset.php';
         $asset = file_exists($asset_file) ? require $asset_file : array('dependencies' => array('jquery', 'wp-element'), 'version' => '1.0.0');
         wp_register_script('sb-elementor-editor', plugin_dir_url(__FILE__) . 'dist/sb-elementor-editor.js', array_unique(array_merge($asset['dependencies'], array('jquery'))), $asset['version'], \true);
-        wp_localize_script('sb-elementor-editor', 'sbElementorRegistry', array_values($this->elementor_widgets));
+        // Same scoper-induced multi-singleton problem as in enqueue_editor_assets():
+        // merge into the existing global instead of overwriting it.
+        $json = wp_json_encode(array_values($this->elementor_widgets));
+        wp_add_inline_script('sb-elementor-editor', 'window.sbElementorRegistry = (window.sbElementorRegistry || []).concat(' . $json . ');', 'before');
         wp_register_style('sb-elementor-editor', plugin_dir_url(__FILE__) . 'dist/sb-elementor-editor.css', array(), $asset['version']);
     }
 }

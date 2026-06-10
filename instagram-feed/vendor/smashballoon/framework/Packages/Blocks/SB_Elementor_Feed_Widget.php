@@ -27,7 +27,7 @@ abstract class SB_Elementor_Feed_Widget extends Widget_Base
     }
     public function get_title()
     {
-        return esc_html__($this->get_widget_title(), $this->get_text_domain());
+        return esc_html($this->get_widget_title());
     }
     public function get_icon()
     {
@@ -47,7 +47,11 @@ abstract class SB_Elementor_Feed_Widget extends Widget_Base
     }
     protected function register_controls()
     {
-        $this->start_controls_section('section_content', array('label' => esc_html__($this->get_widget_title() . ' Settings', $this->get_text_domain())));
+        $this->start_controls_section('section_content', array('label' => sprintf(
+            /* translators: %s: feed type name, e.g. "Instagram Feed". */
+            esc_html__('%s Settings', $this->get_text_domain()),
+            $this->get_widget_title()
+        )));
         $this->add_control('feed_id', array('label' => esc_html__('Select a Feed', $this->get_text_domain()), 'type' => Controls_Manager::SELECT, 'label_block' => \true, 'options' => array('' => esc_html__('Select a Feed', $this->get_text_domain())) + $this->get_feeds_options(), 'default' => ''));
         $this->end_controls_section();
     }

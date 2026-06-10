@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 7.0
-Stable tag: 6.11.0
+Stable tag: 6.11.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,11 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.11.1 =
+* New - Added a Help widget to the feed builder for in-app access to documentation and support.
+* Fix - The legacy Instagram Feed block now renders a live preview correctly inside the WP 7.0+ iframed block editor, and the legacy Elementor widget now renders correctly inside the Elementor preview.
+* Fix - The Elementor widget title is now translatable.
 
 = 6.11.0 =
 * New - Added a modern Gutenberg block and Elementor widget for the Instagram feed. Existing feeds using the legacy block continue to render without reconfiguration.

@@ -7,12 +7,101 @@
         ServerSideRender = _wp$serverSideRender === void 0 ? wp.components.ServerSideRender : _wp$serverSideRender,
         _ref = wp.blockEditor || wp.editor,
         InspectorControls = _ref.InspectorControls,
+        useBlockProps = _ref.useBlockProps,
         _wp$components = wp.components,
         TextareaControl = _wp$components.TextareaControl,
         Button = _wp$components.Button,
         PanelBody = _wp$components.PanelBody,
         Placeholder = _wp$components.Placeholder,
         registerBlockType = wp.blocks.registerBlockType;
+
+    // Locate the WP 7.0 block editor canvas iframe. Returns null if the
+    // iframe doesn't exist yet or its contentDocument isn't reachable.
+    function getEditorIframe() {
+        var selectors = [
+            'iframe[name="editor-canvas"]',
+            'iframe.edit-post-visual-editor__content-area',
+            'iframe.editor-canvas'
+        ];
+        for (var i = 0; i < selectors.length; i++) {
+            var el = document.querySelector(selectors[i]);
+            if (el && el.contentDocument && el.contentDocument.head) {
+                return el;
+            }
+        }
+        return null;
+    }
+
+    // Inject sbi-scripts.min.js (and its config + jQuery if needed) into the
+    // editor iframe's <head>, so window.sbi_init exists inside the iframe
+    // and can find the feed DOM that ServerSideRender mounts there.
+    var iframeAssetsPromise = null;
+    function ensureIframeFeedAssets() {
+        if (iframeAssetsPromise) {
+            return iframeAssetsPromise;
+        }
+        iframeAssetsPromise = new Promise(function (resolve, reject) {
+            var attempts = 0;
+            var tryInject = function () {
+                attempts++;
+                var iframe = getEditorIframe();
+                if (!iframe) {
+                    if (attempts > 40) {
+                        reject(new Error('sbi: editor iframe not found'));
+                        return;
+                    }
+                    setTimeout(tryInject, 250);
+                    return;
+                }
+                var doc = iframe.contentDocument;
+                if (doc.documentElement.getAttribute('data-sbi-feed-assets-injected')) {
+                    resolve(iframe);
+                    return;
+                }
+                doc.documentElement.setAttribute('data-sbi-feed-assets-injected', '1');
+
+                var config = doc.createElement('script');
+                config.textContent =
+                    'window.sb_instagram_js_options = ' + JSON.stringify(sbi_block_editor.sbInstagramJsOptions || {}) + ';' +
+                    'window.sbiTranslations = ' + JSON.stringify(sbi_block_editor.sbiTranslations || {}) + ';';
+                doc.head.appendChild(config);
+
+                var loadScript = function (src) {
+                    return new Promise(function (res, rej) {
+                        var s = doc.createElement('script');
+                        s.src = src;
+                        s.onload = function () { res(); };
+                        s.onerror = function () { rej(new Error('sbi: failed to load ' + src)); };
+                        doc.head.appendChild(s);
+                    });
+                };
+
+                var chain = Promise.resolve();
+                if (!iframe.contentWindow.jQuery && sbi_block_editor.jqueryUrl) {
+                    chain = chain.then(function () { return loadScript(sbi_block_editor.jqueryUrl); });
+                }
+                if (sbi_block_editor.iframeScriptUrl) {
+                    chain = chain.then(function () { return loadScript(sbi_block_editor.iframeScriptUrl); });
+                }
+                chain.then(function () { resolve(iframe); }, reject);
+            };
+            tryInject();
+        });
+        return iframeAssetsPromise;
+    }
+
+    // Call sbi_init() inside the iframe (WP 7.0+) or in the outer scope as a
+    // fallback for pre-iframe editors.
+    function triggerSbiInit() {
+        var iframe = getEditorIframe();
+        if (iframe && iframe.contentWindow && typeof iframe.contentWindow.sbi_init === 'function') {
+            try { iframe.contentWindow.sbi_init(); } catch (e) {}
+            return;
+        }
+        if (!iframe && typeof sbi_init !== 'undefined') {
+            try { sbi_init(); } catch (e) {}
+        }
+    }
 
     var sbiIcon = createElement('svg', {
         width: 20,
@@ -38,6 +127,7 @@
             }
         },
         edit: function edit(props) {
+            var blockProps = typeof useBlockProps === 'function' ? useBlockProps() : {};
             var _props = props,
                 setAttributes = _props.setAttributes,
                 _props$attributes = _props.attributes,
@@ -60,33 +150,15 @@
             }
 
             function afterRender() {
-                var executed = false;
-                // no way to run a script after AJAX call to get feed so we just try to execute it on a few intervals
-                setTimeout(function () {
-                    if (typeof sbi_init !== 'undefined') {
-                        sbi_init();
-                    }
-                }, 1000);
-                setTimeout(function () {
-                    if (typeof sbi_init !== 'undefined') {
-                        sbi_init();
-                    }
-                }, 2000);
-                setTimeout(function () {
-                    if (typeof sbi_init !== 'undefined') {
-                        sbi_init();
-                    }
-                }, 3000);
-                setTimeout(function () {
-                    if (typeof sbi_init !== 'undefined') {
-                        sbi_init();
-                    }
-                }, 5000);
-                setTimeout(function () {
-                    if (typeof sbi_init !== 'undefined') {
-                        sbi_init();
-                    }
-                }, 10000);
+                // Inject sbi-scripts into the WP 7.0 iframe (no-op once injected),
+                // then poll-trigger sbi_init in iframe scope. ServerSideRender
+                // doesn't expose an onload callback, so we retry on intervals.
+                ensureIframeFeedAssets().catch(function () {});
+                setTimeout(triggerSbiInit, 1000);
+                setTimeout(triggerSbiInit, 2000);
+                setTimeout(triggerSbiInit, 3000);
+                setTimeout(triggerSbiInit, 5000);
+                setTimeout(triggerSbiInit, 10000);
             }
 
             var jsx = [React.createElement(InspectorControls, {
@@ -127,7 +199,7 @@
                 }, sbi_block_editor.i18n.preview)));
             }
 
-            return jsx;
+            return createElement('div', blockProps, jsx);
         },
         save: function save() {
             return null;

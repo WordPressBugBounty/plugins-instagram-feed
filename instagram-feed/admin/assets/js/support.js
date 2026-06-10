@@ -4,7 +4,6 @@ var support_data = {
     system_info: sbi_support.system_info,
     system_info_n: sbi_support.system_info_n,
     exportFeed: 'none',
-    stickyWidget: false,
     feeds: sbi_support.feeds,
     supportUrl: sbi_support.supportUrl,
     socialWallActivated: sbi_support.socialWallActivated,
@@ -147,14 +146,6 @@ var sbisupport = new Vue({
         activateView: function (viewName, sourcePopupType = 'creation', ajaxAction = false) {
             var self = this;
             self.viewsActive[viewName] = (self.viewsActive[viewName] == false) ? true : false;
-        },
-        /**
-         * Toggle Sticky Widget view
-         *
-         * @since 4.0
-         */
-        toggleStickyWidget: function () {
-            this.stickyWidget = !this.stickyWidget;
         },
 
         /**

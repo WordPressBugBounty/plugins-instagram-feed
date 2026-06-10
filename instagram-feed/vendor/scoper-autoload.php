@@ -29,6 +29,6 @@ if (!function_exists('humbug_phpscoper_expose_class')) {
         }
     }
 }
-humbug_phpscoper_expose_class('ComposerAutoloaderInitf604b7c542a1f0336461ab1ec648eb2f', 'InstagramFeed\Vendor\ComposerAutoloaderInitf604b7c542a1f0336461ab1ec648eb2f');
+humbug_phpscoper_expose_class('ComposerAutoloaderInitb2e3b3853ee8eef122f948f4c32012ac', 'InstagramFeed\Vendor\ComposerAutoloaderInitb2e3b3853ee8eef122f948f4c32012ac');
 
 return $loader;
