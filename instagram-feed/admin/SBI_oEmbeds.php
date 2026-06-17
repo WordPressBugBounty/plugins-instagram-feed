@@ -320,6 +320,15 @@ class SBI_oEmbeds
 			$sbi_notices->remove_notice('oembed_api_change_reconnect');
 		}
 
+		// The branches below persist oEmbed tokens (sbi_oembed_token / cff_oembed_token)
+		// straight from request data on a GET page load. Require the connection nonce that
+		// get_connection_url() issues and the connect flow returns, so a forged cross-site
+		// request can't overwrite the tokens. Mirrors SBI_Source::maybe_source_connection_data().
+		$nonce = !empty($_GET['sbi_con']) ? sanitize_key($_GET['sbi_con']) : '';
+		if (!wp_verify_nonce($nonce, 'sbi_con')) {
+			return false;
+		}
+
 		if (!empty($_GET['transfer'])) {
 			if (class_exists('\CustomFacebookFeed\CFF_Oembed')) {
 				$cff_oembed_token = CFF_Oembed::last_access_token();
