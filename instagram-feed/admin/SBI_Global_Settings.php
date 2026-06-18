@@ -686,6 +686,7 @@ class SBI_Global_Settings
 
 		$user_id = get_current_user_id();
 		update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+		update_user_meta($user_id, 'sb_notice_discount_dismissed', true);
 		$sbi_notices->remove_notice('discount');
 
 		$sbi_statuses_option = get_option('sbi_statuses', array());

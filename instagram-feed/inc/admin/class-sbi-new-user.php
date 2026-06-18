@@ -551,6 +551,7 @@ class SBI_New_User extends SBI_Notifications
 		$discount_notice = $sbi_notices->get_notice('discount');
 		if ($discount_notice && !isset($sbi_statuses_option['preexisting_discount_notice_check'])) {
 			update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+			update_user_meta($user_id, 'sb_notice_discount_dismissed', true);
 			$sbi_notices->remove_notice('discount');
 		}
 		$sbi_statuses_option['preexisting_discount_notice_check'] = true;
@@ -586,6 +587,7 @@ class SBI_New_User extends SBI_Notifications
 			update_option('sbi_statuses', $sbi_statuses_option, false);
 
 			update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+			update_user_meta($user_id, 'sb_notice_discount_dismissed', true);
 		}
 
 		if (isset($_GET['sbi_ignore_rating_notice_nag'])) {
@@ -617,6 +619,7 @@ class SBI_New_User extends SBI_Notifications
 			}
 			if ('always' === $new_user_ignore) {
 				update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+				update_user_meta($user_id, 'sb_notice_discount_dismissed', true);
 
 				$current_month_number = (int)date('n', sbi_get_current_time());
 				$not_early_in_the_year = ($current_month_number > 5);
@@ -639,9 +642,12 @@ class SBI_New_User extends SBI_Notifications
 			} elseif (date('Y', sbi_get_current_time()) === $bfcm_ignore) {
 				update_user_meta($user_id, 'sbi_ignore_bfcm_sale_notice', date('Y', sbi_get_current_time()));
 			}
-			update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+			if ($bfcm_ignore) {
+				update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+				update_user_meta($user_id, 'sb_notice_discount_dismissed', true);
 
-			$sbi_notices->remove_notice('discount');
+				$sbi_notices->remove_notice('discount');
+			}
 		}
 
 		if (isset($_GET['sbi_dismiss'])) {
@@ -655,6 +661,7 @@ class SBI_New_User extends SBI_Notifications
 				update_option('sbi_statuses', $sbi_statuses_option, false);
 
 				update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+				update_user_meta($user_id, 'sb_notice_discount_dismissed', true);
 
 				$sbi_notices->remove_notice('review_step_1');
 				$sbi_notices->remove_notice('review_step_1_all_pages');
@@ -662,6 +669,7 @@ class SBI_New_User extends SBI_Notifications
 				$sbi_notices->remove_notice('review_step_2_all_pages');
 			} elseif ('discount' === $notice_dismiss) {
 				update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
+				update_user_meta($user_id, 'sb_notice_discount_dismissed', true);
 
 				$current_month_number = (int)date('n', sbi_get_current_time());
 				$not_early_in_the_year = ($current_month_number > 5);
@@ -669,8 +677,6 @@ class SBI_New_User extends SBI_Notifications
 				if ($not_early_in_the_year) {
 					update_user_meta($user_id, 'sbi_ignore_bfcm_sale_notice', date('Y', sbi_get_current_time()));
 				}
-
-				update_user_meta($user_id, 'sbi_ignore_new_user_sale_notice', 'always');
 
 				$sbi_notices->remove_notice('discount');
 			}

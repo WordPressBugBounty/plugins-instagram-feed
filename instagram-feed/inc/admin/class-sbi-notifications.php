@@ -823,6 +823,7 @@ class SBI_Notifications
 			$sbi_notices->remove_notice('review_step_2_all_pages');
 		} elseif ($id === 'discount') {
 			update_user_meta(get_current_user_id(), 'sbi_ignore_new_user_sale_notice', 'always');
+			update_user_meta(get_current_user_id(), 'sb_notice_discount_dismissed', true);
 
 			$current_month_number = (int)date('n', sbi_get_current_time());
 			$not_early_in_the_year = ($current_month_number > 5);
