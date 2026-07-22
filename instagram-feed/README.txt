@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 7.0
-Stable tag: 6.11.3
+Stable tag: 6.11.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,12 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.11.4 =
+* New - Photos, Videos, and Reels filter toggles are now available in Instagram Feed Free.
+* Fix - Instagram images now honor the intended image quality, and the Thumbnail feed size now uses the cached thumbnail file.
+* Fix - Resolved an editor typography issue on WordPress versions below 7.0 caused by legacy block iframe styles.
+* Fix - Additional plugin hardening.
 
 = 6.11.3 =
 * Fix - Notices now stay dismissed once closed, including on sites with multiple administrators.

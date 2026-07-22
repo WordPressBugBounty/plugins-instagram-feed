@@ -59,62 +59,37 @@ class SB_Instagram_Blocks
 		// Priority 25 mirrors the pre-existing behavior so our localized data lands
 		// after WP core / common editor assets but before theme/plugin hooks at 30+.
 		add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'), 25);
-		add_filter('block_editor_settings_all', array($this, 'inject_iframe_styles'));
+		// Styles enqueued on enqueue_block_assets are copied into the iframed editor
+		// canvas by core (wp_get_iframed_editor_assets), so this reaches the iframe on
+		// WP 7.0+ and the plain editor on older versions. Do NOT push raw CSS into the
+		// block_editor_settings_all `styles` array instead: entries there are treated
+		// as theme editor styles on every WP version, which suppresses core's default
+		// editor typography and drops the post title/content to the browser's serif
+		// fallback on themes that ship no editor styles.
+		add_action('enqueue_block_assets', array($this, 'enqueue_block_content_assets'));
 	}
 
 	/**
-	 * Inject block UI and feed CSS into the WP 7.0+ iframed editor canvas.
+	 * Enqueue feed + block UI CSS for the editor canvas (iframed or not).
 	 *
-	 * `block_editor_settings_all` exposes a `styles` array that WordPress renders
-	 * inline inside the iframe `<head>`. wp_enqueue_style on the outer admin page
-	 * does not propagate to the iframe for api_version 3 blocks, so we have to
-	 * push the CSS contents through this filter for it to be visible inside the
-	 * iframe (e.g. the license-expired notice rendered by get_feed_html()).
+	 * Restores the enqueue_block_assets path removed in fb89bc4 and additionally
+	 * enqueues sb-instagram-admin.css so the block UI rules (license-expired
+	 * notice rendered by get_feed_html()) are styled inside the iframe as well.
 	 *
-	 * @param array $settings Block editor settings.
-	 * @return array
+	 * @since 6.11.0
 	 */
-	public function inject_iframe_styles($settings)
+	public function enqueue_block_content_assets()
 	{
-		// Cache the CSS payload across the request lifecycle. block_editor_settings_all
-		// fires on every block-editor request (post editor, site editor, widget editor)
-		// and the CSS bytes on disk don't change between calls, so re-reading them is
-		// wasteful disk I/O on the hottest path of the editor.
-		// TODO: also scope this by screen so we only inject when the editor could host
-		// this plugin's blocks. Scoping is intentionally skipped for now because
-		// block_editor_settings_all fires in REST contexts where get_current_screen()
-		// is unreliable, and over-scoping would re-break the iframe styling fix.
-		static $cached = null;
-
-		if ($cached === null) {
-			$files = array(
-				trailingslashit(SBI_PLUGIN_DIR) . 'css/sb-instagram-admin.css',
-				trailingslashit(SBI_PLUGIN_DIR) . 'css/sbi-styles.min.css',
-			);
-
-			$cached = array();
-			foreach ($files as $file) {
-				if (! file_exists($file)) {
-					continue;
-				}
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading local plugin CSS, WP_Filesystem would be overkill.
-				$css = file_get_contents($file);
-				if ($css === false) {
-					continue;
-				}
-				$cached[] = array( 'css' => $css );
-			}
+		if (!is_admin()) {
+			return;
 		}
-
-		if (! isset($settings['styles']) || ! is_array($settings['styles'])) {
-			$settings['styles'] = array();
-		}
-
-		foreach ($cached as $entry) {
-			$settings['styles'][] = $entry;
-		}
-
-		return $settings;
+		sb_instagram_scripts_enqueue(true);
+		wp_enqueue_style(
+			'sb-instagram-admin-block',
+			trailingslashit(SBI_PLUGIN_URL) . 'css/sb-instagram-admin.css',
+			array(),
+			SBIVER
+		);
 	}
 
 	/**
@@ -161,7 +136,10 @@ class SB_Instagram_Blocks
 	{
 		$db = sbi_get_database_settings();
 
-		sb_instagram_scripts_enqueue(true);
+		// sb_instagram_scripts_enqueue() runs on enqueue_block_assets (see
+		// enqueue_block_content_assets) — the only hook whose styles core copies
+		// into the iframed canvas — and both hooks fire on every editor load, so
+		// calling it here too would duplicate its wp_localize_script data.
 
 		wp_enqueue_style('sbi-blocks-styles');
 		wp_enqueue_script(

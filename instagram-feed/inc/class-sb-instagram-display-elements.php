@@ -228,6 +228,8 @@ class SB_Instagram_Display_Elements
 		$suffix = '';
 		switch ($resolution) {
 			case 'thumb':
+				$suffix = isset($sizes['thumb']) ? 'thumb' : (isset($sizes['low']) ? 'low' : (isset($sizes['full']) ? 'full' : ''));
+				break;
 			case 'medium':
 				$suffix = isset($sizes['low']) ? 'low' : (isset($sizes['full']) ? 'full' : '');
 				break;

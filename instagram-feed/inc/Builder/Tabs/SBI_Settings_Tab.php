@@ -83,10 +83,47 @@ class SBI_Settings_Tab
 	public static function get_settings_filters_moderation_controls()
 	{
 		return [
+			// Active post-type toggles — Photos, Feed Videos, Reels all work in Free
+			// via the existing media + videotypes pipeline
+			// (see SB_Instagram_Settings::filter_for_builder()).
+			//
+			// Note: we intentionally do NOT set 'stacked' here. The Vue template
+			// reads control.stacked as a truthiness check — and the string 'false'
+			// is truthy in JS, so 'stacked' => 'false' would end up rendering as
+			// data-stacked="true" and trigger the 5px padding override meant for
+			// stacked controls. Omitting the key keeps the 20px default padding
+			// so the heading doesn't crowd the tab's top border.
 			[
 				'type' => 'heading',
 				'strongHeading' => 'true',
-				'heading' => __('Show specific types of posts', 'instagram-feed')
+				'heading' => __('Show specific types of posts', 'instagram-feed'),
+				'checkViewDisabled' => 'moderationMode',
+			],
+			[
+				'type' => 'checkbox',
+				'id' => 'photosposts',
+				'label' => __('Photos', 'instagram-feed'),
+				'reverse' => 'true',
+				'stacked' => 'true',
+				'checkViewDisabled' => 'moderationMode',
+				'ajaxAction' => 'feedFlyPreview',
+				'options' => [
+					'enabled' => true,
+					'disabled' => false,
+				],
+			],
+			[
+				'type' => 'checkbox',
+				'id' => 'videosposts',
+				'label' => __('Feed Videos', 'instagram-feed'),
+				'reverse' => 'true',
+				'stacked' => 'true',
+				'checkViewDisabled' => 'moderationMode',
+				'ajaxAction' => 'feedFlyPreview',
+				'options' => [
+					'enabled' => true,
+					'disabled' => false,
+				],
 			],
 			[
 				'type' => 'checkbox',
@@ -98,22 +135,23 @@ class SBI_Settings_Tab
 				'ajaxAction' => 'feedFlyPreview',
 				'options' => [
 					'enabled' => true,
-					'disabled' => false
-				]
+					'disabled' => false,
+				],
 			],
 			[
 				'type' => 'separator',
 				'top' => 20,
-				'bottom' => 20
+				'bottom' => 20,
 			],
 
+			// Pro upsell section — word filters + visual moderation stay paid.
 			[
 				'type' => 'heading',
 				'heading' => __('Advanced', 'instagram-feed'),
 				'proLabel' => true,
 				'description' => __('Visually moderate your feed or hide specific posts with Instagram Feed Pro.', 'instagram-feed'),
 				'checkExtensionPopup' => 'filtermoderation',
-				'checkExtensionPopupLearnMore' => 'filtermoderation'
+				'checkExtensionPopupLearnMore' => 'filtermoderation',
 			],
 
 			[
@@ -130,8 +168,8 @@ class SBI_Settings_Tab
 					'labelStrong' => true,
 					'options' => [
 						'enabled' => true,
-						'disabled' => false
-					]
+						'disabled' => false,
+					],
 				],
 				'moderationTypes' => [
 					'allow' => [
@@ -141,8 +179,8 @@ class SBI_Settings_Tab
 					'block' => [
 						'label' => __('Block List', 'instagram-feed'),
 						'description' => __('Show all posts by default so you can select the ones you want to hide', 'instagram-feed'),
-					]
-				]
+					],
+				],
 			],
 			[
 				'type' => 'heading',
@@ -151,18 +189,18 @@ class SBI_Settings_Tab
 				'checkExtensionDimmed' => 'filtermoderation',
 				'checkExtensionPopup' => 'filtermoderation',
 				'disabledInput' => true,
-				'checkViewDisabled' => 'moderationMode'
+				'checkViewDisabled' => 'moderationMode',
 			],
 			[
 				'type' => 'textarea',
 				'id' => 'includewords',
 				'heading' => __('Only show posts containing', 'instagram-feed'),
-				'tooltip' => __('Show your active stories from Instagram when your header avatar is clicked. Displays a colored ring around your avatar when a story is available.', 'instagram-feed'),
+				'tooltip' => __('Only show posts which contain certain words or hashtags in the caption.', 'instagram-feed'),
 				'placeholder' => __('Add words here to only show posts containing these words', 'instagram-feed'),
 				'checkExtensionDimmed' => 'filtermoderation',
 				'checkExtensionPopup' => 'filtermoderation',
 				'disabledInput' => true,
-				'checkViewDisabled' => 'moderationMode'
+				'checkViewDisabled' => 'moderationMode',
 			],
 			[
 				'type' => 'separator',
@@ -171,9 +209,8 @@ class SBI_Settings_Tab
 				'checkExtensionDimmed' => 'filtermoderation',
 				'checkExtensionPopup' => 'filtermoderation',
 				'disabledInput' => true,
-				'checkViewDisabled' => 'moderationMode'
+				'checkViewDisabled' => 'moderationMode',
 			],
-
 			[
 				'type' => 'textarea',
 				'id' => 'excludewords',
@@ -183,71 +220,8 @@ class SBI_Settings_Tab
 				'placeholder' => __('Add words here to hide any posts containing these words', 'instagram-feed'),
 				'checkExtensionDimmed' => 'filtermoderation',
 				'checkExtensionPopup' => 'filtermoderation',
-				'disabledInput' => true,
-				'checkViewDisabled' => 'moderationMode'
-			],
-
-			[
-				'type' => 'heading',
-				'strongHeading' => 'true',
-				'stacked' => 'true',
-				'heading' => __('Show specific types of posts', 'instagram-feed'),
-				'checkExtensionDimmed' => 'filtermoderation',
-				'checkExtensionPopup' => 'filtermoderation',
-				'disabledInput' => true,
-				'checkViewDisabled' => 'moderationMode'
-			],
-
-			[
-				'type' => 'checkbox',
-				'id' => 'photosposts',
-				'label' => __('Photos', 'instagram-feed'),
-				'reverse' => 'true',
-				'stacked' => 'true',
 				'checkViewDisabled' => 'moderationMode',
-				'ajaxAction' => 'feedFlyPreview',
-				'checkExtensionDimmed' => 'filtermoderation',
-				'checkExtensionPopup' => 'filtermoderation',
-				'disabledInput' => true,
-				'options' => [
-					'enabled' => true,
-					'disabled' => false
-				]
 			],
-
-			[
-				'type' => 'checkbox',
-				'id' => 'videosposts',
-				'label' => __('Feed Videos', 'instagram-feed'),
-				'reverse' => 'true',
-				'stacked' => 'true',
-				'checkViewDisabled' => 'moderationMode',
-				'ajaxAction' => 'feedFlyPreview',
-				'checkExtensionDimmed' => 'filtermoderation',
-				'checkExtensionPopup' => 'filtermoderation',
-				'disabledInput' => true,
-				'options' => [
-					'enabled' => true,
-					'disabled' => false
-				]
-			],
-			[
-				'type' => 'checkbox',
-				'id' => 'igtvposts',
-				'label' => __('IGTV Videos', 'instagram-feed'),
-				'reverse' => 'true',
-				'stacked' => 'true',
-				'checkViewDisabled' => 'moderationMode',
-				'ajaxAction' => 'feedFlyPreview',
-				'checkExtensionDimmed' => 'filtermoderation',
-				'checkExtensionPopup' => 'filtermoderation',
-				'disabledInput' => true,
-				'options' => [
-					'enabled' => true,
-					'disabled' => false
-				]
-			],
-
 			[
 				'type' => 'separator',
 				'top' => 10,
@@ -255,9 +229,8 @@ class SBI_Settings_Tab
 				'checkExtensionDimmed' => 'filtermoderation',
 				'checkExtensionPopup' => 'filtermoderation',
 				'disabledInput' => true,
-				'checkViewDisabled' => 'moderationMode'
+				'checkViewDisabled' => 'moderationMode',
 			],
-
 			[
 				'type' => 'number',
 				'id' => 'offset',
@@ -270,10 +243,8 @@ class SBI_Settings_Tab
 				'checkExtensionDimmed' => 'filtermoderation',
 				'checkExtensionPopup' => 'filtermoderation',
 				'disabledInput' => true,
-				'checkViewDisabled' => 'moderationMode'
+				'checkViewDisabled' => 'moderationMode',
 			],
-
-
 		];
 	}
 

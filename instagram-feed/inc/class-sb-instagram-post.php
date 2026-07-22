@@ -487,11 +487,14 @@ class SB_Instagram_Post
 
 					// not uncommon for the image editor to not work using it this way
 					if (!is_wp_error($image_editor)) {
-						$image_editor->set_quality(80);
-
 						$sizes = $image_editor->get_size();
 
 						$image_editor->resize($image_size, null);
+
+						// set_quality() must be called AFTER resize(): since WP 6.8 the core
+						// resize() implementations internally invoke set_quality(null, $dims),
+						// which would overwrite any quality set beforehand.
+						$image_editor->set_quality(80);
 
 						$full_file_name = trailingslashit($upload_dir) . $this_image_file_name;
 						$mime_type = $webp_supported ? 'image/webp' : 'image/jpeg';

@@ -400,26 +400,52 @@ class SB_Instagram_Settings
 	 */
 	public function filter_for_builder($settings, $atts)
 	{
-
+		// Combine photosposts / videosposts / reelsposts toggles into the
+		// media + videotypes pair that filter_posts() actually consumes.
+		// Mirrors Pro's logic so the builder behaves the same way for users
+		// who later upgrade (class-sbi-settings-pro.php:filter_for_builder).
 		if (!isset($atts['media'])) {
-			if (isset($settings['reelsposts'])) {
-				$include_reels = $settings['reelsposts'] !== 'false' && !empty($settings['reelsposts']) ? true : false;
+			$include_photos = $settings['media'] !== 'videos';
+			if (isset($settings['photosposts'])) {
+				$include_photos = $settings['photosposts'] !== 'false' && !empty($settings['photosposts']);
+			}
+
+			if (isset($settings['videosposts']) && $settings['videosposts']) {
+				$include_videos = true;
 			} else {
-				$include_reels = $settings['media'] === 'all' ? true : false;
+				$include_videos = $settings['media'] === 'all' || $settings['media'] === 'videos';
+			}
+			if (isset($settings['videosposts'])) {
+				$include_videos = $settings['videosposts'] !== 'false' && !empty($settings['videosposts']);
+			}
+
+			if (isset($settings['reelsposts'])) {
+				$include_reels = $settings['reelsposts'] !== 'false' && !empty($settings['reelsposts']);
+			} else {
+				$include_reels = ($settings['media'] === 'all' || $include_videos) !== false;
 				$settings['reelsposts'] = $include_reels ? true : false;
 			}
 
-			$settings['media'] = $include_reels ? 'all' : array('photos', 'videos');
+			if ($include_photos && $include_videos && $include_reels) {
+				$settings['media'] = 'all';
+			} elseif ($include_photos && ($include_videos || $include_reels)) {
+				$settings['media'] = array('photos', 'videos');
+			} elseif ($include_videos || $include_reels) {
+				$settings['media'] = 'videos';
+			} else {
+				$settings['media'] = 'photos';
+			}
 		} else {
-			$include_reels = $settings['media'] === 'all' && strpos($settings['videotypes'], 'reels') !== false;
+			$include_reels = $settings['media'] === 'all' || ($settings['media'] === 'videos' && strpos($settings['videotypes'], 'reels') !== false);
+			$include_videos = $settings['media'] === 'all' || ($settings['media'] === 'videos' && strpos($settings['videotypes'], 'regular') !== false);
 		}
 
 		if (!isset($atts['videotypes'])) {
 			$video_types = array();
 			if ($include_reels) {
 				$video_types[] = 'reels';
-				$video_types[] = 'regular';
-			} else {
+			}
+			if ($include_videos) {
 				$video_types[] = 'regular';
 			}
 			$settings['videotypes'] = implode(',', $video_types);

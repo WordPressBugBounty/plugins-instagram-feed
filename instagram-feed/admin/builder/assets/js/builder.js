@@ -372,6 +372,9 @@ sbiBuilder = new Vue({
         if (sbiStorage?.setCurrentStep !== undefined) {
             self.currentOnboardingWizardStep = 1;
             sbiStorage.removeItem("setCurrentStep");
+            if ( typeof window.sbiSmashUsageRecordEvent === 'function' ) {
+                window.sbiSmashUsageRecordEvent( 'setup_wizard_started' );
+            }
         }
 
     },
@@ -3112,6 +3115,9 @@ sbiBuilder = new Vue({
 
             if (self.currentOnboardingWizardStep < self.onboardingWizardContent.steps.length) {
                 self.currentOnboardingWizardStep += 1;
+                if ( typeof window.sbiSmashUsageRecordEvent === 'function' ) {
+                    window.sbiSmashUsageRecordEvent( 'setup_wizard_step_completed' );
+                }
             }
         },
 
@@ -3146,6 +3152,9 @@ sbiBuilder = new Vue({
             })
             setTimeout(function () {
                 self.onboardingWizardDone = 'true';
+                if ( typeof window.sbiSmashUsageRecordEvent === 'function' ) {
+                    window.sbiSmashUsageRecordEvent( 'setup_wizard_completed' );
+                }
             }, 100)
             sbiBuilder.$forceUpdate();
         },
@@ -3254,6 +3263,9 @@ sbiBuilder = new Vue({
         },
 
         dismissOnboardingWizard: function () {
+            if ( typeof window.sbiSmashUsageRecordEvent === 'function' ) {
+                window.sbiSmashUsageRecordEvent( 'setup_wizard_abandoned' );
+            }
             const self = this,
                 dismissWizardData = {
                     action: 'sbi_feed_saver_manager_dismiss_wizard'

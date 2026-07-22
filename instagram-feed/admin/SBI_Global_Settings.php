@@ -28,6 +28,7 @@ use SB_Instagram_GDPR_Integrations;
 use function json_decode;
 use function sbi_is_pro_version;
 use function stripslashes;
+use InstagramFeed\UsageTracking\Config as SmashTrackingConfig;
 
 class SBI_Global_Settings
 {
@@ -170,20 +171,27 @@ class SBI_Global_Settings
 		$sbi_settings['email_notification'] = sanitize_text_field($advanced['email_notification']);
 		$sbi_settings['email_notification_addresses'] = sanitize_text_field($advanced['email_notification_addresses']);
 
-		$usage_tracking = get_option('sbi_usage_tracking', array('last_send' => 0, 'enabled' => sbi_is_pro_version()));
-		if (isset($advanced['email_notification_addresses'])) {
-			$usage_tracking['enabled'] = false;
-			if (isset($advanced['usage_tracking'])) {
-				if (!is_array($usage_tracking)) {
-					$usage_tracking = array(
-						'enabled' => $advanced['usage_tracking'],
-						'last_send' => 0,
-					);
-				} else {
-					$usage_tracking['enabled'] = $advanced['usage_tracking'];
-				}
+		if ( isset( $advanced['usage_tracking'] ) ) {
+			$tracking_enabled = (bool) $advanced['usage_tracking'];
+			$usage_tracking   = get_option(
+				'sbi_usage_tracking',
+				array(
+					'enabled'   => SmashTrackingConfig::DEFAULT_ENABLED,
+					'last_send' => 0,
+				)
+			);
+			$last_send        = is_array( $usage_tracking ) && isset( $usage_tracking['last_send'] ) ? $usage_tracking['last_send'] : 0;
+			update_option(
+				'sbi_usage_tracking',
+				array(
+					'enabled'   => $tracking_enabled,
+					'last_send' => $last_send,
+				),
+				false
+			);
+			if ( ! $tracking_enabled ) {
+				wp_clear_scheduled_hook( SmashTrackingConfig::CRON_HOOK );
 			}
-			update_option('sbi_usage_tracking', $usage_tracking, false);
 		}
 
 		// Update the sbi_style_settings option that contains data for translation and advanced tabs
@@ -1052,7 +1060,7 @@ class SBI_Global_Settings
 				),
 				'usageBox' => array(
 					'title' => __('Usage Tracking', 'instagram-feed'),
-					'helpText' => sprintf(__('This helps to prevent plugin and theme conflicts by sending a report in the background once per week about your settings and relevant site stats. It does not send sensitive information like access tokens, email addresses, or user info. This will also not affect your site performance. %s', 'instagram-feed'), '<a href="' . $usage_tracking_url . '" target="_blank">' . __('Learn More', 'instagram-feed') . '</a>'),
+					'helpText' => sprintf( __( 'Send a weekly report to Smash Balloon to help improve the product. No sensitive data is collected. You can disable this at any time. %s', 'instagram-feed' ), '<a href="' . $usage_tracking_url . '" target="_blank">' . __( 'Learn More', 'instagram-feed' ) . '</a>' ),
 				),
 				'resetErrorBox' => array(
 					'title' => __('Reset Error Log', 'instagram-feed'),
@@ -1181,7 +1189,6 @@ class SBI_Global_Settings
 		$sbi_cache_cron_interval = $sbi_settings['sbi_cache_cron_interval'];
 		$sbi_cache_cron_time = $sbi_settings['sbi_cache_cron_time'];
 		$sbi_cache_cron_am_pm = $sbi_settings['sbi_cache_cron_am_pm'];
-		$usage_tracking = get_option('sbi_usage_tracking', array('last_send' => 0, 'enabled' => sbi_is_pro_version()));
 		$sbi_ajax = $sbi_settings['sb_instagram_ajax_theme'];
 		$active_gdpr_plugin = SB_Instagram_GDPR_Integrations::gdpr_plugins_active();
 		$sbi_preserve_setitngs = $sbi_settings['sb_instagram_preserve_settings'];
@@ -1220,7 +1227,7 @@ class SBI_Global_Settings
 			'advanced' => array(
 				'sbi_enable_resize' => !$sbi_settings['sb_instagram_disable_resize'],
 				'image_format' => $sbi_settings['image_format'],
-				'usage_tracking' => $usage_tracking['enabled'],
+				'usage_tracking' => SmashTrackingConfig::is_enabled(),
 				'sbi_ajax' => $sbi_ajax,
 				'sb_ajax_initial' => $sbi_settings['sb_ajax_initial'],
 				'sbi_enqueue_js_in_head' => $sbi_settings['enqueue_js_in_head'],

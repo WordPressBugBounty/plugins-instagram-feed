@@ -104,7 +104,6 @@
         </div>
     </div>
 
-
     <div class="sb-tab-box sb-load-ajax-box sb-reset-box-style clearfix">
         <div class="tab-label">
             <h3>{{advancedTab.ajaxInitial.title}}</h3>
