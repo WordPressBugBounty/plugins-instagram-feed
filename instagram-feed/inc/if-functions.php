@@ -1024,7 +1024,7 @@ function sbi_is_url($input)
 
 
 /**
- * Added to workaround MySQL tables that don't use utf8mb4 character sets
+ * Added to work around MySQL tables that don't use utf8mb4 character sets
  *
  * @since 2.2.1/5.3.1
  */
@@ -1037,7 +1037,7 @@ function sbi_sanitize_emoji($string)
 }
 
 /**
- * Added to workaround MySQL tables that don't use utf8mb4 character sets
+ * Added to work around MySQL tables that don't use utf8mb4 character sets
  *
  * @since 2.2.1/5.3.1
  */
@@ -1239,6 +1239,29 @@ function sb_instagram_clear_page_caches()
 }
 
 /**
+ * Registers the local design-tokens stylesheet so consumer styles can
+ * declare it as a dependency. Hooked at priority 1 on both the frontend
+ * and admin enqueue actions so the handle is always available before
+ * any consumer style registers.
+ *
+ * The file is a snapshot of @smashballoons/tokens (npm) — see
+ * assets/tokens/sb-tokens-local.css for the version pin and migration
+ * notes.
+ */
+function sb_instagram_register_tokens_local_style()
+{
+	wp_register_style(
+		'sbi-tokens-local',
+		SBI_PLUGIN_URL . 'assets/tokens/sb-tokens-local.css',
+		array(),
+		SBIVER
+	);
+}
+
+add_action('wp_enqueue_scripts', 'sb_instagram_register_tokens_local_style', 1);
+add_action('admin_enqueue_scripts', 'sb_instagram_register_tokens_local_style', 1);
+
+/**
  * Makes the JavaScript file available and enqueues the stylesheet
  * for the plugin
  */
@@ -1266,9 +1289,9 @@ function sb_instagram_scripts_enqueue($enqueue = false)
 	}
 
 	if (isset($sb_instagram_settings['enqueue_css_in_shortcode']) && $sb_instagram_settings['enqueue_css_in_shortcode']) {
-		wp_register_style('sbi_styles', trailingslashit(SBI_PLUGIN_URL) . $css_file, array(), SBIVER);
+		wp_register_style('sbi_styles', trailingslashit(SBI_PLUGIN_URL) . $css_file, array('sbi-tokens-local'), SBIVER);
 	} else {
-		wp_enqueue_style('sbi_styles', trailingslashit(SBI_PLUGIN_URL) . $css_file, array(), SBIVER);
+		wp_enqueue_style('sbi_styles', trailingslashit(SBI_PLUGIN_URL) . $css_file, array('sbi-tokens-local'), SBIVER);
 	}
 
 
@@ -1647,7 +1670,7 @@ function sbi_send_report_email()
 	} else {
 		$title = __('Your Private Instagram Feed Account Needs to be Reauthenticated', 'instagram-feed');
 		$bold = __('Access Token Refresh Needed', 'instagram-feed');
-		$details = '<p>' . __('As your Instagram account is set to be "Private", Instagram requires that you reauthenticate your account every 60 days. This a courtesy email to let you know that you need to take action to allow the Instagram feed on your website to continue updating. If you don\'t refresh your account, then a backup cache will be displayed instead.', 'instagram-feed') . '</p>';
+		$details = '<p>' . __('As your Instagram account is set to be "Private", Instagram requires that you reauthenticate your account every 60 days. This is a courtesy email to let you know that you need to take action to allow the Instagram feed on your website to continue updating. If you don\'t refresh your account, then a backup cache will be displayed instead.', 'instagram-feed') . '</p>';
 		$details .= '<p>' . sprintf(__('To prevent your account expiring every 60 days %sswitch your account to be public%s. For more information and to refresh your account, click here to visit the %sInstagram Feed settings page%s on your website.', 'instagram-feed'), '<a href="https://help.instagram.com/116024195217477/In">', '</a>', '<a href="' . esc_url($link) . '">', '</a>') . '</p>';
 	}
 	$message_content = '<h6 style="padding:0;word-wrap:normal;font-family:\'Helvetica Neue\',Helvetica,Arial,sans-serif;font-weight:bold;line-height:130%;font-size: 16px;color:#444444;text-align:inherit;margin:0 0 20px 0;Margin:0 0 20px 0;">' . $bold . '</h6>' . $details;

@@ -50,9 +50,12 @@ class SbiWidget extends WP_Widget
 				   name="<?php echo esc_attr($this->get_field_name('title')); ?>" type="text"
 				   value="<?php echo esc_attr($title); ?>"/>
 		</p>
-		<textarea class="widefat" id="<?php echo esc_attr($this->get_field_id('content')); ?>"
-				  name="<?php echo esc_attr($this->get_field_name('content')); ?>"
-				  rows="16"><?php echo esc_textarea($content); ?></textarea>
+		<p>
+			<label for="<?php echo esc_attr($this->get_field_id('content')); ?>"><?php esc_html_e('Shortcode:'); ?></label>
+			<textarea class="widefat" id="<?php echo esc_attr($this->get_field_id('content')); ?>"
+					  name="<?php echo esc_attr($this->get_field_name('content')); ?>"
+					  rows="16"><?php echo esc_textarea($content); ?></textarea>
+		</p>
 		<?php
 	}
 

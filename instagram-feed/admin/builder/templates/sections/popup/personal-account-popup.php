@@ -1,13 +1,14 @@
 <script type="text/x-template" id="sb-personal-account-component">
     <div class="sbi-fb-source-ctn sbi-personal-account-ctn sb-fs-boss sbi-fb-center-boss"
+         role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Add personal account', 'instagram-feed' ); ?>"
          v-if="personalAccountPopup == true">
         <div class="sbi-fb-source-popup sbi-fb-popup-inside sbi-narrower-modal">
-            <div class="sbi-fb-popup-cls" @click.prevent.default="personalAccountPopup = false; step = 1;">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <button type="button" class="sbi-fb-popup-cls" aria-label="<?php esc_attr_e( 'Close', 'instagram-feed' ); ?>" @click.prevent.default="personalAccountPopup = false; step = 1;">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
                           fill="#141B38"/>
                 </svg>
-            </div>
+            </button>
             <div class="sbi-fb-personal-step1 sbi-fb-fs" v-if="step == 1">
                 <div class="sbi-source-account-box sbi-fb-fs">
                     <div class="sbi-pers-account-icon" v-html="svgIcons['camera']"></div>
@@ -34,7 +35,8 @@
                         </button>
                         <span v-html="personalAccountInfo.fileName"></span>
                         <input id="avatar_file" type="file" value="avatar_file" ref="file"
-                               v-on:change="onFileChooserChange" accept="image/png, image/jpeg">
+                               v-on:change="onFileChooserChange" accept="image/png, image/jpeg"
+                               aria-label="<?php esc_attr_e('Upload profile picture', 'instagram-feed'); ?>">
                     </div>
                     <div class="sbi-fb-personal-textarea sbi-fb-fs">
                         <label v-html="personalAccountModalText.bioLabel"></label>

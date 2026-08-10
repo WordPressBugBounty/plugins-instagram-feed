@@ -49,10 +49,13 @@ $img_screenreader = str_replace(
 	$img_screenreader
 );
 $img_screenreader = trim( $img_screenreader );
+if ( '' === $img_screenreader ) {
+	$img_screenreader = sprintf( __( 'Instagram post %s', 'instagram-feed' ), $post_id );
+}
 $img_screenreader = apply_filters('sbi_img_screenreader', $img_screenreader, $post);
 
 ?>
-<div class="sbi_item sbi_type_<?php echo esc_attr($media_type); ?><?php echo esc_attr($classes); ?>"
+<div class="sbi_item sbi_type_<?php echo esc_attr($media_type); ?><?php echo esc_attr($classes); ?>" role="listitem"
 	id="sbi_<?php echo esc_html($post_id); ?>" data-date="<?php echo esc_html($timestamp); ?>">
 	<div class="sbi_photo_wrap">
 		<a class="sbi_photo" href="<?php echo esc_url($permalink); ?>" target="_blank" rel="noopener nofollow"

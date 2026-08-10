@@ -435,7 +435,18 @@ if (!sbi_js_exists) {
                     if (feed.settings.debugEnabled) {
                         console.log(response);
                     }
+                    var sbiPrevCount = $self.find('#sbi_images .sbi_item').length;
                     feed.appendNewPosts(response.html);
+                    var sbiNewCount = $self.find('#sbi_images .sbi_item').length - sbiPrevCount;
+                    if (sbiNewCount > 0) {
+                        var sbiStatusEl = $self.find('[data-sbi-feed-status]');
+                        var sbiAnnounceText = typeof sbiTranslate === 'function'
+                            ? sbiTranslate('new posts loaded')
+                            : 'new posts loaded';
+                        if (sbiStatusEl.length) {
+                            sbiStatusEl.text(sbiNewCount + ' ' + sbiAnnounceText);
+                        }
+                    }
                     feed.addResizedImages(response.resizedImages);
                     if (feed.settings.ajaxPostLoad) {
                         feed.settings.ajaxPostLoad = false;
@@ -446,7 +457,25 @@ if (!sbi_js_exists) {
 
                     if (!response.feedStatus.shouldPaginate) {
                         feed.outOfPages = true;
-                        $self.find('.sbi_load_btn').hide();
+                        var sbiLoadBtn = $self.find('.sbi_load_btn');
+                        var sbiLoadBtnFocused = sbiLoadBtn.is(document.activeElement);
+                        sbiLoadBtn.hide();
+                        var sbiEndStatusEl = $self.find('[data-sbi-feed-status]');
+                        if (sbiEndStatusEl.length) {
+                            var sbiEndText = typeof sbiTranslate === 'function'
+                                ? sbiTranslate('All posts loaded')
+                                : 'All posts loaded';
+                            sbiEndStatusEl.text(sbiNewCount > 0 ? sbiNewCount + ' ' + sbiAnnounceText + '. ' + sbiEndText : sbiEndText);
+                        }
+                        if (sbiLoadBtnFocused) {
+                            var sbiFirstNew = sbiNewCount > 0 ? $self.find('#sbi_images .sbi_item').eq(sbiPrevCount) : $();
+                            if (sbiFirstNew.length) {
+                                sbiFirstNew.attr('tabindex', '-1').focus();
+                            } else {
+                                var sbiFocusFallback = sbiEndStatusEl.length ? sbiEndStatusEl : $self;
+                                sbiFocusFallback.attr('tabindex', '-1').focus();
+                            }
+                        }
                     } else {
                         feed.outOfPages = false;
                     }

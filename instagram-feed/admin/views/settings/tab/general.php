@@ -1,4 +1,4 @@
-<div v-if="selected === 'app-1'">
+<div v-if="selected === 'app-1'" id="sbi-panel-general" role="tabpanel" aria-labelledby="sbi-settings-tab-general" tabindex="0">
 	<div class="sb-tab-box sb-license-box clearfix">
 		<div class="tab-label">
 			<h3>{{generalTab.licenseBox.title}}</h3>
@@ -22,7 +22,8 @@
 				<div v-else class="d-flex">
 					<div class="field-left-content">
 						<div class="sb-form-field">
-							<input type="password" name="license-key" id="license-key" class="sbi-form-field"
+							<label for="license-key-free-valid" class="sr-only" v-html="generalTab.licenseBox.title"></label>
+							<input type="password" name="license-key" id="license-key-free-valid" class="sbi-form-field"
 								   :placeholder="generalTab.licenseBox.inactiveFieldPlaceholder" v-model="licenseKey">
 						</div>
 						<div class="form-info d-flex justify-between">
@@ -32,7 +33,13 @@
 								<a :href="links.manageLicense" @click.prevent.default="deactivateLicense">{{generalTab.licenseBox.deactivate}}</a>
 							</span>
 							<span>
-								<span class="test-connection" @click="testConnection()"
+								<span class="test-connection"
+									  role="button"
+									  tabindex="0"
+									  :aria-label="generalTab.licenseBox.test"
+									  @click="testConnection()"
+									  @keydown.enter.prevent="testConnection()"
+									  @keydown.space.prevent="testConnection()"
 									  v-if="testConnectionStatus === null">
 									{{generalTab.licenseBox.test}}
 									<span v-html="testConnectionIcon()" :class="testConnectionStatus">
@@ -49,6 +56,7 @@
 					</div>
 					<div class="field-right-content">
 						<button type="button" class="sbi-btn" v-on:click="licenseActiveAction"
+								:aria-label="(licenseType === 'pro' ? generalTab.licenseBox.deactivate : generalTab.licenseBox.installPro) || '<?php echo esc_js( __( 'License action', 'instagram-feed' ) ); ?>'"
 								:class="{loading: loading, 'sb-btn-blue': licenseType === 'free'}">
 							<span v-if="loading && pressedBtnName === 'sbi'" v-html="loaderSVG"></span>
 							<span class="sbi-license-action-text" v-if="licenseType === 'pro'">{{generalTab.licenseBox.deactivate}}</span>
@@ -77,7 +85,8 @@
 				<div v-else class="d-flex">
 					<div class="field-left-content">
 						<div class="sb-form-field">
-							<input type="password" name="license-key" id="license-key" class="sbi-form-field"
+							<label for="license-key-free" class="sr-only" v-html="generalTab.licenseBox.title"></label>
+							<input type="password" name="license-key" id="license-key-free" class="sbi-form-field"
 								   :placeholder="generalTab.licenseBox.inactiveFieldPlaceholder" v-model="licenseKey">
 						</div>
 						<div class="form-info d-flex justify-between">
@@ -85,7 +94,13 @@
 							<span class="sbi-manage-license">
 							</span>
 							<span>
-								<span class="test-connection" @click="testConnection()"
+								<span class="test-connection"
+									  role="button"
+									  tabindex="0"
+									  :aria-label="generalTab.licenseBox.test"
+									  @click="testConnection()"
+									  @keydown.enter.prevent="testConnection()"
+									  @keydown.space.prevent="testConnection()"
 									  v-if="testConnectionStatus === null">
 									{{generalTab.licenseBox.test}}
 									<span v-html="testConnectionIcon()" :class="testConnectionStatus">
@@ -117,7 +132,8 @@
 				<div class="d-flex">
 					<div class="field-left-content">
 						<div class="sb-form-field">
-							<input type="password" name="license-key" id="license-key" class="sbi-form-field"
+							<label for="license-key-active" class="sr-only" v-html="generalTab.licenseBox.title"></label>
+							<input type="password" name="license-key" id="license-key-active" class="sbi-form-field"
 								   value="******************************" v-model="licenseKey">
 							<span class="field-icon fa fa-check-circle"></span>
 						</div>
@@ -127,7 +143,13 @@
 								   target="_blank">{{generalTab.licenseBox.manageLicense}}</a>
 							</span>
 							<span>
-								<span class="test-connection" @click="testConnection()"
+								<span class="test-connection"
+									  role="button"
+									  tabindex="0"
+									  :aria-label="generalTab.licenseBox.test"
+									  @click="testConnection()"
+									  @keydown.enter.prevent="testConnection()"
+									  @keydown.space.prevent="testConnection()"
 									  v-if="testConnectionStatus === null">
 									{{generalTab.licenseBox.test}}
 									<span v-html="testConnectionIcon()" :class="testConnectionStatus">
@@ -166,7 +188,8 @@
 				<div class="d-flex">
 					<div class="field-left-content">
 						<div class="sb-form-field">
-							<input type="password" name="license-key" id="license-key" class="sbi-form-field"
+							<label for="license-key-inactive" class="sr-only" v-html="generalTab.licenseBox.title"></label>
+							<input type="password" name="license-key" id="license-key-inactive" class="sbi-form-field"
 								   :placeholder="generalTab.licenseBox.inactiveFieldPlaceholder" v-model="licenseKey">
 							<span class="field-icon field-icon-error fa fa-times-circle"
 								  v-if="licenseErrorMsg !== null"></span>
@@ -177,7 +200,13 @@
 						<div class="form-info d-flex justify-between">
 							<span></span>
 							<span>
-								<span class="test-connection" @click="testConnection()"
+								<span class="test-connection"
+									  role="button"
+									  tabindex="0"
+									  :aria-label="generalTab.licenseBox.test"
+									  @click="testConnection()"
+									  @keydown.enter.prevent="testConnection()"
+									  @keydown.space.prevent="testConnection()"
 									  v-if="testConnectionStatus === null">
 									{{generalTab.licenseBox.test}}
 									<span v-html="testConnectionIcon()" :class="testConnectionStatus">
@@ -212,12 +241,17 @@
 				<span class="help-text">
 					{{generalTab.manageSource.description}}
 				</span>
-				<div class="sb-sources-list">
+				<div class="sb-sources-list" role="group" :aria-label="generalTab.manageSource.title">
 					<div class="sb-srcs-item sb-srcs-new"
-						 @click.prevent.default="activateView('sourcePopup','creationRedirect')">
+						 role="button"
+						 tabindex="0"
+						 :aria-label="genericText.addSource"
+						 @click.prevent.default="activateView('sourcePopup','creationRedirect')"
+						 @keydown.enter.prevent.default="activateView('sourcePopup','creationRedirect')"
+						 @keydown.space.prevent.default="activateView('sourcePopup','creationRedirect')">
 						<span class="add-new-icon">
 							<svg width="15" height="14" viewBox="0 0 15 14" fill="none"
-								 xmlns="http://www.w3.org/2000/svg">
+								 xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 								<path d="M14.25 8H8.25V14H6.25V8H0.25V6H6.25V0H8.25V6H14.25V8Z" fill="#0068A0"/>
 							</svg>
 						</span>
@@ -236,8 +270,9 @@
 									<div class="sb-srcs-item-used">
 										<span v-html="printUsedInText(source.used_in)"></span>
 										<div v-if="source.used_in > 0" class="sb-control-elem-tltp">
-											<div class="sb-control-elem-tltp-icon" v-html="svgIcons['info']"
-												 @click.prevent.default="viewSourceInstances(source)"></div>
+											<button type="button" class="sb-control-elem-tltp-icon" v-html="svgIcons['info']"
+												 :aria-label="'<?php echo esc_attr( esc_js( __( 'View source instances', 'instagram-feed' ) ) ); ?> ' + source.username"
+												 @click.prevent.default="viewSourceInstances(source)"></button>
 										</div>
 									</div>
 								</div>
@@ -245,7 +280,7 @@
 									<div v-if="source.error !== '' || source.error_encryption"
 										 class="sb-source-error-wrap">
 										<svg width="13" height="13" viewBox="0 0 13 13" fill="none"
-											 xmlns="http://www.w3.org/2000/svg">
+											 xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 											<path d="M6.50008 0.666664C3.28008 0.666664 0.666748 3.28 0.666748 6.5C0.666748 9.72 3.28008 12.3333 6.50008 12.3333C9.72008 12.3333 12.3334 9.72 12.3334 6.5C12.3334 3.28 9.72008 0.666664 6.50008 0.666664ZM7.08342 9.41667H5.91675V8.25H7.08342V9.41667ZM7.08342 7.08333H5.91675V3.58333H7.08342V7.08333Z"
 												  fill="#D72C2C"/>
 										</svg>
@@ -258,14 +293,29 @@
 								</div>
 								<div class="sb-srcs-item-actions">
 									<div class="sb-srcs-item-actions-btn sb-srcs-item-delete"
+										 role="button"
+										 tabindex="0"
+										 :aria-label="'<?php echo esc_attr( esc_js( __( 'Delete source', 'instagram-feed' ) ) ); ?> ' + source.username"
 										 @click.prevent.default="openDialogBox('deleteSource', source)"
+										 @keydown.enter.prevent.default="openDialogBox('deleteSource', source)"
+										 @keydown.space.prevent.default="openDialogBox('deleteSource', source)"
 										 v-html="svgIcons['delete']"></div>
 									<div class="sb-srcs-item-actions-btn sb-srcs-item-cog"
+										 role="button"
+										 tabindex="0"
+										 :aria-label="'<?php echo esc_attr( esc_js( __( 'Show source settings', 'instagram-feed' ) ) ); ?> ' + source.username"
 										 v-if="expandedFeedID != sourceIndex + 1" v-html="svgIcons['cog']"
-										 @click="displayFeedSettings(source, sourceIndex)"></div>
+										 @click="displayFeedSettings(source, sourceIndex)"
+										 @keydown.enter.prevent.default="displayFeedSettings(source, sourceIndex)"
+										 @keydown.space.prevent.default="displayFeedSettings(source, sourceIndex)"></div>
 									<div class="sb-srcs-item-actions-btn sb-srcs-item-angle-up"
+										 role="button"
+										 tabindex="0"
+										 :aria-label="'<?php echo esc_attr( esc_js( __( 'Hide source settings', 'instagram-feed' ) ) ); ?> ' + source.username"
 										 v-if="expandedFeedID == sourceIndex + 1" v-html="svgIcons['angleUp']"
-										 @click="hideFeedSettings()"></div>
+										 @click="hideFeedSettings()"
+										 @keydown.enter.prevent.default="hideFeedSettings()"
+										 @keydown.space.prevent.default="hideFeedSettings()"></div>
 								</div>
 							</div>
 						</div>
@@ -286,17 +336,18 @@
 							<div class="sbi-fb-srcs-info-item">
 								<strong>{{genericText.id}}</strong>
 								<span>{{source.account_id}}</span>
-								<div class="sbi-fb-srcs-info-icon" v-html="svgIcons['copy2']"
-									 @click.prevent.default="copyToClipBoard(source.account_id)"></div>
+								<button type="button" class="sbi-fb-srcs-info-icon" v-html="svgIcons['copy2']"
+									 :aria-label="genericText.copy + ' ' + genericText.id"
+									 @click.prevent.default="copyToClipBoard(source.account_id)"></button>
 							</div>
 						</div>
 
-						<div class="sbi-fb-srcs-personal-btn"
+						<button type="button" class="sbi-fb-srcs-personal-btn"
 							 v-if="expandedFeedID == sourceIndex + 1 && source.account_type == 'basic'"
 							 @click.prevent.default="openPersonalAccount( source )">
 							<div v-html="svgIcons['addRoundIcon']"></div>
 							<span v-html="source?.header_data?.biography || source?.local_avatar_url ? genericText.updateAccountInfo : genericText.addAccountInfo"></span>
-						</div>
+						</button>
 					</div>
 
 				</div>
@@ -314,7 +365,8 @@
 			<div class="sb-form-field">
 				<label for="preserve-settings" class="sbi-checkbox">
 					<input type="checkbox" name="preserve-settings" id="preserve-settings"
-						   v-model="model.general.preserveSettings">
+						   v-model="model.general.preserveSettings"
+						   :aria-label="generalTab.preserveBox.title">
 					<span class="toggle-track">
 						<div class="toggle-indicator"></div>
 					</span>
@@ -339,7 +391,9 @@
 						{{generalTab.importBox.button}}
 					</button>
 					<div class="input-hidden">
-						<input id="import_file" type="file" value="import_file" ref="file" v-on:change="uploadFile">
+						<input id="import_file" type="file" value="import_file" ref="file" v-on:change="uploadFile"
+							   tabindex="-1" aria-hidden="true"
+							   :aria-label="generalTab.importBox.title">
 					</div>
 				</div>
 				<span class="help-text">
@@ -356,7 +410,7 @@
 		<div class="sbi-tab-form-field">
 			<div class="sb-form-field">
 				<div class="d-flex mb-15">
-					<select name="" id="sbi-feeds-list" class="sbi-select" v-model="exportFeed" ref="export_feed">
+					<select name="" id="sbi-feeds-list" class="sbi-select" v-model="exportFeed" ref="export_feed" :aria-label="generalTab.exportBox.title">
 						<option value="none" selected
 								disabled><?php esc_html_e('Select Feed', 'instagram-feed'); ?></option>
 						<option v-for="feed in feeds" :value="feed.id">{{ feed.name }}</option>

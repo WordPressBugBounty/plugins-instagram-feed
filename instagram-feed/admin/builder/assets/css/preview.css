@@ -187,20 +187,20 @@ body {
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    -moz-transition: background 0.1s ease-in-out;
-    -webkit-transition: background 0.1s ease-in-out;
-    -o-transition: background 0.1s ease-in-out;
-    transition: background 0.1s ease-in-out;
+    -moz-transition: background var(--sb-duration-100) ease-in-out;
+    -webkit-transition: background var(--sb-duration-100) ease-in-out;
+    -o-transition: background var(--sb-duration-100) ease-in-out;
+    transition: background var(--sb-duration-100) ease-in-out;
 }
 
 .sbi-preview-ctn .sbi-preview-loadmore-btn:hover {
     background: #ddd;
     background: rgba(0, 0, 0, 0.1);
     text-decoration: none;
-    -moz-transition: background 0.1s ease-in-out;
-    -webkit-transition: background 0.1s ease-in-out;
-    -o-transition: background 0.1s ease-in-out;
-    transition: background 0.1s ease-in-out;
+    -moz-transition: background var(--sb-duration-100) ease-in-out;
+    -webkit-transition: background var(--sb-duration-100) ease-in-out;
+    -o-transition: background var(--sb-duration-100) ease-in-out;
+    transition: background var(--sb-duration-100) ease-in-out;
 }
 
 /*Post List Layout*/
@@ -606,8 +606,8 @@ body {
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.05);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07);
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sbi-preview-ctn .sbi-post-item-meta:hover {
@@ -679,8 +679,8 @@ body {
 .sbi-post-meta-item-icon-share svg path,
 .sbi-post-meta-item-icon-like svg path {
     fill: rgba(0, 0, 0, 0.4);
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
+    -webkit-transition: all var(--sb-duration-200) ease;
+    transition: all var(--sb-duration-200) ease;
 }
 
 .sbi-post-meta-item-icon-comment svg.sbi-svg-bg path,
@@ -713,8 +713,8 @@ body {
 .sbi-post-item-meta[data-icon-theme="dark"] .sbi-post-meta-item-icon-share svg path,
 .sbi-post-item-meta[data-icon-theme="dark"] .sbi-post-meta-item-icon-like svg path {
     fill: rgba(255, 255, 255, 0.05);
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
+    -webkit-transition: all var(--sb-duration-200) ease;
+    transition: all var(--sb-duration-200) ease;
 }
 
 .sbi-post-item-meta[data-icon-theme="dark"] .sbi-post-meta-item-icon-comment svg.sbi-svg-bg path,
@@ -1153,8 +1153,8 @@ body {
     z-index: 9;
     opacity: 0;
     visibility: hidden;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sbi-preview-ctn .sbi-post-item-media-wrap:hover .sbi-post-overlay,
@@ -1310,8 +1310,8 @@ body {
     -webkit-transform: rotate(135deg);
     transform: rotate(135deg);
     opacity: .7;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sbi-lightbox-next .sbi-lightbox-nav-icon {
@@ -1333,8 +1333,8 @@ body {
     height: 60px;
     cursor: pointer;
     box-sizing: border-box;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
     background-size: cover;
     background-position: center center;
     margin: 4px;
@@ -1509,8 +1509,8 @@ body {
     top: 50%;
     margin-top: -20px;
     left: 0px;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sbi-carousel[data-navigation="onhover"] .owl-next {
@@ -1591,4 +1591,62 @@ span.sbi-rating-num, span.sbi-star {
 
 span.sbi-rating-num {
     margin: 0 2px 0 4px !important;
+}
+
+/* SMASH-1378 a11y: dummy lightbox preview close/nav controls are now
+   <button> instead of <a>; neutralize browser defaults so the preview
+   looks identical to the original <a> rendering. Scoped to the admin
+   builder context. */
+#sbi-builder-app button.sbi_lb-prev,
+#sbi-builder-app button.sbi_lb-next,
+#sbi-builder-app button.sbi_lb-close,
+#sbi-builder-app button.sbi_share_close,
+#sbi-builder-app .sbi_lightbox_action button {
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+/* The sbi-styles.css rules use selectors like ".sbi_lb-nav a.sbi_lb-prev"
+   which no longer match after the <a> -> <button> conversion. Restore
+   the positioning and opacity portions for the button form. */
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-prev,
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-next {
+    width: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    opacity: 0.5;
+    -webkit-transition: opacity 0.2s;
+    -moz-transition: opacity 0.2s;
+    -o-transition: opacity 0.2s;
+    transition: opacity 0.2s;
+}
+
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-prev {
+    left: -70px;
+    float: left;
+}
+
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-next {
+    right: -70px;
+    float: right;
+}
+
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-prev:hover,
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-next:hover {
+    opacity: 1;
+}
+
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-prev span {
+    background-position: -53px 0;
+}
+
+#sbi-builder-app .sbi_lb-nav button.sbi_lb-next span {
+    left: auto;
+    right: 20px;
+    background-position: -18px 0;
 }

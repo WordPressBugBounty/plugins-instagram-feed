@@ -42,6 +42,7 @@ class SB_Datepicker_Control extends SB_Controls_Base
 		<div class="sb-control-input-ctn sbi-fb-fs">
 			<input type="date" class="sb-control-input sbi-fb-fs"
 				   v-model="<?php echo $controlEditingTypeModel ?>[control.id]"
+				   :aria-label="control.heading || control.label || 'Date'"
 				   @change.prevent.default="changeSettingValue(control.id, false,false, control.ajaxAction ? control.ajaxAction : false)"
 				   :placeholder="control.placeholder ? control.placeholder : ''">
 		</div>

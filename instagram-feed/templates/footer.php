@@ -26,6 +26,8 @@ $footer_attributes = SB_Instagram_Display_Elements::get_footer_attributes($setti
 ?>
 <div id="sbi_load" <?php echo $footer_attributes; ?>>
 
+	<div class="sbi-screenreader" aria-live="polite" aria-atomic="true" data-sbi-feed-status></div>
+
 	<?php if ($use_pagination || sbi_doing_customizer($settings)) : ?>
 		<button class="sbi_load_btn"
 			type="button" <?php echo $load_btn_style; ?><?php echo SB_Instagram_Display_Elements::get_button_data_attributes($settings); ?>>

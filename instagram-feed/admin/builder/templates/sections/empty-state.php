@@ -4,12 +4,12 @@
         <div class="sbi-fb-wlcm-inf-1 sbi-fb-fs">
             <div class="sbi-fb-inf-svg">
                 <svg class="sb-head" width="13" height="7" viewBox="0 0 13 7" fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
+                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M1 6L5.5 1L11.5 6" stroke="#141B38" stroke-width="2" stroke-linejoin="round"/>
                 </svg>
 
                 <svg class="sb-shaft" width="85" height="62" viewBox="0 0 85 62" fill="none"
-                     xmlns="http://www.w3.org/2000/svg">
+                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M84.5 59C63.5 66 4.5 54 1.5 0.5" stroke="#141B38" stroke-width="2"
                           stroke-linejoin="round"/>
                 </svg>
@@ -31,7 +31,7 @@
                     <p class="sb-small-p">{{welcomeScreen.customizeFeedDescription}}</p>
                 </div>
                 <div class="sbi-fb-inf-img">
-                    <svg width="125" height="119" viewBox="0 0 125 119" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="125" height="119" viewBox="0 0 125 119" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                         <rect x="7.72339" width="116.775" height="110.72" rx="2" transform="rotate(4 7.72339 0)"
                               fill="#D0D1D7"/>
                         <g filter="url(#filter0_dd_512:1750)">
@@ -107,7 +107,7 @@
         <div class="sbi-fb-wlcm-inf-3 sbi-fb-fs">
             <div class="sbi-fb-inf-cnt">
                 <div class="sbi-fb-inf-img">
-                    <svg width="121" height="134" viewBox="0 0 121 134" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="121" height="134" viewBox="0 0 121 134" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                         <rect x="0.00878906" y="8.56641" width="111.967" height="125.336" rx="2"
                               transform="rotate(-4 0.00878906 8.56641)" fill="#D0D1D7"/>
                         <g filter="url(#filter0_d_503:1671)">

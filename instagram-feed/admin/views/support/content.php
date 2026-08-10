@@ -1,4 +1,4 @@
-<div class="sbi-fb-full-wrapper sbi-fb-fs">
+<div class="sbi-fb-full-wrapper sbi-fb-fs" role="main">
 	<?php
 
 	/**
@@ -11,12 +11,15 @@
 	?>
 	<div class="sbi-sb-container">
 		<div class="sbi-section-header">
-			<h2>{{genericText.title}}</h2>
+			<h1>{{genericText.title}}</h1>
 			<div class="sbi-search-doc">
 				<div :href="links.doc" target="_blank" class="sbi-search-doc-field">
-					<span class="sb-btn-icon" @click="goToSearchDocumentation()" v-html="icons.magnify"></span>
+					<button type="button" class="sb-btn-icon" @click="goToSearchDocumentation()" v-html="icons.magnify"
+							:aria-label="buttons.searchDoc"></button>
+					<label for="sbi-search-doc-input" class="sr-only" v-html="buttons.searchDoc"></label>
 					<input class="sb-btn-input" id="sbi-search-doc-input" v-model="searchKeywords"
-						   v-on:keyup="searchDoc" v-on:paste="searchDocStrings" :placeholder="buttons.searchDoc">
+						   v-on:keyup="searchDoc" v-on:paste="searchDocStrings" :placeholder="buttons.searchDoc"
+						   :aria-label="buttons.searchDoc">
 				</div>
 			</div>
 		</div>
@@ -108,7 +111,7 @@
 			</div>
 			<div class="sb-contact-block-right">
 				<div>
-					<img :src="images.supportMembers">
+					<img :src="images.supportMembers" alt="" role="presentation">
 				</div>
 				<p>{{genericText.ourFast}}</p>
 			</div>
@@ -123,7 +126,7 @@
 				</button>
 			</div>
 			<div class="sbi-system-info">
-				<div v-html="system_info" id="system_info" class="system_info" :class="systemInfoBtnStatus"></div>
+				<div v-text="system_info_n" id="system_info" class="system_info" :class="systemInfoBtnStatus"></div>
 				<button class="sbi-expand-btn" @click="expandSystemInfo">
 					<span v-html="icons.downAngle"></span>
 					<span v-html="expandBtnText()"></span>
@@ -141,14 +144,14 @@
 						:disabled="createStatus !== null">
 					<svg v-if="createStatus !== null" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"
 						 x="0px" y="0px" width="20px" height="20px"
-						 viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve"><path
+						 viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve" aria-hidden="true" focusable="false"><path
 								fill="#fff"
 								d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h6.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
 							<animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25"
 											  to="360 25 25" dur="0.6s" repeatCount="indefinite"></animateTransform>
 						</path></svg>
 					<svg v-if="createStatus === null" width="16" height="16" viewBox="0 0 16 16" fill="none"
-						 xmlns="http://www.w3.org/2000/svg">
+						 xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 						<mask id="mask0_4615_22" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
 							  width="16" height="16">
 							<rect width="16" height="16" fill="#D9D9D9"/>
@@ -189,7 +192,7 @@
 							<svg v-if="deleteStatus !== null" version="1.1" id="loader-1"
 								 xmlns="http://www.w3.org/2000/svg" x="0px"
 								 y="0px" width="20px" height="20px" viewBox="0 0 50 50"
-								 style="enable-background:new 0 0 50 50;" xml:space="preserve"><path fill="#fff"
+								 style="enable-background:new 0 0 50 50;" xml:space="preserve" aria-hidden="true" focusable="false"><path fill="#fff"
 																									 d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h6.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
 									<animateTransform attributeType="xml" attributeName="transform" type="rotate"
 													  from="0 25 25" to="360 25 25" dur="0.6s"
@@ -199,7 +202,7 @@
 						</button>
 						<button class="sb-btn sb-btn-grey" @click.prevent.default="copyToClipBoard(tempUser.url)">
 							<svg width="16" height="17" viewBox="0 0 16 17" fill="none"
-								 xmlns="http://www.w3.org/2000/svg">
+								 xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 								<path d="M12 1.83325H6C5.26667 1.83325 4.66667 2.43325 4.66667 3.16659V11.1666C4.66667 11.8999 5.26667 12.4999 6 12.4999H12C12.7333 12.4999 13.3333 11.8999 13.3333 11.1666V3.16659C13.3333 2.43325 12.7333 1.83325 12 1.83325ZM12 11.1666H6V3.16659H12V11.1666ZM2 10.4999V9.16659H3.33333V10.4999H2ZM2 6.83325H3.33333V8.16659H2V6.83325ZM6.66667 13.8333H8V15.1666H6.66667V13.8333ZM2 12.8333V11.4999H3.33333V12.8333H2ZM3.33333 15.1666C2.6 15.1666 2 14.5666 2 13.8333H3.33333V15.1666ZM5.66667 15.1666H4.33333V13.8333H5.66667V15.1666ZM9 15.1666V13.8333H10.3333C10.3333 14.5666 9.73333 15.1666 9 15.1666ZM3.33333 4.49992V5.83325H2C2 5.09992 2.6 4.49992 3.33333 4.49992Z"
 									  fill="#141B38"/>
 							</svg>
@@ -212,8 +215,8 @@
 
 	</div>
 </div>
-<div class="sb-notification-ctn" :data-active="notificationElement.shown" :data-type="notificationElement.type">
-	<div class="sb-notification-icon" v-html="svgIcons[notificationElement.type+'Notification']"></div>
+<div class="sb-notification-ctn" role="status" aria-live="polite" :data-active="notificationElement.shown" :data-type="notificationElement.type">
+	<div class="sb-notification-icon" v-html="svgIcons[notificationElement.type+'Notification']" aria-hidden="true"></div>
 	<span class="sb-notification-text" v-html="notificationElement.text"></span>
 </div>
 <?php

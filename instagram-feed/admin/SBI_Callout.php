@@ -402,7 +402,7 @@ class SBI_Callout
 				</div>
 				<div class="sb-callout-progress-text">
 					<strong><?php echo __('Setup is almost complete', 'instagram-feed') ?></strong>
-					<span><?php echo __('Complete your Smash Balloon feed setup and increase engagment', 'instagram-feed') ?></span>
+					<span><?php echo __('Complete your Smash Balloon feed setup and increase engagement', 'instagram-feed') ?></span>
 				</div>
 			</div>
 			<div class="sb-callout-plugins sb-fs">

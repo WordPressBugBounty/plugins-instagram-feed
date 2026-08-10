@@ -204,7 +204,7 @@
     border: 1px solid #DCDDE1;
     position: relative;
     text-decoration: none;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-fb-hd-btn:focus {
@@ -292,6 +292,17 @@
 }
 
 .sbi-section-header .sbi-search-doc .sbi-search-doc-field .sb-btn-icon {
+    /* R3 sweep converted this from <span> to <button> for keyboard a11y;
+       strip UA button defaults so the magnifier renders as an icon, not
+       a bordered button overlapping the input. */
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
     position: absolute;
     left: 15px;
     top: 11px;
@@ -446,7 +457,7 @@
     text-align: center;
     text-decoration: none;
     padding: 6px;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-support-blocks .sbi-sb-button a:hover,
@@ -596,7 +607,7 @@
     height: 38px;
     padding: 5px 20px 5px 12px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-system-info-section .sbi-system-header .sbi-copy-btn:hover {
@@ -645,6 +656,7 @@
     height: 123px;
     font-family: 'Fira Code', monospace;
     word-break: break-all;
+    white-space: pre-wrap;
 }
 
 .sbi-system-info-section .sbi-system-info .system_info.expanded {
@@ -671,7 +683,7 @@
     position: relative;
     font-weight: 500;
     cursor: pointer;
-    transition: all .15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-system-info-section .sbi-system-info .sbi-expand-btn:hover {
@@ -744,18 +756,18 @@
     border: 1px solid #DCDDE1;
     border-radius: 2px;
     font-weight: 500;
-    transition: all .15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     cursor: pointer;
 }
 
 .sbi-export-settings-section .sbi-btn:disabled {
     cursor: not-allowed;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     background: #F3F4F5;
 }
 
 .sbi-export-settings-section .sbi-btn:disabled:hover {
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sbi-export-settings-section .sbi-btn span {
@@ -791,13 +803,13 @@
 }
 
 .sb-notification-ctn[data-active="hidden"] {
-    -webkit-animation: sbi-notification-hide .5s forwards linear;
-    animation: sbi-notification-hide .5s forwards linear;
+    -webkit-animation: sbi-notification-hide var(--sb-duration-500) forwards linear;
+    animation: sbi-notification-hide var(--sb-duration-500) forwards linear;
 }
 
 .sb-notification-ctn[data-active="shown"] {
-    -webkit-animation: sbi-notification-show .5s forwards linear;
-    animation: sbi-notification-show .5s forwards linear;
+    -webkit-animation: sbi-notification-show var(--sb-duration-500) forwards linear;
+    animation: sbi-notification-show var(--sb-duration-500) forwards linear;
 }
 
 @-webkit-keyframes sbi-notification-show {

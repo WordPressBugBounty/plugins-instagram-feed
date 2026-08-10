@@ -187,7 +187,7 @@
     border: 1px solid #DCDDE1;
     position: relative;
     text-decoration: none;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-fb-hd-btn:focus {
@@ -269,7 +269,7 @@
     color: #fff;
     font-size: 14px;
     cursor: pointer;
-    transition: all .15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     box-sizing: border-box;
     text-decoration: none;
     display: flex;
@@ -628,7 +628,7 @@
     align-items: center;
     padding: 11px 13px;
     border-bottom: 1px solid #DCDDE1;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
     font-size: 12px;
 }
 
@@ -665,7 +665,7 @@
     background: var(--cl-orange);
     color: #fff;
     position: relative;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
     font-weight: 600;
 }
 
@@ -733,7 +733,7 @@
     align-items: center;
     margin-left: 4px;
     border-radius: 2px;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-stck-flw-links svg {

@@ -1,6 +1,6 @@
-<div class="sbi-oembed-modal" v-if="openFacebookInstaller">
+<div class="sbi-oembed-modal" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Facebook installer', 'instagram-feed' ); ?>" v-if="openFacebookInstaller">
     <div class="sbi-modal-content">
-        <button type="button" class="cancel-btn sbi-btn" v-html="modal.timesIcon" @click="closeModal"></button>
+        <button type="button" class="cancel-btn sbi-btn" aria-label="<?php esc_attr_e('Close dialog', 'instagram-feed'); ?>" v-html="modal.timesIcon" @click="closeModal"></button>
         <div class="modal-icon">
             <img :src="modal.instaIcon" :alt="modal.title">
         </div>

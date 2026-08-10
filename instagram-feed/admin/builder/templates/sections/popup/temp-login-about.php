@@ -1,17 +1,17 @@
-<div class="sbi-fb-source-ctn sb-fs-boss sbi-fb-center-boss" v-if="viewsActive.tempLoginAboutPopup !== false">
+<div class="sbi-fb-source-ctn sb-fs-boss sbi-fb-center-boss" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Temporary login', 'instagram-feed' ); ?>" v-if="viewsActive.tempLoginAboutPopup !== false">
 	<div class="sbi-fb-source-popup sbi-fb-tempuser-popup sbi-fb-popup-inside sbi-narrower-modal">
-		<div class="sbi-fb-popup-cls" @click.prevent.default="activateView('tempLoginAboutPopup')">
-			<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<button type="button" class="sbi-fb-popup-cls" aria-label="<?php esc_attr_e( 'Close', 'instagram-feed' ); ?>" @click.prevent.default="activateView('tempLoginAboutPopup')">
+			<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 				<path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
 					  fill="#141B38"/>
 			</svg>
-		</div>
+		</button>
 		<div class="sbi-fb-fs">
-			<h3><?php echo __('Temporary Login Links', 'instgram-feed') ?></h3>
+			<h3><?php echo esc_html__('Temporary Login Links', 'instagram-feed') ?></h3>
 
 			<div class="sbi-fb-tempuser-icon-ctn sbi-fb-fs">
 				<div class="sbi-fb-tempuser-icon">
-					<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 						<mask id="mask0_4585_2431" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
 							  width="30" height="30">
 							<rect width="30" height="30" fill="#D9D9D9"/>
@@ -29,24 +29,24 @@
 				<div class="sbi-fb-tempuser-content-item sbi-fb-fs">
 					<div class="sbi-fb-tempuser-item-num">1</div>
 					<div class="sbi-fb-tempuser-item-text">
-						<strong class="sbi-fb-fs"><?php echo __('What are they used for?', 'instgram-feed') ?></strong>
-						<p class="sbi-fb-fs"><?php echo __('Solving an issue in your plugin might sometime require testing API access but with your setup. We do not want to expose your API keys over support messages and hence we use a temporary login link system to securely access it.', 'instgram-feed') ?>
+						<strong class="sbi-fb-fs"><?php echo esc_html__('What are they used for?', 'instagram-feed') ?></strong>
+						<p class="sbi-fb-fs"><?php echo esc_html__('Solving an issue in your plugin might sometime require testing API access but with your setup. We do not want to expose your API keys over support messages and hence we use a temporary login link system to securely access it.', 'instagram-feed') ?>
 						<p>
 					</div>
 				</div>
 				<div class="sbi-fb-tempuser-content-item sbi-fb-fs">
 					<div class="sbi-fb-tempuser-item-num">2</div>
 					<div class="sbi-fb-tempuser-item-text">
-						<strong class="sbi-fb-fs"><?php echo __('What can a support executive access?', 'instgram-feed') ?></strong>
-						<p class="sbi-fb-fs"><?php echo __('A support team member can only access Smash Balloon plugin to make API requests. They can NOT access any other plugins, create posts or in any way modify your WordPress website.', 'instgram-feed') ?>
+						<strong class="sbi-fb-fs"><?php echo esc_html__('What can a support executive access?', 'instagram-feed') ?></strong>
+						<p class="sbi-fb-fs"><?php echo esc_html__('A support team member can only access Smash Balloon plugin to make API requests. They can NOT access any other plugins, create posts or in any way modify your WordPress website.', 'instagram-feed') ?>
 						<p>
 					</div>
 				</div>
 				<div class="sbi-fb-tempuser-content-item sbi-fb-fs">
 					<div class="sbi-fb-tempuser-item-num">3</div>
 					<div class="sbi-fb-tempuser-item-text">
-						<strong class="sbi-fb-fs"><?php echo __('Can I disable or delete the temporary login link?', 'instgram-feed') ?></strong>
-						<p class="sbi-fb-fs"><?php echo __('The login link is auto-destroyed in 14 days. You can also manually delete it any time you want.', 'instgram-feed') ?>
+						<strong class="sbi-fb-fs"><?php echo esc_html__('Can I disable or delete the temporary login link?', 'instagram-feed') ?></strong>
+						<p class="sbi-fb-fs"><?php echo esc_html__('The login link is auto-destroyed in 14 days. You can also manually delete it any time you want.', 'instagram-feed') ?>
 						<p>
 					</div>
 				</div>
@@ -54,11 +54,11 @@
 
 			<div class="sbi-fb-tempuser-footer-btn sbi-fb-fs">
 				<button class="sb-btn sb-btn-blue" @click.prevent.default="activateView('tempLoginAboutPopup')">
-					<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 						<path d="M9.66671 1.27325L8.72671 0.333252L5.00004 4.05992L1.27337 0.333252L0.333374 1.27325L4.06004 4.99992L0.333374 8.72659L1.27337 9.66659L5.00004 5.93992L8.72671 9.66659L9.66671 8.72659L5.94004 4.99992L9.66671 1.27325Z"
 							  fill="white"/>
 					</svg>
-					<strong><?php echo __('Dismiss', 'instgram-feed') ?></strong>
+					<strong><?php echo esc_html__('Dismiss', 'instagram-feed') ?></strong>
 				</button>
 			</div>
 

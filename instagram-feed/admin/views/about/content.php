@@ -1,4 +1,4 @@
-<div class="sbi-fb-full-wrapper sbi-fb-fs">
+<div class="sbi-fb-full-wrapper sbi-fb-fs" role="main">
 	<?php
 
 	/**
@@ -11,7 +11,7 @@
 	?>
 	<div class="sbi-sb-container">
 		<div class="sbi-section-header">
-			<h2>{{genericText.title}}</h2>
+			<h1>{{genericText.title}}</h1>
 		</div>
 
 		<div class="sbi-about-box">
@@ -42,12 +42,15 @@
 					<p class="sb-box-description">{{plugin.description}}</p>
 					<div class="sb-action-buttons">
 						<button class="sbi-btn sb-btn-add" v-if="!plugin.installed"
+								:aria-label="buttons.install + ' ' + plugin.title"
 								@click="installPlugin(plugin.download_plugin, name, index, 'plugin')">
 							<span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
 							<span v-html="icons.installIcon" v-if="!btnClicked || btnName != name"></span>
 							{{buttons.install}}
 						</button>
-						<button class="sbi-btn sb-btn-installed" v-if="plugin.installed">
+						<button class="sbi-btn sb-btn-installed" v-if="plugin.installed"
+								:aria-label="buttons.installed + ' ' + plugin.title"
+								aria-disabled="true">
 							<span v-html="icons.checkmarkSVG"></span>
 							{{buttons.installed}}
 						</button>
@@ -63,11 +66,14 @@
 					<h4 class="sb-box-title">{{plugin.title}}</h4>
 					<p class="sb-box-description">{{plugin.description}}</p>
 					<div class="sb-action-buttons">
-						<a class="sbi-btn sb-btn-add" v-if="!plugin.installed" :href="plugin.permalink" target="_blank">
+						<a class="sbi-btn sb-btn-add" v-if="!plugin.installed" :href="plugin.permalink" target="_blank"
+								:aria-label="buttons.viewDemo + ' ' + plugin.title">
 							{{buttons.viewDemo}}
 							<span v-html="icons.link"></span>
 						</a>
-						<button class="sbi-btn sb-btn-installed" v-if="plugin.installed">
+						<button class="sbi-btn sb-btn-installed" v-if="plugin.installed"
+								:aria-label="buttons.installed + ' ' + plugin.title"
+								aria-disabled="true">
 							<span v-html="icons.checkmarkSVG"></span>
 							{{buttons.installed}}
 						</button>
@@ -88,12 +94,15 @@
 					<p class="sb-box-description">{{plugin.description}}</p>
 					<div class="sb-action-buttons">
 						<button class="sbi-btn sb-btn-add" v-if="!plugin.installed"
+								:aria-label="buttons.install + ' ' + plugin.title"
 								@click="installPlugin(plugin.download_plugin, name, index, 'recommended_plugin')">
 							<span v-html="buttonIcon()" v-if="btnClicked == index + 1 && btnName == name"></span>
 							<span v-html="icons.installIcon" v-if="!btnClicked || btnName != name"></span>
 							{{buttons.install}}
 						</button>
-						<button class="sbi-btn sb-btn-installed" v-if="plugin.installed">
+						<button class="sbi-btn sb-btn-installed" v-if="plugin.installed"
+								:aria-label="buttons.installed + ' ' + plugin.title"
+								aria-disabled="true">
 							<span v-html="icons.checkmarkSVG"></span>
 							{{buttons.installed}}
 						</button>

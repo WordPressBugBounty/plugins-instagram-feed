@@ -79,7 +79,8 @@ class SBI_Feed_Saver_Manager
 		if (isset($settings_data['new_insert']) && $settings_data['new_insert'] == 'true' && isset($settings_data['sourcename'])) {
 			$settings_data['order'] = sanitize_text_field($_POST['order']);
 			if ($_POST['type'] === 'hashtag') {
-				$settings_data['feed_name'] = sanitize_text_field(implode(' ', $_POST['hashtag']));
+				// Sanitized unconditionally below, regardless of which branch populates feed_name.
+				$settings_data['feed_name'] = implode(' ', $_POST['hashtag']);
 			} else {
 				$settings_data['feed_name'] = SBI_Db::feeds_query_name($settings_data['sourcename']);
 			}
@@ -126,7 +127,11 @@ class SBI_Feed_Saver_Manager
 			SB_Instagram_Cache::clear_legacy();
 		}
 		$feed_saver = new SBI_Feed_Saver($feed_id);
-		$feed_saver->set_feed_name($feed_name);
+		// Sanitize unconditionally here rather than relying on the new_insert-gated
+		// branch above — that branch is skipped whenever new_insert is omitted from
+		// the request (e.g. the update_feed path), which previously left $feed_name
+		// as the raw, unsanitized POST value.
+		$feed_saver->set_feed_name(sanitize_text_field($feed_name));
 		$settings_data = self::filter_save_data($settings_data);
 		$feed_saver->set_data($settings_data);
 

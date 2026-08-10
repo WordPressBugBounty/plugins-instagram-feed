@@ -1,3 +1,47 @@
+/* Frontend focus indicators (SMASH-1378 A11Y-Focus). Modern browsers only
+   apply :focus-visible when the focus is keyboard-driven, leaving mouse
+   clicks unaffected. Scoped to #sb_instagram and .sbi_lightbox so this
+   doesn't bleed into the host theme or other plugins.
+   --sb-focus-ring is provided by assets/tokens/sb-tokens-local.css, enqueued
+   as a dependency of the sbi_styles handle. */
+#sb_instagram a:focus-visible,
+#sb_instagram button:focus-visible,
+.sbi_lightbox a:focus-visible,
+.sbi_lightbox button:focus-visible {
+    /* !important needed because pre-existing `outline: none` resets on
+       :focus / :active (e.g. .sbi_lightbox a:focus around line 1247)
+       would otherwise suppress the focus ring for keyboard users. */
+    outline: 2px solid var(--sb-focus-ring) !important;
+    outline-offset: 2px !important;
+}
+
+/* The tabbable post link (.sbi_photo) sits inside .sbi_item which is
+   overflow:hidden. The link's OWN outline can't show: a positive offset is
+   clipped by that overflow:hidden, and a negative offset is painted under the
+   full-bleed post <img>. Lift the ring to the .sbi_item container instead: an
+   element's own outline is never clipped by its own overflow:hidden, and
+   .sbi_item's parent (#sbi_images) is overflow:visible, so an OUTWARD outline
+   renders in the grid gutter, clear of the image. :has() with :focus-visible
+   keeps it keyboard-only. The link's default :focus-visible ring (above) is
+   left intact as a non-:has fallback. */
+#sb_instagram .sbi_item:has(.sbi_photo:focus-visible) {
+    outline: 2px solid var(--sb-focus-ring);
+    outline-offset: 0;
+}
+
+/* The feed header account link (.sbi_header_link) sits inside
+   .sb_instagram_header which is overflow:hidden (to prevent width push on
+   mobile), so the link's own :focus-visible outline is clipped. Same fix as
+   the post tile above: lift the ring to the .sb_instagram_header container.
+   Its own overflow:hidden never clips its own outline, and all its ancestors
+   are overflow:visible, so an OUTWARD outline renders cleanly just outside the
+   header block. :has() keeps it keyboard-only; the link's default
+   :focus-visible ring (top of file) is left intact as a non-:has fallback. */
+#sb_instagram .sb_instagram_header:has(.sbi_header_link:focus-visible) {
+    outline: 2px solid var(--sb-focus-ring);
+    outline-offset: 2px;
+}
+
 /**************/
 /*** LAYOUT ***/
 /**************/
@@ -61,10 +105,10 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
+    -webkit-transition: all var(--sb-duration-500) ease;
+    -moz-transition: all var(--sb-duration-500) ease;
+    -o-transition: all var(--sb-duration-500) ease;
+    transition: all var(--sb-duration-500) ease;
 }
 
 /* Transition items in */
@@ -175,9 +219,9 @@
     height: inherit;
     object-fit: cover;
     scale: 1;
-    transition: -webkit-transform .5s ease-in-out;
-    transition: transform .5s ease-in-out;
-    transition: transform .5s ease-in-out, -webkit-transform .5s ease-in-out;
+    transition: -webkit-transform var(--sb-duration-500) ease-in-out;
+    transition: transform var(--sb-duration-500) ease-in-out;
+    transition: transform var(--sb-duration-500) ease-in-out, -webkit-transform var(--sb-duration-500) ease-in-out;
     vertical-align: middle;
 }
 
@@ -300,8 +344,8 @@
     background-color: rgba(0, 0, 0, 0.5);
 
     border-radius: 100%;
-    -webkit-animation: sbi-sk-scaleout 1.0s infinite ease-in-out;
-    animation: sbi-sk-scaleout 1.0s infinite ease-in-out;
+    -webkit-animation: sbi-sk-scaleout var(--sb-duration-1000) infinite ease-in-out;
+    animation: sbi-sk-scaleout var(--sb-duration-1000) infinite ease-in-out;
 }
 
 #sb_instagram br {
@@ -354,8 +398,8 @@
 
 #sb_instagram .fa-pulse,
 #sbi_lightbox .fa-pulse {
-    -webkit-animation: fa-spin 1s infinite steps(8);
-    animation: fa-spin 1s infinite steps(8)
+    -webkit-animation: fa-spin var(--sb-duration-1000) infinite steps(8);
+    animation: fa-spin var(--sb-duration-1000) infinite steps(8)
 }
 
 @-webkit-keyframes fa-spin {
@@ -405,7 +449,7 @@
 #sb_instagram .sb_instagram_header a,
 .sb_instagram_header a {
     text-decoration: none;
-    transition: color 0.5s ease;
+    transition: color var(--sb-duration-500) ease;
 }
 
 .sb_instagram_header.sbi_header_outside {
@@ -448,10 +492,10 @@
 .sbi_no_avatar:hover .sbi_header_hashtag_icon {
     display: block;
     opacity: 1;
-    -webkit-transition: background .2s linear, color .2s linear;
-    -moz-transition: background .2s linear, color .2s linear;
-    -o-transition: background .2s linear, color .2s linear;
-    transition: background .2s linear, color .2s linear
+    -webkit-transition: background var(--sb-duration-200) linear, color var(--sb-duration-200) linear;
+    -moz-transition: background var(--sb-duration-200) linear, color var(--sb-duration-200) linear;
+    -o-transition: background var(--sb-duration-200) linear, color var(--sb-duration-200) linear;
+    transition: background var(--sb-duration-200) linear, color var(--sb-duration-200) linear
 }
 
 /** Medium Header */
@@ -592,7 +636,7 @@
 #sb_instagram .sb_instagram_header .sbi_fade_in,
 .sb_instagram_header .sbi_fade_in {
     opacity: 1;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity var(--sb-duration-200) ease-in-out;
 }
 
 /* Fade the Instagram icon in when hovering on the header */
@@ -686,12 +730,12 @@
 
 #sb_instagram #sbi_load {
     opacity: 1;
-    transition: all 0.5s ease-in;
+    transition: all var(--sb-duration-500) ease-in;
 }
 
 #sb_instagram .sbi_load_btn .sbi_btn_text, #sb_instagram .sbi_load_btn .sbi_loader {
     opacity: 1;
-    transition: all 0.1s ease-in;
+    transition: all var(--sb-duration-100) ease-in;
 }
 
 #sb_instagram .sbi_hidden {
@@ -747,7 +791,7 @@
 #sb_instagram .sbi_follow_btn a,
 #sb_instagram .sbi_follow_btn a,
 #sb_instagram #sbi_load .sbi_load_btn {
-    transition: all 0.1s ease-in;
+    transition: all var(--sb-duration-100) ease-in;
 }
 
 /* Hover state for default colors */
@@ -1348,10 +1392,10 @@ body:after {
 
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0.5);
     opacity: 0.5;
-    -webkit-transition: opacity 0.2s;
-    -moz-transition: opacity 0.2s;
-    -o-transition: opacity 0.2s;
-    transition: opacity 0.2s;
+    -webkit-transition: opacity var(--sb-duration-200);
+    -moz-transition: opacity var(--sb-duration-200);
+    -o-transition: opacity var(--sb-duration-200);
+    transition: opacity var(--sb-duration-200);
 
 }
 
@@ -1370,10 +1414,10 @@ body:after {
 
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0.5);
     opacity: 0.5;
-    -webkit-transition: opacity 0.2s;
-    -moz-transition: opacity 0.2s;
-    -o-transition: opacity 0.2s;
-    transition: opacity 0.2s;
+    -webkit-transition: opacity var(--sb-duration-200);
+    -moz-transition: opacity var(--sb-duration-200);
+    -o-transition: opacity var(--sb-duration-200);
+    transition: opacity var(--sb-duration-200);
 
 }
 
@@ -1608,7 +1652,7 @@ body:after {
     clear: both;
     padding: 5px 0 15px 0;
     font-size: 12px;
-    color: #999999;
+    color: var(--sb-text-tertiary);
 }
 
 .sbi_lb-data .sbi_lb-close {
@@ -1617,15 +1661,15 @@ body:after {
     width: 30px;
     height: 30px;
     font-size: 18px; /* Hides icon font X */
-    color: #aaa;
+    color: var(--sb-text-tertiary);
     text-align: right;
     outline: none;
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
     opacity: 0.7;
-    -webkit-transition: opacity 0.2s;
-    -moz-transition: opacity 0.2s;
-    -o-transition: opacity 0.2s;
-    transition: opacity 0.2s;
+    -webkit-transition: opacity var(--sb-duration-200);
+    -moz-transition: opacity var(--sb-duration-200);
+    -o-transition: opacity var(--sb-duration-200);
+    transition: opacity var(--sb-duration-200);
 }
 
 .sbi_lb-data .sbi_lb-close:hover {

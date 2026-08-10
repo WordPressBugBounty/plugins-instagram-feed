@@ -152,7 +152,12 @@ add_filter("plugin_action_links_instagram-feed/instagram-feed.php", 'sbi_add_set
 
 function sb_instagram_admin_style()
 {
-	wp_register_style('sb_instagram_admin_css', SBI_PLUGIN_URL . 'css/sb-instagram-admin.css', array(), SBIVER);
+	wp_register_style(
+		'sb_instagram_admin_css',
+		SBI_PLUGIN_URL . 'css/sb-instagram-admin.css',
+		array('sbi-tokens-local'),
+		SBIVER
+	);
 	wp_enqueue_style('sb_instagram_admin_css');
 	wp_enqueue_style('wp-color-picker');
 }
@@ -403,7 +408,8 @@ function addErrorNotice($id, $title, $message, $buttons = array())
 		'buttons_wrap_end' => '</p>',
 		'icon' => array(
 			'src' => SBI_PLUGIN_URL . 'admin/assets/img/sbi-error.svg',
-			'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src}></span>',
+			'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src} {alt}></span>',
+			'alt' => '',
 		),
 		'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-body">{title}{message}{buttons}</div></div>',
 	);

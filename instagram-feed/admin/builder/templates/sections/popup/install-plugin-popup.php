@@ -1,12 +1,12 @@
 <script type="text/x-template" id="install-plugin-popup">
-    <div class="sbi-fb-source-ctn sb-fs-boss sbi-fb-center-boss" v-if="viewsActive.installPluginPopup">
+    <div class="sbi-fb-source-ctn sb-fs-boss sbi-fb-center-boss" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Install plugin', 'instagram-feed' ); ?>" @keydown.esc.prevent="$parent.activateView('installPluginPopup')" v-if="viewsActive.installPluginPopup">
         <div class="sbi-fb-source-popup sbi-fb-popup-inside sbi-install-plugin-modal">
-            <div class="sbi-fb-popup-cls" @click.prevent.default="$parent.activateView('installPluginPopup')">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <button type="button" class="sbi-fb-popup-cls" aria-label="<?php esc_attr_e( 'Close', 'instagram-feed' ); ?>" @click.prevent.default="$parent.activateView('installPluginPopup')">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
                           fill="#141B38"/>
                 </svg>
-            </div>
+            </button>
             <div class="sbi-install-plugin-body sbi-fb-fs">
                 <div class="sbi-install-plugin-header">
                     <div class="sb-plugin-image" v-html="plugins.svgIcon"></div>
@@ -18,7 +18,7 @@
                         <p>
                             <span class="sb-author-logo">
                                 <svg width="13" height="17" viewBox="0 0 13 17" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd"
+                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd"
                                                                               d="M5.72226 4.70098C4.60111 4.19717 3.43332 3.44477 2.34321 3.09454C2.73052 4.01824 3.05742 5.00234 3.3957 5.97507C2.72098 6.48209 1.93286 6.8757 1.17991 7.30453C1.82065 7.93788 2.72809 8.3045 3.45109 8.85558C2.87196 9.57021 1.73414 10.3129 1.45689 10.9606C2.65579 10.8103 4.05285 10.5668 5.16832 10.5174C5.41343 11.7495 5.53984 13.1002 5.88845 14.2288C6.40758 12.7353 6.87695 11.192 7.49488 9.79727C8.44849 10.1917 9.61069 10.6726 10.5416 10.9052C9.88842 9.98881 9.29237 9.01536 8.71356 8.02465C9.57007 7.40396 10.4364 6.79309 11.2617 6.14122C10.0952 6.03375 8.88647 5.96834 7.66107 5.91968C7.46633 4.65567 7.5175 3.14579 7.21791 1.98667C6.76462 2.93671 6.2297 3.80508 5.72226 4.70098ZM6.27621 15.1705C6.12214 15.8299 6.62974 16.1004 6.55318 16.5C6.052 16.3273 5.67498 16.2386 5.00213 16.3338C5.02318 15.8194 5.48587 15.7466 5.3899 15.1151C-1.78016 14.3 -1.79456 1.34382 5.3345 0.546422C14.2483 -0.450627 14.528 14.9414 6.27621 15.1705Z"
                                                                               fill="#FE544F"/><path fill-rule="evenodd"
                                                                                                     clip-rule="evenodd"

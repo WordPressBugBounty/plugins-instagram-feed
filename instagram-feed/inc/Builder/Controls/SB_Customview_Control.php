@@ -204,8 +204,14 @@ class SB_Customview_Control extends SB_Controls_Base
 			<div class="sb-control-moderationmode-elements sbi-fb-fs" v-if="viewsActive.moderationMode">
 
 				<div class="sb-control-switcher-ctn"
+					 role="switch"
+					 tabindex="0"
+					 :aria-checked="<?php echo $controlEditingTypeModel ?>[control.switcher.id] === control.switcher.options.enabled ? 'true' : 'false'"
+					 :aria-label="control.switcher.label"
 					 :data-active="<?php echo $controlEditingTypeModel ?>[control.switcher.id] === control.switcher.options.enabled"
-					 @click.prevent.default="changeSwitcherSettingValue(control.switcher.id, control.switcher.options.enabled, control.switcher.options.disabled, control.switcher.ajaxAction ? control.switcher.ajaxAction : false)">
+					 @click.prevent.default="changeSwitcherSettingValue(control.switcher.id, control.switcher.options.enabled, control.switcher.options.disabled, control.switcher.ajaxAction ? control.switcher.ajaxAction : false)"
+					 @keydown.enter.prevent.default="changeSwitcherSettingValue(control.switcher.id, control.switcher.options.enabled, control.switcher.options.disabled, control.switcher.ajaxAction ? control.switcher.ajaxAction : false)"
+					 @keydown.space.prevent.default="changeSwitcherSettingValue(control.switcher.id, control.switcher.options.enabled, control.switcher.options.disabled, control.switcher.ajaxAction ? control.switcher.ajaxAction : false)">
 					<div class="sb-control-switcher sb-tr-2"></div>
 					<div class="sb-control-label" v-if="control.switcher.label"
 						 :data-title="control.switcher.labelStrong ? 'true' : false">{{control.switcher.label}}
@@ -219,10 +225,18 @@ class SB_Customview_Control extends SB_Controls_Base
 								{{genericText.moderationMode}}
 							</div>
 						</div>
-						<div class="sb-control-toggle-set-ctn sb-control-toggle-set-desc-ctn sbi-fb-fs">
+						<div class="sb-control-toggle-set-ctn sb-control-toggle-set-desc-ctn sbi-fb-fs"
+							 role="radiogroup"
+							 :aria-label="genericText.moderationMode">
 							<div class="sb-control-toggle-elm sbi-fb-fs sb-tr-2"
 								 v-for="(moderationItem, moderationId) in control.moderationTypes "
+								 role="radio"
+								 :tabindex="moderationSettings.list_type_selected == moderationId ? 0 : -1"
+								 :aria-checked="moderationSettings.list_type_selected == moderationId ? 'true' : 'false'"
+								 :aria-label="moderationItem.label"
 								 @click.prevent.default="switchModerationListType(moderationId)"
+								 @keydown.enter.prevent.default="switchModerationListType(moderationId)"
+								 @keydown.space.prevent.default="switchModerationListType(moderationId)"
 								 :data-active="moderationSettings.list_type_selected == moderationId">
 								<div class="sb-control-toggle-deco sb-tr-1"></div>
 								<div class="sb-control-content">

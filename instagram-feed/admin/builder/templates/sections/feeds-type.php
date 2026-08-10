@@ -4,8 +4,10 @@
         <span class="sbi-fb-types-desc">{{selectFeedTypeScreen.mainDescription}}</span>
         <div class="sbi-fb-types-list sbi-fb-types-list-free">
             <div class="sbi-fb-type-el" v-for="(feedTypeEl, feedTypeIn) in feedTypes"
+                 role="button" tabindex="0" :aria-label="feedTypeEl.title"
                  :data-active="selectedFeed.includes(feedTypeEl.type) && feedTypeEl.type != 'socialwall'"
-                 :data-type="feedTypeEl.type" @click.prevent.default="chooseFeedType(feedTypeEl)">
+                 :data-type="feedTypeEl.type" @click.prevent.default="chooseFeedType(feedTypeEl)"
+                 @keydown.enter.prevent.default="chooseFeedType(feedTypeEl)" @keydown.space.prevent.default="chooseFeedType(feedTypeEl)">
                 <div class="sbi-fb-type-el-img sbi-fb-fs" v-html="svgIcons[feedTypeEl.icon]"></div>
                 <div class="sbi-fb-type-el-info sbi-fb-fs">
                     <p class="sb-small-p sb-bold sb-dark-text">
@@ -15,8 +17,11 @@
                     <a href="" v-if="feedTypeEl.businessRequired != undefined && feedTypeEl.businessRequired">
                         <span v-html="genericText.businessRequired"></span>
                         <div class="sb-control-elem-tltp" v-if="feedTypeEl.tooltip != undefined"
+                             tabindex="0" role="img" :aria-label="feedTypeEl.tooltip"
                              @mouseover.prevent.default="toggleElementTooltip(feedTypeEl.tooltip, 'show', feedTypeEl.tooltipAlign ? feedTypeEl.tooltipAlign : 'center' )"
-                             @mouseleave.prevent.default="toggleElementTooltip('', 'hide')">
+                             @mouseleave.prevent.default="toggleElementTooltip('', 'hide')"
+                             @focus.prevent.default="toggleElementTooltip(feedTypeEl.tooltip, 'show', feedTypeEl.tooltipAlign ? feedTypeEl.tooltipAlign : 'center' )"
+                             @blur.prevent.default="toggleElementTooltip('', 'hide')">
                             <div class="sb-control-elem-tltp-icon" v-html="svgIcons['tooltipHelpSvg']"></div>
                         </div>
                     </a>

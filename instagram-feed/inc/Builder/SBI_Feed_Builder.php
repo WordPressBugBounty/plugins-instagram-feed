@@ -193,7 +193,7 @@ class SBI_Feed_Builder
 				'class' => 'CFF_Elementor_Widget',
 				'link' => 'https://smashballoon.com/custom-facebook-feed/?utm_campaign=instagram-free&utm_source=about-us&utm_medium=marketing',
 				'icon' => self::builder_svg_icons('install-plugins-popup.facebook'),
-				'description' => __('Custom Facebook Feeds is a highly customizable way to display tweets from your Facebook account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
+				'description' => __('Custom Facebook Feeds is a highly customizable way to display posts from your Facebook account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
 				'download_plugin' => 'https://downloads.wordpress.org/plugin/custom-facebook-feed.zip',
 				'dashboard_link' => admin_url('admin.php?page=cff-feed-builder'),
 				'active' => is_plugin_active($active_sb_plugins['facebook_plugin'])
@@ -203,7 +203,7 @@ class SBI_Feed_Builder
 				'class' => 'SBI_Elementor_Widget',
 				'link' => 'https://smashballoon.com/instagram-feed/?utm_campaign=instagram-free&utm_source=about-us&utm_medium=marketing',
 				'icon' => self::builder_svg_icons('install-plugins-popup.instagram'),
-				'description' => __('Instagram Feeds is a highly customizable way to display tweets from your Instagram account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
+				'description' => __('Instagram Feeds is a highly customizable way to display posts from your Instagram account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
 				'download_plugin' => 'https://downloads.wordpress.org/plugin/instagram-feed.zip',
 				'dashboard_link' => admin_url('admin.php?page=sbi-feed-builder'),
 				'active' => is_plugin_active($active_sb_plugins['instagram_plugin'])
@@ -223,7 +223,7 @@ class SBI_Feed_Builder
 				'class' => 'SBY_Elementor_Widget',
 				'link' => 'https://smashballoon.com/youtube-feed/?utm_campaign=instagram-free&utm_source=about-us&utm_medium=marketing',
 				'icon' => self::builder_svg_icons('install-plugins-popup.youtube'),
-				'description' => __('YouTube Feeds is a highly customizable way to display tweets from your YouTube account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
+				'description' => __('YouTube Feeds is a highly customizable way to display videos from your YouTube account. Promote your latest content and update your site content automatically.', 'instagram-feed'),
 				'download_plugin' => 'https://downloads.wordpress.org/plugin/feeds-for-youtube.zip',
 				'dashboard_link' => admin_url('admin.php?page=sby-feed-builder'),
 				'active' => is_plugin_active($active_sb_plugins['youtube_plugin'])
@@ -332,7 +332,7 @@ class SBI_Feed_Builder
 							'toolTip' => __('What are Legacy Feeds?', 'instagram-feed'),
 							'toolTipExpanded' => array(
 								__('Legacy feeds are older feeds from before the version 6 update. You can edit settings for these feeds by using the "Settings" button to the right. These settings will apply to all legacy feeds, just like the settings before version 6, and work in the same way that they used to.', 'instagram-feed'),
-								__('You can also create a new feed, which will now have it\'s own individual settings. Modifying settings for new feeds will not affect other feeds.', 'instagram-feed'),
+								__('You can also create a new feed, which will now have its own individual settings. Modifying settings for new feeds will not affect other feeds.', 'instagram-feed'),
 							),
 							'toolTipExpandedAction' => array(
 								__('Legacy feeds represent shortcodes of old feeds found on your website before <br/>the version 6 update.', 'instagram-feed'),
@@ -599,6 +599,14 @@ class SBI_Feed_Builder
 					SBIVER,
 					true
 				);
+				// SMASH-1378 F-002: focus trap for popups declared as role="dialog".
+				wp_enqueue_script(
+					'sbi-popup-focus-trap',
+					SBI_PLUGIN_URL . 'admin/builder/assets/js/popup-focus-trap.js',
+					array(),
+					SBIVER,
+					true
+				);
 				// Customize screens
 				$sbi_builder['customizeScreens'] = $this->get_customize_screens_text();
 				wp_localize_script(
@@ -622,6 +630,9 @@ class SBI_Feed_Builder
 	{
 		return array(
 			'done' => __('Done', 'instagram-feed'),
+			'saving' => __('Saving…', 'instagram-feed'),
+			'saved' => __('Saved', 'instagram-feed'),
+			'saveFailed' => __('Failed: ', 'instagram-feed'),
 			'title' => __('Settings', 'instagram-feed'),
 			'dashboard' => __('Dashboard', 'instagram-feed'),
 			'setup' => __('Setup', 'instagram-feed'),
@@ -708,6 +719,7 @@ class SBI_Feed_Builder
 			'moderationModeEnterPostId' => __('Or Enter Post IDs to hide manually', 'instagram-feed'),
 			'moderationModeTextareaPlaceholder' => __('Add words here to hide any posts containing these words', 'instagram-feed'),
 			'filtersAndModeration' => __('Filters & Moderation', 'instagram-feed'),
+			'customizerTabs' => __('Customizer Tabs', 'instagram-feed'),
 			'topRated' => __('Top Rated', 'instagram-feed'),
 			'mostRecent' => __('Most recent', 'instagram-feed'),
 			'moderationModePreview' => __('Moderation Mode Preview', 'instagram-feed'),
@@ -965,7 +977,7 @@ class SBI_Feed_Builder
 			'description' => __('Sources are Instagram accounts your feed will display content from', 'instagram-feed'),
 			'emptySourceDescription' => __('Looks like you have not added any source.<br/>Use “Add Source” to add a new one.', 'instagram-feed'),
 			'mainHashtagHeading' => __('Enter Public Hashtags', 'instagram-feed'),
-			'hashtagDescription' => __('Add one or more hashtag separated by comma', 'instagram-feed'),
+			'hashtagDescription' => __('Add one or more hashtags separated by comma', 'instagram-feed'),
 			'hashtagGetBy' => __('Fetch posts that are', 'instagram-feed'),
 
 			'sourcesListPopup' => array(
@@ -1006,7 +1018,7 @@ class SBI_Feed_Builder
 				'hashtag' => array(
 					'heading' => __('Hashtag', 'instagram-feed'),
 					'icon' => 'hashtag',
-					'description' => __('Add one or more hashtag separated by comma.', 'instagram-feed'),
+					'description' => __('Add one or more hashtags separated by comma.', 'instagram-feed'),
 					'businessRequired' => true,
 					'actionType' => 'inputHashtags'
 				),
@@ -1025,7 +1037,7 @@ class SBI_Feed_Builder
 				'connectAccount' => __('Connect an Instagram Account', 'instagram-feed'),
 				'connectAccountDescription' => __('This does not give us permission to manage your Instagram account, it simply allows the plugin to see a list of them and retrieve their public content from the API.', 'instagram-feed'),
 				'connect' => __('Connect', 'instagram-feed'),
-				'alreadyHave' => __('Already have a API Token and Access Key for your account?', 'instagram-feed'),
+				'alreadyHave' => __('Already have an API Token and Access Key for your account?', 'instagram-feed'),
 				'addManuallyLink' => __('Add Account Manually', 'instagram-feed'),
 				'selectAccount' => __('Select an Instagram Account', 'instagram-feed'),
 				'showing' => __('Showing', 'instagram-feed'),
@@ -1250,7 +1262,7 @@ class SBI_Feed_Builder
 				'displayName' => __('YouTube', 'instagram-feed'),
 				'name' => __('Feeds for YouTube', 'instagram-feed'),
 				'author' => __('By Smash Balloon', 'instagram-feed'),
-				'description' => __('To display a YouTube feed, our YouTube plugin is required. It provides a simple yet powerful way to display videos from YouTube on your website, Increasing engagement with your channel while keeping visitors on your website.', 'instagram-feed'),
+				'description' => __('To display a YouTube feed, our YouTube plugin is required. It provides a simple yet powerful way to display videos from YouTube on your website, increasing engagement with your channel while keeping visitors on your website.', 'instagram-feed'),
 				'dashboard_permalink' => admin_url('admin.php?page=youtube-feed'),
 				'svgIcon' => self::builder_svg_icons('install-plugins-popup.youtube'),
 				'installed' => $active_sb_plugins['is_youtube_installed'],
@@ -1666,7 +1678,7 @@ class SBI_Feed_Builder
 			'mainHeading1' => __('We’re almost there...', 'instagram-feed'),
 			'mainHeading2' => __('Update Personal Account', 'instagram-feed'),
 			'mainHeading3' => __('Add Instagram Profile Picture and Bio', 'instagram-feed'),
-			'mainDescription' => __('Instagram does not provide us access to your profile picture or bio for personal accounts. Would you like to set up a custom profile photo and bio?.', 'instagram-feed'),
+			'mainDescription' => __('Instagram does not provide us access to your profile picture or bio for personal accounts. Would you like to set up a custom profile photo and bio?', 'instagram-feed'),
 			'bioLabel' => __('Bio (140 Characters)', 'instagram-feed'),
 			'bioPlaceholder' => __('Add your profile bio here', 'instagram-feed'),
 			'confirmBtn' => __('Yes, let\'s do it', 'instagram-feed'),

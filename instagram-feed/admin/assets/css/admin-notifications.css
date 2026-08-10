@@ -1,3 +1,28 @@
+/* Admin notice + settings pages focus indicators -- covers admin contexts
+   that don't load the builder global.css. Uses box-shadow so the ring
+   respects each element's border-radius and sits flush against the button
+   without a "double border" gap. `outline: 2px solid transparent` keeps
+   Windows High Contrast Mode visible. Mirrors the unified rule in
+   admin/builder/assets/css/global.css.
+
+   --sb-focus-ring (#007ca8) is provided by assets/tokens/sb-tokens-local.css,
+   enqueued as a dependency of the IG admin baseline style handle. */
+body[class*="_page_sb-instagram-feed"] *:focus-visible,
+body[class*="_page_sbi-feed-builder"] *:focus-visible,
+body[class*="_page_sbi-settings"] *:focus-visible,
+body[class*="_page_sbi-extensions"] *:focus-visible,
+body[class*="_page_sbi-support"] *:focus-visible,
+.sbi-section-header *:focus-visible,
+.sbi-notice-content *:focus-visible,
+.sbi-support-blocks *:focus-visible,
+.sbi-system-info-section *:focus-visible,
+.sbi-tempuser-settings-section *:focus-visible,
+.sbi_support_tools_wrap *:focus-visible {
+    outline: 2px solid transparent !important;
+    outline-offset: 0 !important;
+    box-shadow: 0 0 0 2px var(--sb-focus-ring) !important;
+}
+
 #sbi-notifications {
     position: relative;
     background: #FFFFFF 0 0 no-repeat padding-box;
@@ -72,7 +97,7 @@
 }
 
 .sbi-btn {
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     letter-spacing: 0.2px;
 }
 
@@ -200,7 +225,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 #sbi-notifications .navigation svg {
@@ -228,7 +253,7 @@
 
 #sbi-notifications .navigation .disabled {
     background: #E8E8EB;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     cursor: default;
 }
 

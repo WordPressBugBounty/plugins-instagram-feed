@@ -318,7 +318,7 @@ class SBI_Feed_Saver
 		if (!empty($this->feed_name)) {
 			$this->sanitized_and_sorted_data['feeds'][] = array(
 				'key' => 'feed_name',
-				'values' => array($this->feed_name)
+				'values' => array(sanitize_text_field($this->feed_name))
 			);
 		}
 

@@ -5,14 +5,12 @@
 		<div class="sbi-lightbox-dummy-overlay"></div>
 		<div class="sbi_lb-outerContainer" style="width: 1080px; height: 718px;">
 			<div class="sbi_lb-nav" style="">
-				<a class="sbi_lb-prev" href="#">
-					<p class="sbi-screenreader">Previous Slide</p>
-					<span></span>
-				</a>
-				<a class="sbi_lb-next" href="#" style="">
-					<p class="sbi-screenreader">Next Slide</p>
-					<span></span>
-				</a>
+				<button type="button" class="sbi_lb-prev" aria-label="<?php esc_attr_e( 'Previous slide', 'instagram-feed' ); ?>">
+					<span aria-hidden="true"></span>
+				</button>
+				<button type="button" class="sbi_lb-next" aria-label="<?php esc_attr_e( 'Next slide', 'instagram-feed' ); ?>" style="">
+					<span aria-hidden="true"></span>
+				</button>
 			</div>
 			<div class="sbi_lb-container-wrapper">
 				<div class="sbi_lb-container"
@@ -48,14 +46,14 @@
 							</span>
 							<span class="sbi_lb-number">1 / {{customizerFeedData.settings.num}}</span>
 							<div class="sbi_lightbox_action sbi_share">
-								<a href="JavaScript:void(0);">
+								<button type="button" aria-label="<?php esc_attr_e( 'Share', 'instagram-feed' ); ?>">
 									<svg class="svg-inline--fa fa-share fa-w-16" aria-hidden="true" data-fa-processed=""
 										 data-prefix="fa" data-icon="share" role="presentation"
 										 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 										<path fill="currentColor"
 											  d="M503.691 189.836L327.687 37.851C312.281 24.546 288 35.347 288 56.015v80.053C127.371 137.907 0 170.1 0 322.326c0 61.441 39.581 122.309 83.333 154.132 13.653 9.931 33.111-2.533 28.077-18.631C66.066 312.814 132.917 274.316 288 272.085V360c0 20.7 24.3 31.453 39.687 18.164l176.004-152c11.071-9.562 11.086-26.753 0-36.328z"></path>
 									</svg>
-									Share </a>
+									Share </button>
 								<p class="sbi_lightbox_tooltip sbi_tooltip_social" style="display: none;">
 									<a href="https://www.facebook.com/sharer/sharer.php?u=https://www.instagram.com/p/BoR7Qf3Fa0r/&amp;t=Text"
 									   target="_blank" rel="noopener" id="sbi_facebook_icon">
@@ -112,14 +110,14 @@
 												  d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"></path>
 										</svg>
 									</a>
-									<a class="sbi_share_close">
+									<button type="button" class="sbi_share_close" aria-label="<?php esc_attr_e( 'Close share menu', 'instagram-feed' ); ?>">
 										<svg class="svg-inline--fa fa-times fa-w-12" aria-hidden="true"
 											 data-fa-processed="" data-prefix="fa" data-icon="times" role="presentation"
 											 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
 											<path fill="currentColor"
 												  d="M323.1 441l53.9-53.9c9.4-9.4 9.4-24.5 0-33.9L279.8 256l97.2-97.2c9.4-9.4 9.4-24.5 0-33.9L323.1 71c-9.4-9.4-24.5-9.4-33.9 0L192 168.2 94.8 71c-9.4-9.4-24.5-9.4-33.9 0L7 124.9c-9.4 9.4-9.4 24.5 0 33.9l97.2 97.2L7 353.2c-9.4 9.4-9.4 24.5 0 33.9L60.9 441c9.4 9.4 24.5 9.4 33.9 0l97.2-97.2 97.2 97.2c9.3 9.3 24.5 9.3 33.9 0z"></path>
 										</svg>
-									</a>
+									</button>
 								</p>
 							</div>
 							<div class="sbi_lightbox_action sbi_instagram">
@@ -134,14 +132,14 @@
 									Instagram </a>
 							</div>
 							<div class="sbi_lb-closeContainer">
-								<a class="sbi_lb-close">
+								<button type="button" class="sbi_lb-close" aria-label="<?php esc_attr_e( 'Close lightbox', 'instagram-feed' ); ?>">
 									<svg class="svg-inline--fa fa-times fa-w-12" aria-hidden="true" data-fa-processed=""
 										 data-prefix="fa" data-icon="times" role="presentation"
 										 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
 										<path fill="currentColor"
 											  d="M323.1 441l53.9-53.9c9.4-9.4 9.4-24.5 0-33.9L279.8 256l97.2-97.2c9.4-9.4 9.4-24.5 0-33.9L323.1 71c-9.4-9.4-24.5-9.4-33.9 0L192 168.2 94.8 71c-9.4-9.4-24.5-9.4-33.9 0L7 124.9c-9.4 9.4-9.4 24.5 0 33.9l97.2 97.2L7 353.2c-9.4 9.4-9.4 24.5 0 33.9L60.9 441c9.4 9.4 24.5 9.4 33.9 0l97.2-97.2 97.2 97.2c9.3 9.3 24.5 9.3 33.9 0z"></path>
 									</svg>
-								</a>
+								</button>
 							</div>
 						</div>
 						<div class="sbi_lb-commentBox sbi_dummy-lb-commentBox"

@@ -1,16 +1,17 @@
 <div class="sb-onboarding-wizard-step-wrapper sb-onboarding-wizard-step-success sb-fs">
 	<div class="sb-onboarding-wizard-step-top sb-fs" data-large="true">
-		<h4 v-html="onboardingWizardStepContent['success-page'].heading"></h4>
+		<h1 tabindex="-1" class="sb-onboarding-wizard-step-heading" v-html="onboardingWizardStepContent['success-page'].heading"></h1>
 		<span v-html="onboardingWizardStepContent['success-page'].description"></span>
 	</div>
 
-	<div class="sb-onboarding-wizard-success-list sb-fs" :data-done="onboardingWizardDone">
+	<div class="sb-onboarding-wizard-success-list sb-fs" :data-done="onboardingWizardDone"
+		 aria-live="polite" aria-atomic="false">
 
 		<div class="sb-onboarding-wizard-succes-elem sb-fs"
 			 v-for="(singleMessage , sId) in onboardingSuccessMessagesDisplay"
-			 :style="'transition-delay:' + (parseInt(sId) * .5) + 's;'">
+			 :style="successItemStyle(sId)">
 			<span class="sb-onboarding-wizard-succes-icon">
-				<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 					<path d="M18.3346 9.23355V10.0002C18.3336 11.7972 17.7517 13.5458 16.6757 14.9851C15.5998 16.4244 14.0874 17.4773 12.3641 17.9868C10.6408 18.4963 8.79902 18.4351 7.11336 17.8124C5.4277 17.1896 3.98851 16.0386 3.01044 14.5311C2.03236 13.0236 1.56779 11.2403 1.68603 9.44714C1.80427 7.65402 2.49897 5.94715 3.66654 4.58111C4.8341 3.21506 6.41196 2.26303 8.16479 1.867C9.91763 1.47097 11.7515 1.65216 13.393 2.38355"
 						  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 					<path d="M18.3333 3.33301L10 11.6747L7.5 9.17467" stroke-width="2" stroke-linecap="round"
@@ -26,7 +27,7 @@
 
 <div class="sb-onboarding-wizard-upgrade-ctn sb-fs">
 	<div class="sb-onboarding-wizard-upgrade-text sb-fs">
-		<h3 v-html="onboardingWizardStepContent['success-page'].upgradeContent.heading"></h3>
+		<h2 v-html="onboardingWizardStepContent['success-page'].upgradeContent.heading"></h2>
 		<p v-html="onboardingWizardStepContent['success-page'].upgradeContent.description"></p>
 		<div class="sb-onboarding-wizard-upgrade-btns">
 			<a class="sb-btn sbi-btn-white sb-btn-wizard-next"
@@ -35,7 +36,7 @@
 			   rel="noopener"></a>
 			<div class="sb-onboarding-wizard-upgrade-off">
 				<div>
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 						<mask id="mask0_4219_56670" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0"
 							  width="24" height="24">
 							<rect width="24" height="24" fill="#D9D9D9"/>
@@ -51,30 +52,31 @@
 		</div>
 	</div>
 	<div class="sb-onboarding-wizard-upgrade-banner sb-fs">
-		<img :src="onboardingWizardStepContent['success-page'].upgradeContent.banner" alt="Upgrade Content Banner"/>
+		<img :src="onboardingWizardStepContent['success-page'].upgradeContent.banner" alt="" role="presentation"/>
 	</div>
 </div>
 
 <div class="sb-onboarding-wizard-license-ctn sb-fs">
-	<strong><?php echo __('Already have a license key?') ?></strong>
-	<p><?php echo __('Upgrade in a single click by adding your license key below') ?></p>
+	<strong><?php echo esc_html__('Already have a license key?', 'instagram-feed') ?></strong>
+	<p><?php echo esc_html__('Upgrade in a single click by adding your license key below', 'instagram-feed') ?></p>
 	<div class="sb-onboarding-wizard-license-inp-ctn">
-		<input type="text" placeholder="<?php echo __('Paste license key here') ?>" v-model="setupLicencekey"/>
+		<label for="sbi-license-key" class="sb-sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"><?php echo esc_html__('License key', 'instagram-feed') ?></label>
+		<input type="text" id="sbi-license-key" placeholder="<?php echo esc_attr__('Paste license key here', 'instagram-feed') ?>" v-model="setupLicencekey"/>
 		<button class="sb-btn sb-btn-grey" @click.prevent.default="runOneClickUpgrade">
 			<svg v-if="licenseLoading" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"
 				 x="0px" y="0px" width="20px" height="20px"
-				 viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve"><path fill="#fff"
+				 viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve" aria-hidden="true" focusable="false"><path fill="#fff"
 																										 d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
 					<animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25"
 									  to="360 25 25" dur="0.6s" repeatCount="indefinite"/>
 				</path></svg>
 			<svg v-if="!licenseLoading" width="16" height="16" viewBox="0 0 16 16" fill="none"
-				 xmlns="http://www.w3.org/2000/svg">
+				 xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 				<path fill-rule="evenodd" clip-rule="evenodd"
 					  d="M6.46447 9.88868L12.8284 3.52472L14.2426 4.93893L6.46447 12.7171L2.22183 8.47446L3.63604 7.06025L6.46447 9.88868Z"
 					  fill="#9295A6"/>
 			</svg>
-			<?php echo __('Activate') ?>
+			<?php echo esc_html__('Activate', 'instagram-feed') ?>
 		</button>
 	</div>
 	<span class="sb-onboarding-wizard-license-error" v-if="setupLicencekeyError !== null"
@@ -83,8 +85,8 @@
 
 <div class="sb-onboarding-wizard-finish-ctn sb-fs">
 	<button class="sb-btn sb-btn-grey" @click.prevent.default="dismissOnboardingWizard">
-		<?php echo __('Complete Setup Without Upgrading') ?>
-		<svg width="6" height="9" viewBox="0 0 6 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<?php echo esc_html__('Complete Setup Without Upgrading', 'instagram-feed') ?>
+		<svg width="6" height="9" viewBox="0 0 6 9" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 			<path d="M1.66656 0.5L0.726562 1.44L3.7799 4.5L0.726562 7.56L1.66656 8.5L5.66656 4.5L1.66656 0.5Z"
 				  fill="#141B38"/>
 		</svg>

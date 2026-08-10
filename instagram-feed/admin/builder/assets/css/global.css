@@ -1,3 +1,108 @@
+/* Visually-hidden utility for accessible labels (SMASH-1378 a11y).
+   Hides content from sighted users but keeps it readable by assistive tech.
+   Lives in global.css so it's available on every IG admin page (Settings,
+   Support, About, Builder, etc.) — not just pages that enqueue settings.css. */
+.sr-only,
+.sbi-sr-only {
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	height: 1px;
+	width: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	position: absolute !important;
+	word-wrap: normal !important;
+}
+
+/* SMASH-1378: reset UA button defaults for elements converted from <div>/<a>
+   to <button> during the a11y semantic upgrade. Lives in global.css (loaded on
+   every IG admin page — Settings, Support, About, Builder) so converted icon
+   buttons that appear OUTSIDE the builder (e.g. the Manage Sources "view
+   instances" info icon on the Settings page) are reset too; builder.css carries
+   a parallel block for builder-only controls. Wrapped in :where() so the reset
+   is (0,0,0) specificity and any per-control author rule wins automatically. */
+:where(
+	button.sb-control-elem-tltp-icon,
+	button.sb-control-input-info,
+	button.sbi-fb-popup-cls,
+	button.sbi-fd-lst-shortcode-cp,
+	button.sbi-addsource-type-btn,
+	button.sbi-selected-source-item-icon,
+	button.sbi-hashtag-item-delete
+) {
+	appearance: none;
+	-webkit-appearance: none;
+	background: none;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+	text-align: inherit;
+	line-height: inherit;
+}
+
+/* Admin focus indicators (SMASH-1378 A11Y-Focus). Modern browsers only apply
+   :focus-visible when the focus is keyboard-driven, leaving mouse clicks
+   unaffected. Scope covers both IG admin page bodies (WordPress generates
+   `*_page_<slug>` classes on <body>) and the per-container selectors used by
+   builder/popup/settings markup, so the ring is consistent across every IG
+   admin surface regardless of which container an interactive element sits
+   inside.
+
+   Visual treatment uses `box-shadow` rather than `outline` so the ring
+   respects each element's `border-radius` and hugs rounded buttons cleanly
+   on all browsers. `outline: 2px solid transparent` is retained so Windows
+   High Contrast Mode (which suppresses box-shadow but honors outline) still
+   shows a visible ring. `outline-offset: 0` eliminates the gap between a
+   button's own border and the focus indicator that previously read as a
+   "double border" on rectangular buttons.
+
+   --sb-focus-ring (#007ca8) is provided by assets/tokens/sb-tokens-local.css,
+   enqueued as a dependency of the IG admin baseline style handle. */
+body[class*="_page_sb-instagram-feed"] *:focus-visible,
+body[class*="_page_sbi-feed-builder"] *:focus-visible,
+body[class*="_page_sbi-settings"] *:focus-visible,
+body[class*="_page_sbi-extensions"] *:focus-visible,
+body[class*="_page_sbi-support"] *:focus-visible,
+.sbi_support_tools_wrap *:focus-visible,
+.sbi-fb-fs *:focus-visible,
+.sbi-fb-popup-inside *:focus-visible,
+.sb-form-field *:focus-visible,
+.sbi-fb-source-ctn *:focus-visible,
+.sbi-fb-feedtypes-pp-ctn *:focus-visible,
+.sbi-fb-extensions-pp-ctn *:focus-visible,
+[id^="sbi-builder"] *:focus-visible,
+[id^="sbi-settings"] *:focus-visible {
+	/* !important needed because pre-existing `outline: none !important` /
+	   `outline: unset !important` rules in builder.css would otherwise
+	   suppress the focus ring for keyboard users. */
+	outline: 2px solid transparent !important;
+	outline-offset: 0 !important;
+	box-shadow: 0 0 0 2px var(--sb-focus-ring) !important;
+}
+
+/* Onboarding wizard step heading exception (SMASH-1378). The <h1> step heading
+   carries tabindex="-1" and is programmatically focused on step change so screen
+   readers announce the new step. It is a non-interactive heading, so under WCAG
+   2.4.7 it does not require a visible focus indicator (only interactive elements
+   do). Suppress the ring the global rule above would otherwise paint, which made
+   the heading look like a focused text input. Programmatic focus management is
+   unaffected — only the visible ring is removed. !important + same scope needed
+   to beat the global ring rule. */
+body[class*="_page_sb-instagram-feed"] .sb-onboarding-wizard-step-heading[tabindex="-1"]:focus,
+body[class*="_page_sb-instagram-feed"] .sb-onboarding-wizard-step-heading[tabindex="-1"]:focus-visible,
+[id^="sbi-builder"] .sb-onboarding-wizard-step-heading[tabindex="-1"]:focus,
+[id^="sbi-builder"] .sb-onboarding-wizard-step-heading[tabindex="-1"]:focus-visible,
+.sb-onboarding-wizard-step-heading[tabindex="-1"]:focus,
+.sb-onboarding-wizard-step-heading[tabindex="-1"]:focus-visible {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
 /*
 	Global CSS styles
 	Theses styles can be used for different screens
@@ -33,18 +138,18 @@
 	Transitions
 */
 .sb-tr-1 {
-    -webkit-transition: all .1s ease-in-out;
-    transition: all .1s ease-in-out;
+    -webkit-transition: all var(--sb-duration-100) ease-in-out;
+    transition: all var(--sb-duration-100) ease-in-out;
 }
 
 .sb-tr-2 {
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sb-tr-3 {
-    -webkit-transition: all .3s ease-in-out;
-    transition: all .3s ease-in-out;
+    -webkit-transition: all var(--sb-duration-300) ease-in-out;
+    transition: all var(--sb-duration-300) ease-in-out;
 }
 
 .sb-tr-4 {
@@ -53,8 +158,8 @@
 }
 
 .sb-tr-5 {
-    -webkit-transition: all .5s ease-in-out;
-    transition: all .5s ease-in-out;
+    -webkit-transition: all var(--sb-duration-500) ease-in-out;
+    transition: all var(--sb-duration-500) ease-in-out;
 }
 
 .sb-tr-6 {
@@ -63,8 +168,8 @@
 }
 
 .sb-tr-7 {
-    -webkit-transition: all .7s ease-in-out;
-    transition: all .7s ease-in-out;
+    -webkit-transition: all var(--sb-duration-700) ease-in-out;
+    transition: all var(--sb-duration-700) ease-in-out;
 }
 
 .sb-tr-8 {
@@ -78,8 +183,8 @@
 }
 
 .sb-tr-10 {
-    -webkit-transition: all 1s ease-in-out;
-    transition: all 1s ease-in-out;
+    -webkit-transition: all var(--sb-duration-1000) ease-in-out;
+    transition: all var(--sb-duration-1000) ease-in-out;
 }
 
 /*
@@ -91,7 +196,7 @@
     font-weight: normal;
     font-size: 14px;
     line-height: 160%;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     margin: 0;
 }
 
@@ -343,7 +448,7 @@
 .sb-btn-grey[data-active="false"],
 .sb-btn-dark[data-active="false"] {
     background: #E8E8EB !important;
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
 }
 
 
@@ -497,6 +602,10 @@
     right: 17px;
     top: 17px;
     z-index: 3;
+    /* SMASH-1378: <button> element reset so the close-button rewrite stays visually identical to the previous <div>. */
+    background: none;
+    border: 0;
+    padding: 0;
 }
 
 .sbi-fb-center-boss {
@@ -692,7 +801,7 @@
 
 .sbi-fb-source-account-info {
     background: #F3F4F5;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     display: flex;
     align-items: center;
     padding: 6px 6px 6px 12px;
@@ -855,7 +964,7 @@
 
 .sbi-fb-stp-src-type[data-disabled="true"],
 .sbi-fb-stp-src-type[data-disabled="true"] .sbi-fb-chbx-round {
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
     cursor: default;
 }
 
@@ -864,7 +973,7 @@
 }
 
 .sbi-fb-srcs-item[data-disabled="true"] .sbi-fb-srcs-item-inf {
-    opacity: .55;
+    opacity: var(--sb-opacity-disabled);
 }
 
 .sbi-fb-srcs-item:hover {
@@ -1336,7 +1445,8 @@
     padding-bottom: 50px;
 }
 
-.sb-customizer-sidebar-breadcrumb a, .sb-customizer-sidebar-breadcrumb span {
+.sb-customizer-sidebar-breadcrumb a, .sb-customizer-sidebar-breadcrumb span,
+.sb-customizer-sidebar-breadcrumb button.sb-customizer-sidebar-breadcrumb-link {
     display: inline-block;
     position: relative;
     cursor: pointer;
@@ -1690,6 +1800,10 @@
     right: 17px;
     top: 17px;
     z-index: 3;
+    /* SMASH-1378: <button> element reset so the close-button rewrite stays visually identical to the previous <div>. */
+    background: none;
+    border: 0;
+    padding: 0;
 }
 
 .sbi-fb-center-boss {
@@ -2554,7 +2668,7 @@
     height: 38px;
     padding: 8px 20px;
     box-sizing: border-box;
-    transition: all .15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     border-radius: 2px;
     width: 100%;
     margin-top: 28px;
@@ -2566,7 +2680,7 @@
 }
 
 .sbi-install-plugin-body .sbi-install-plugin-content .sbi-btn-orange:disabled {
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
     background: #E8E8EB !important;
     cursor: not-allowed;
 }
@@ -2966,10 +3080,10 @@
     position: relative;
     background-color: #0096CC;
     color: #0096CC;
-    -webkit-animation: sb-source-redirect 1s infinite linear alternate;
-    animation: sb-source-redirect 1s infinite linear alternate;
-    -webkit-animation-delay: .5s;
-    animation-delay: .5s;
+    -webkit-animation: sb-source-redirect var(--sb-duration-1000) infinite linear alternate;
+    animation: sb-source-redirect var(--sb-duration-1000) infinite linear alternate;
+    -webkit-animation-delay: var(--sb-duration-500);
+    animation-delay: var(--sb-duration-500);
 }
 
 .sb-fb-source-redirect-ld div:before,
@@ -2987,8 +3101,8 @@
     border-radius: 50px;
     background-color: #0096CC;
     color: #0096CC;
-    -webkit-animation: sb-source-redirect 1s infinite alternate;
-    animation: sb-source-redirect 1s infinite alternate;
+    -webkit-animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
+    animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
     -webkit-animation-delay: 0s;
     animation-delay: 0s;
 }
@@ -3000,10 +3114,10 @@
     border-radius: 50px;
     background-color: #0096CC;
     color: #0096CC;
-    -webkit-animation: sb-source-redirect 1s infinite alternate;
-    animation: sb-source-redirect 1s infinite alternate;
-    -webkit-animation-delay: 1s;
-    animation-delay: 1s;
+    -webkit-animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
+    animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
+    -webkit-animation-delay: var(--sb-duration-1000);
+    animation-delay: var(--sb-duration-1000);
 }
 
 
@@ -3036,7 +3150,7 @@
 }
 
 .sb-fb-source-redirect-info p {
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     padding: 0 24%;
     font-size: 16px;
     margin-bottom: 0px;
@@ -3336,7 +3450,7 @@
     color: #141B38;
     letter-spacing: 0.2px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     text-decoration: none;
 }
 
@@ -3581,7 +3695,7 @@
     background-color: #0068A0;
     color: #fff;
     box-shadow: 0px 2px 5px rgba(60, 66, 87, 0.12), 0px 1px 1px rgba(0, 0, 0, 0.08), inset 0px -1px 1px rgba(0, 0, 0, 0.12);
-    transition: all .2s ease-in;
+    transition: all var(--sb-duration-200) ease-in;
 }
 
 .sbi-integration-popup-modal .sbi-integration-popup .sbi-popup-ua-integration-step .sbi-btn-install:hover {

@@ -1,29 +1,39 @@
 <script type="text/x-template" id="sb-add-source-component">
-    <div class="sbi-fb-source-ctn sb-fs-boss sbi-fb-center-boss" v-if="viewsActive.sourcePopup">
+    <div class="sbi-fb-source-ctn sb-fs-boss sbi-fb-center-boss" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Add source', 'instagram-feed' ); ?>" v-if="viewsActive.sourcePopup">
         <!--START Source Popup on the Customizer-->
         <div class="sbi-fb-source-popup sbi-fb-popup-inside sbi-fb-source-pp-customizer"
              v-bind:class="{ 'sbi-narrower-modal' : typeof viewsActive.sourcePopupScreen !== 'undefined' && viewsActive.sourcePopupScreen === 'step_4' }"
              v-if="viewsActive.sourcePopupType == 'customizer'">
-            <div class="sbi-fb-popup-cls" @click.prevent.default="$parent.closeSourceCustomizer()">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <button type="button" class="sbi-fb-popup-cls" aria-label="<?php esc_attr_e( 'Close', 'instagram-feed' ); ?>" @click.prevent.default="$parent.closeSourceCustomizer()">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
                           fill="#141B38"/>
                 </svg>
-            </div>
+            </button>
             <div class="sbi-fb-source-top sbi-fb-fs">
                 <h3>{{selectSourceScreen.updateHeading}}</h3>
                 <div class="sbi-fb-srcs-desc">{{selectSourceScreen.updateDescription}}</div>
                 <div class="sbi-fb-srcslist-ctn sbi-fb-fs">
                     <div class="sbi-fb-srcs-item sbi-fb-srcs-new"
-                         @click.prevent.default="$parent.activateView('sourcePopup', 'creationRedirect')">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                         role="button"
+                         tabindex="0"
+                         @click.prevent.default="$parent.activateView('sourcePopup', 'creationRedirect')"
+                         @keydown.enter.prevent.default="$parent.activateView('sourcePopup', 'creationRedirect')"
+                         @keydown.space.prevent.default="$parent.activateView('sourcePopup', 'creationRedirect')">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="M9.66634 5.66634H5.66634V9.66634H4.33301V5.66634H0.333008V4.33301H4.33301V0.333008H5.66634V4.33301H9.66634V5.66634Z"
                                   fill="#0096CC"/>
                         </svg>
                         <span class="sb-small-p sb-bold">{{genericText.addNew}}</span>
                     </div>
                     <div class="sbi-fb-srcs-item" v-for="(source, sourceIndex) in sourcesList"
+                         role="button"
+                         tabindex="0"
+                         :aria-label="source.username"
+                         :aria-pressed="$parent.isSourceActiveCustomizer(source) ? 'true' : 'false'"
                          @click.prevent.default="$parent.selectSourceCustomizer(source)"
+                         @keydown.enter.prevent.default="$parent.selectSourceCustomizer(source)"
+                         @keydown.space.prevent.default="$parent.selectSourceCustomizer(source)"
                          :data-type="source.account_type"
                          :data-active="$parent.isSourceActiveCustomizer(source)"
                          :data-test="(Array.isArray($parent.customizerFeedData.settings.sources.map) || $parent.customizerFeedData.settings.sources instanceof Object ) && $parent.customizerFeedData.settings.sources.map(s => s.account_id).includes(source.account_id)"
@@ -32,7 +42,7 @@
                             <div class="sbi-fb-srcs-item-chkbx-ic"></div>
                         </div>
                         <div class="sbi-fb-srcs-item-avatar" v-if="$parent.returnAccountAvatar(source)">
-                            <img :src="$parent.returnAccountAvatar(source)">
+                            <img :src="$parent.returnAccountAvatar(source)" alt="" aria-hidden="true">
                         </div>
                         <div class="sbi-fb-srcs-item-inf">
                             <div class="sbi-fb-srcs-item-name"><span class="sb-small-p sb-bold"
@@ -54,7 +64,7 @@
                 <div class="sbi-fb-srcs-update-ctn sbi-fb-fs">
                     <button class="sbi-fb-srcs-update sb-btn sbi-fb-fs sb-btn-orange"
                             @click.prevent.default="$parent.activateView('sourcePopup', 'updateCustomizer', 'feedFlyPreview')">
-                        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path fill-rule="evenodd" clip-rule="evenodd"
                                   d="M6.08058 8.36133L14.0355 0.406383L15.8033 2.17415L6.08058 11.8969L0.777281 6.59357L2.54505 4.8258L6.08058 8.36133Z"
                                   fill="white"/>
@@ -69,13 +79,13 @@
         <div class="sbi-fb-source-popup sbi-fb-popup-inside"
              v-bind:class="{ 'sbi-narrower-modal' : typeof viewsActive.sourcePopupScreen !== 'undefined' && viewsActive.sourcePopupScreen === 'step_4' }"
              v-if="viewsActive.sourcePopupType != 'customizer'" :data-step="viewsActive.sourcePopupScreen">
-            <div class="sbi-fb-popup-cls" @click.prevent.default="$parent.activateView('sourcePopup')"
+            <button type="button" class="sbi-fb-popup-cls" aria-label="<?php esc_attr_e( 'Close', 'instagram-feed' ); ?>" @click.prevent.default="$parent.activateView('sourcePopup')"
                  v-if="viewsActive.sourcePopupScreen != 'redirect_1'">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
                           fill="#141B38"/>
                 </svg>
-            </div>
+            </button>
             <!-- Step One Select Source -->
             <div class="sbi-fb-source-step1 sbi-fb-fs" v-if="viewsActive.sourcePopupScreen == 'step_1'"
                  v-bind:class="{ 'sbi-has-alert' : typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed !== 'user'}">
@@ -83,7 +93,7 @@
                     <div class="sbi-fb-fs" v-if="viewsActive.sourcePopupType === 'customizer'">
                         <div class="sbi-fb-src-back-top"
                              @click.prevent.default="$parent.activateView('sourcePopup', 'updateCustomizer')">
-                            <svg width="6" height="9" viewBox="0 0 6 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="6" height="9" viewBox="0 0 6 9" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                 <path d="M5.27398 1.44L4.33398 0.5L0.333984 4.5L4.33398 8.5L5.27398 7.56L2.22065 4.5L5.27398 1.44Z"
                                       fill="#434960"/>
                             </svg>
@@ -92,7 +102,7 @@
                     </div>
                     <h3>{{selectSourceScreen.modal.addNew}}</h3>
                     <div class="sb-alert" v-if="checkDisclaimer()">
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="M8.99935 0.666504C4.39935 0.666504 0.666016 4.39984 0.666016 8.99984C0.666016 13.5998 4.39935 17.3332 8.99935 17.3332C13.5993 17.3332 17.3327 13.5998 17.3327 8.99984C17.3327 4.39984 13.5993 0.666504 8.99935 0.666504ZM9.83268 13.1665H8.16602V11.4998H9.83268V13.1665ZM9.83268 9.83317H8.16602V4.83317H9.83268V9.83317Z"
                                   fill="#995C00"></path>
                         </svg>
@@ -105,24 +115,37 @@
                                 {{selectSourceScreen.modal.selectSourceType}}
                             </div>
                         </div>
-                        <div class="sbi-fb-stp1-elm-act sbi-fb-stp-src-ctn">
+                        <div class="sbi-fb-stp1-elm-act sbi-fb-stp-src-ctn" role="radiogroup" :aria-label="selectSourceScreen.modal.selectSourceType">
                             <div class="sbi-fb-stp-src-type sb-small-p sb-dark-text"
+                                 role="radio"
+                                 :tabindex="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] !== 'user') ? -1 : 0"
+                                 :aria-checked="(typeof window.sbiSelectedFeed === 'undefined' || window.sbiSelectedFeed[0] === 'user') && addNewSource.typeSelected !== 'business' ? 'true' : 'false'"
+                                 :aria-disabled="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] !== 'user') ? 'true' : 'false'"
                                  :data-disabled="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] !== 'user')"
                                  :data-active="(typeof window.sbiSelectedFeed === 'undefined' || window.sbiSelectedFeed[0] === 'user') && addNewSource.typeSelected !== 'business'"
-                                 @click.prevent.default="typeof window.sbiSelectedFeed === 'undefined' || window.sbiSelectedFeed[0] === 'user' ? addNewSource.typeSelected = 'personal' : addNewSource.typeSelected = 'business'">
+                                 @click.prevent.default="typeof window.sbiSelectedFeed === 'undefined' || window.sbiSelectedFeed[0] === 'user' ? addNewSource.typeSelected = 'personal' : addNewSource.typeSelected = 'business'"
+                                 @keydown.enter.prevent.default="typeof window.sbiSelectedFeed === 'undefined' || window.sbiSelectedFeed[0] === 'user' ? addNewSource.typeSelected = 'personal' : addNewSource.typeSelected = 'business'"
+                                 @keydown.space.prevent.default="typeof window.sbiSelectedFeed === 'undefined' || window.sbiSelectedFeed[0] === 'user' ? addNewSource.typeSelected = 'personal' : addNewSource.typeSelected = 'business'">
                                 <div class="sbi-fb-chbx-round"></div>
                                 {{selectSourceScreen.personal}}
                             </div>
                             <div class="sbi-fb-stp-src-type sb-small-p sb-dark-text"
+                                 role="radio"
+                                 :tabindex="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] === 'user') ? -1 : 0"
+                                 :aria-checked="addNewSource.typeSelected == 'business' ? 'true' : 'false'"
+                                 :aria-disabled="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] === 'user') ? 'true' : 'false'"
+                                 :data-disabled="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] === 'user')"
                                  :data-active="addNewSource.typeSelected == 'business'"
-                                 @click.prevent.default="addNewSource.typeSelected = 'business'">
+                                 @click.prevent.default="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] === 'user') ? null : addNewSource.typeSelected = 'business'"
+                                 @keydown.enter.prevent.default="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] === 'user') ? null : addNewSource.typeSelected = 'business'"
+                                 @keydown.space.prevent.default="(typeof window.sbiSelectedFeed !== 'undefined' && window.sbiSelectedFeed[0] === 'user') ? null : addNewSource.typeSelected = 'business'">
                                 <div class="sbi-fb-chbx-round"></div>
                                 {{selectSourceScreen.business}}
                             </div>
 
                             <div class="sbi-fb-stp-src-type sbi-not-sure-wrap sb-small-p sb-dark-text">
                                 <span class="sbi-flex-center-center"><svg viewBox="0 0 14 14" width="14px"
-                                                                          fill="#434960"><path
+                                                                          fill="#434960" aria-hidden="true" focusable="false"><path
                                                 d="M6.33203 4.99992H7.66536V3.66659H6.33203V4.99992ZM6.9987 12.3333C4.0587 12.3333 1.66536 9.93992 1.66536 6.99992C1.66536 4.05992 4.0587 1.66659 6.9987 1.66659C9.9387 1.66659 12.332 4.05992 12.332 6.99992C12.332 9.93992 9.9387 12.3333 6.9987 12.3333ZM6.9987 0.333252C6.12322 0.333252 5.25631 0.50569 4.44747 0.840722C3.63864 1.17575 2.90371 1.66682 2.28465 2.28587C1.03441 3.53612 0.332031 5.23181 0.332031 6.99992C0.332031 8.76803 1.03441 10.4637 2.28465 11.714C2.90371 12.333 3.63864 12.8241 4.44747 13.1591C5.25631 13.4941 6.12322 13.6666 6.9987 13.6666C8.76681 13.6666 10.4625 12.9642 11.7127 11.714C12.963 10.4637 13.6654 8.76803 13.6654 6.99992C13.6654 6.12444 13.4929 5.25753 13.1579 4.4487C12.8229 3.63986 12.3318 2.90493 11.7127 2.28587C11.0937 1.66682 10.3588 1.17575 9.54992 0.840722C8.74108 0.50569 7.87418 0.333252 6.9987 0.333252ZM6.33203 10.3333H7.66536V6.33325H6.33203V10.3333Z"></path></svg>
                                     {{selectSourceScreen.notSure}}</span>
 
@@ -132,7 +155,7 @@
                                     </div>
                                     <div class="sb-pointer sb-bottom-pointer">
                                         <svg width="20" height="10" viewBox="0 0 20 10" fill="none"
-                                             xmlns="http://www.w3.org/2000/svg">
+                                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                             <path d="M11.4142 8.58579C10.6332 9.36683 9.36684 9.36683 8.58579 8.58579L0 0L20 0L11.4142 8.58579Z"
                                                   fill="white"/>
                                         </svg>
@@ -166,7 +189,7 @@
                 </div>
                 <div class="sbi-fb-source-bottom sbi-fb-fs">
                     <div class="sbi-manual-question">
-                        <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="M19.6004 7.4998L15.0748 12.0254L13.9436 10.8942L17.338 7.4998L13.9436 4.1054L15.0748 2.9742L19.6004 7.4998ZM2.66279 7.4998L6.05719 10.8942L4.92599 12.0254L0.400391 7.4998L4.92599 2.9742L6.05639 4.1054L2.66279 7.4998ZM8.23079 14.6998H6.52839L11.77 0.299805H13.4724L8.23079 14.6998Z"
                                   fill="#141B38"/>
                         </svg>
@@ -177,7 +200,7 @@
                     </div>
                     <button class="sbi-fb-hd-btn sbi-fb-src-add-manual sb-btn-grey"
                             @click.prevent.default="$parent.switchScreen('sourcePopupScreen','step_3')">
-                        <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="M11.8327 7.33317H6.83268V12.3332H5.16602V7.33317H0.166016V5.6665H5.16602V0.666504H6.83268V5.6665H11.8327V7.33317Z"
                                   fill="#141B38"/>
                         </svg>
@@ -204,7 +227,7 @@
                          class="sbi-businesses-connect-actions sbi-connection-error">
                         <div class="sb-alert">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
+                                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                 <path d="M8.99935 0.666504C4.39935 0.666504 0.666016 4.39984 0.666016 8.99984C0.666016 13.5998 4.39935 17.3332 8.99935 17.3332C13.5993 17.3332 17.3327 13.5998 17.3327 8.99984C17.3327 4.39984 13.5993 0.666504 8.99935 0.666504ZM9.83268 13.1665H8.16602V11.4998H9.83268V13.1665ZM9.83268 9.83317H8.16602V4.83317H9.83268V9.83317Z"
                                       fill="#995C00"/>
                             </svg>
@@ -225,14 +248,14 @@
                                     v-html="newSourceData.user.name"></strong>
                             <button class="sbi-fb-hd-btn sbi-fb-src-change sb-btn-grey" @click="processIFConnect()">
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
+                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                     <path d="M0.5 12.3749V15.4999H3.625L12.8417 6.2832L9.71667 3.1582L0.5 12.3749ZM15.8417 3.2832L12.7167 0.158203L10.6083 2.27487L13.7333 5.39987L15.8417 3.2832Z"
                                           fill="#141B38"/>
                                 </svg>
                                 <span class="sb-small-p sb-bold sb-dark-text">{{genericText.change}}</span>
                             </button>
                         </div>
-                        <div class="sbi-fb-source-list sbi-fb-fs">
+                        <div class="sbi-fb-source-list sbi-fb-fs" role="group" :aria-label="selectSourceScreen.modal.selectAccount">
                             <div class="sbi-fb-srcs-item" v-for="(source, sourceIndex) in returnedApiSourcesList"
                                  @click.prevent.default="selectSourcesToConnect(source)"
                                  :data-active="selectedSourcesToConnect.includes(source.account_id)">
@@ -240,7 +263,7 @@
                                     <div class="sbi-fb-srcs-item-chkbx-ic"></div>
                                 </div>
                                 <div class="sbi-fb-srcs-item-avatar" v-if="returnAccountAvatar(source)">
-                                    <img :src="returnAccountAvatar(source)">
+                                    <img :src="returnAccountAvatar(source)" alt="" aria-hidden="true">
                                 </div>
                                 <div class="sbi-fb-srcs-item-inf">
                                     <div class="sbi-fb-srcs-item-name"><span class="sb-small-p sb-bold sb-dark-text"
@@ -263,7 +286,7 @@
                         <div class="sbi-businesses-connect-actions" v-if="addNewSource.typeSelected === 'business'">
                             <div class="sb-alert">
                                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
+                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                     <path d="M8.99935 0.666504C4.39935 0.666504 0.666016 4.39984 0.666016 8.99984C0.666016 13.5998 4.39935 17.3332 8.99935 17.3332C13.5993 17.3332 17.3327 13.5998 17.3327 8.99984C17.3327 4.39984 13.5993 0.666504 8.99935 0.666504ZM9.83268 13.1665H8.16602V11.4998H9.83268V13.1665ZM9.83268 9.83317H8.16602V4.83317H9.83268V9.83317Z"
                                           fill="#995C00"/>
                                 </svg>
@@ -274,7 +297,7 @@
                                     :data-active="typeof window.sbiSelected !== 'undefined' && window.sbiSelected.length ? 'true' : 'false'">
                                 <span>{{genericText.next}}</span>
                                 <svg width="7" height="11" viewBox="0 0 7 11" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
+                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                     <path d="M1.3332 0.00683594L0.158203 1.18184L3.97487 5.00684L0.158203 8.83184L1.3332 10.0068L6.3332 5.00684L1.3332 0.00683594Z"
                                           fill="white"></path>
                                 </svg>
@@ -291,7 +314,7 @@
                     <div class=" sbi-fb-fs">
                         <div class="sbi-fb-src-back-top"
                              @click.prevent.default="$parent.switchScreen('sourcePopupScreen','step_1')">
-                            <svg width="6" height="9" viewBox="0 0 6 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="6" height="9" viewBox="0 0 6 9" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                 <path d="M5.27398 1.44L4.33398 0.5L0.333984 4.5L4.33398 8.5L5.27398 7.56L2.22065 4.5L5.27398 1.44Z"
                                       fill="#434960"/>
                             </svg>
@@ -318,13 +341,13 @@
                         </div>
                     </div>
                     <div class="sbi-fb-source-inputs sbi-fb-fs">
-                        <div class="sbi-fb-source-inp-label sbi-fb-fs"><span class="sb-caption sb-caption-lighter">{{selectSourceScreen.modal.accountID}}</span>
+                        <div class="sbi-fb-source-inp-label sbi-fb-fs"><label for="sbi-manual-source-id" class="sb-caption sb-caption-lighter">{{selectSourceScreen.modal.accountID}}</label>
                         </div>
-                        <input type="text" class="sbi-fb-source-inp sbi-fb-fs" v-model="addNewSource.manualSourceID"
+                        <input id="sbi-manual-source-id" type="text" class="sbi-fb-source-inp sbi-fb-fs" v-model="addNewSource.manualSourceID"
                                :placeholder="selectSourceScreen.modal.enterID">
-                        <div class="sbi-fb-source-inp-label sbi-fb-fs"><span class="sb-caption sb-caption-lighter">{{selectSourceScreen.modal.accessToken}}</span>
+                        <div class="sbi-fb-source-inp-label sbi-fb-fs"><label for="sbi-manual-source-token" class="sb-caption sb-caption-lighter">{{selectSourceScreen.modal.accessToken}}</label>
                         </div>
-                        <input type="text" class="sbi-fb-source-inp sbi-fb-fs" v-model="addNewSource.manualSourceToken"
+                        <input id="sbi-manual-source-token" type="text" class="sbi-fb-source-inp sbi-fb-fs" v-model="addNewSource.manualSourceToken"
                                :placeholder="selectSourceScreen.modal.enterToken">
                     </div>
                     <button class="sbi-fb-source-btn sbi-fb-fs sb-btn-blue sb-account-connection-button"
@@ -341,12 +364,12 @@
 
             <!-- Step Four Business Account Exists Notice -->
             <div class="sbi-fb-source-step4 sbi-fb-fs" v-if="viewsActive.sourcePopupScreen == 'step_4'">
-                <div class="sbi-source-account-box sbi-fb-fs">
+                <div class="sbi-source-account-box sbi-fb-fs" role="group" :aria-label="selectSourceScreen.modal.selectAccount">
                     <div class="sbi-connecting-account-item" v-for="(source, sourceIndex) in returnedApiSourcesList"
                          @click.prevent.default="selectSourcesToConnect(source)"
                          :data-active="selectedSourcesToConnect.includes(source.account_id)">
                         <div class="sbi-fb-srcs-item-avatar" v-if="$parent.returnAccountAvatar(source)">
-                            <img :src="$parent.returnAccountAvatar(source)">
+                            <img :src="$parent.returnAccountAvatar(source)" alt="" aria-hidden="true">
                         </div>
                         <div class="sbi-connecting-account-info">
                             <div class="sbi-fb-srcs-item-name">

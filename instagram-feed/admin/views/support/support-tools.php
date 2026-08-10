@@ -36,19 +36,20 @@ $feeds_list = SBI_Feed_Builder::get_feed_list();
 
 ?>
 	<div class="sbi_support_tools_wrap">
-		<div class="sbi-support-tool-tab">
-			<button class="sbi-support-tool-tablinks active" onclick="openTab(event, 'ConnectedAccounts')">
+		<h2 id="sbi-support-tools-heading" class="sbi-screenreader"><?php esc_html_e('Support Tools', 'instagram-feed'); ?></h2>
+		<div class="sbi-support-tool-tab" role="tablist" aria-labelledby="sbi-support-tools-heading">
+			<button id="sbi-tab-connected-accounts" class="sbi-support-tool-tablinks active" role="tab" aria-selected="true" aria-controls="ConnectedAccounts" onclick="openTab(event, 'ConnectedAccounts')">
 				<span><?php esc_html_e('Connected Accounts', 'instagram-feed'); ?></span>
 			</button>
-			<button class="sbi-support-tool-tablinks" onclick="openTab(event, 'Feeds')">
+			<button id="sbi-tab-feeds" class="sbi-support-tool-tablinks" role="tab" aria-selected="false" aria-controls="Feeds" tabindex="-1" onclick="openTab(event, 'Feeds')">
 				<span><?php esc_html_e('Feeds', 'instagram-feed'); ?></span>
 			</button>
-			<button class="sbi-support-tool-tablinks" onclick="openTab(event, 'SystemInfo')">
+			<button id="sbi-tab-systeminfo" class="sbi-support-tool-tablinks" role="tab" aria-selected="false" aria-controls="SystemInfo" tabindex="-1" onclick="openTab(event, 'SystemInfo')">
 				<span><?php esc_html_e('System Info', 'instagram-feed'); ?></span>
 			</button>
 		</div>
 
-		<div id="ConnectedAccounts" class="sbi-support-tool-tabcontent active">
+		<div id="ConnectedAccounts" class="sbi-support-tool-tabcontent active" role="tabpanel" aria-labelledby="sbi-tab-connected-accounts" tabindex="0">
 			<div class="sbi_support_tools_field_group">
 				<?php if (empty($all_connected_accounts)) : ?>
 					<p><?php esc_html_e('No connected accounts found.', 'instagram-feed'); ?></p>
@@ -98,14 +99,14 @@ $feeds_list = SBI_Feed_Builder::get_feed_list();
 										foreach ($media_fields as $media_field) {
 											$media_field = trim($media_field);
 											$media_label = ucwords(str_replace('_', ' ', $media_field));
-											$checked = in_array($media_field, $default_checked) ? 'checked disabled' : '';
-											echo '<span><input type="checkbox" name="sbi_media_fields[]" value="' . esc_attr($media_field) . '"' . esc_attr($checked) . '>' . esc_html($media_label) . '</span>';
+											$checked = in_array($media_field, $default_checked) ? ' checked disabled' : '';
+											echo '<label><input type="checkbox" name="sbi_media_fields[]" value="' . esc_attr($media_field) . '"' . esc_attr($checked) . '> ' . esc_html($media_label) . '</label>';
 										}
 										?>
 
 										<span>
 										<label for="sbi_post_limit"><?php esc_html_e('Post Limit', 'instagram-feed'); ?></label>
-										<input type="number" name="sbi_post_limit" value="10" min="1" max="100">
+										<input type="number" id="sbi_post_limit" name="sbi_post_limit" value="10" min="1" max="100">
 									</span>
 
 										<div class="sbi-checkbox-action-btns">
@@ -128,7 +129,7 @@ $feeds_list = SBI_Feed_Builder::get_feed_list();
 			</div>
 		</div>
 
-		<div id="Feeds" class="sbi-support-tool-tabcontent">
+		<div id="Feeds" class="sbi-support-tool-tabcontent" role="tabpanel" aria-labelledby="sbi-tab-feeds" tabindex="0">
 			<div class="sbi_support_tools_field_group">
 				<?php if (empty($feeds_list)) : ?>
 					<p><?php esc_html_e('No feeds found.', 'instagram-feed'); ?></p>
@@ -174,7 +175,7 @@ $feeds_list = SBI_Feed_Builder::get_feed_list();
 			</div>
 		</div>
 
-		<div id="SystemInfo" class="sbi-support-tool-tabcontent">
+		<div id="SystemInfo" class="sbi-support-tool-tabcontent" role="tabpanel" aria-labelledby="sbi-tab-systeminfo" tabindex="0">
 			<div class="sbi_support_tools_field_group">
 				<p><?php esc_html_e('This information can be helpful when troubleshooting issues.', 'instagram-feed'); ?></p>
 				<div class="sbi-system-info">

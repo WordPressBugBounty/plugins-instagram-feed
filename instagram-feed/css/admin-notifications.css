@@ -87,7 +87,7 @@
 }
 
 .sbi-btn {
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     letter-spacing: 0.2px;
 }
 
@@ -217,7 +217,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 #sbi-notifications .navigation svg {
@@ -245,7 +245,7 @@
 
 #sbi-notifications .navigation .disabled {
     background: #E8E8EB;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     cursor: default;
 }
 

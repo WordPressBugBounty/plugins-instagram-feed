@@ -7,10 +7,41 @@ function openTab(evt, tabName) {
     tablinks = document.getElementsByClassName("sbi-support-tool-tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
+        tablinks[i].setAttribute('aria-selected', 'false');
+        tablinks[i].setAttribute('tabindex', '-1');
     }
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
+    evt.currentTarget.setAttribute('aria-selected', 'true');
+    evt.currentTarget.setAttribute('tabindex', '0');
 }
+
+// Keyboard arrow navigation for the support-tools tablist (WCAG ARIA Authoring
+// Practices: Left/Right arrows move between tabs, Home/End jump to first/last).
+// Scope the listener to each tablist container so unrelated tablists on the
+// same page can't interfere with each other and the query stays cheap.
+(function () {
+    var tablists = document.querySelectorAll('.sbi-support-tool-tab[role="tablist"]');
+    for (var t = 0; t < tablists.length; t++) {
+        tablists[t].addEventListener('keydown', function (e) {
+            var target = e.target;
+            if (!target || !target.classList || !target.classList.contains('sbi-support-tool-tablinks')) return;
+            var tabs = Array.prototype.slice.call(this.querySelectorAll('.sbi-support-tool-tablinks'));
+            if (!tabs.length) return;
+            var idx = tabs.indexOf(target);
+            if (idx < 0) return;
+            var next = null;
+            if (e.key === 'ArrowRight' || e.keyCode === 39) next = tabs[(idx + 1) % tabs.length];
+            else if (e.key === 'ArrowLeft' || e.keyCode === 37) next = tabs[(idx - 1 + tabs.length) % tabs.length];
+            else if (e.key === 'Home' || e.keyCode === 36) next = tabs[0];
+            else if (e.key === 'End' || e.keyCode === 35) next = tabs[tabs.length - 1];
+            if (!next) return;
+            e.preventDefault();
+            next.focus();
+            next.click();
+        });
+    }
+})();
 
 jQuery(document).ready(function ($) {
     function handleAjaxRequest(nonce, data, successCallback) {

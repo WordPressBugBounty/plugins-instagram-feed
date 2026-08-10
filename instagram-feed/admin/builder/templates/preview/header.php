@@ -40,7 +40,7 @@
 
 <svg width="24px" height="24px" version="1.1" xmlns="http://www.w3.org/2000/svg"
      class="sbi-screenreader" role="img"
-     aria-labelledby="metaSVGid metaSVGdesc" alt="Comments Box SVG icons"><title id="metaSVGid">Comments Box SVG
+     aria-labelledby="metaSVGid metaSVGdesc" alt="Comments Box SVG icons" aria-hidden="true" focusable="false"><title id="metaSVGid">Comments Box SVG
         icons</title>
     <desc id="metaSVGdesc">Used for the like, share, comment, and reaction icons</desc>
     <defs>

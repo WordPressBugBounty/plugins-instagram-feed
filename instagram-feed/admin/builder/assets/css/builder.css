@@ -8,18 +8,18 @@ body {
 }
 
 .sb-tr-1 {
-    -webkit-transition: all .1s ease-in-out;
-    transition: all .1s ease-in-out;
+    -webkit-transition: all var(--sb-duration-100) ease-in-out;
+    transition: all var(--sb-duration-100) ease-in-out;
 }
 
 .sb-tr-2 {
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sb-tr-3 {
-    -webkit-transition: all .3s ease-in-out;
-    transition: all .3s ease-in-out;
+    -webkit-transition: all var(--sb-duration-300) ease-in-out;
+    transition: all var(--sb-duration-300) ease-in-out;
 }
 
 .sb-tr-4 {
@@ -28,8 +28,8 @@ body {
 }
 
 .sb-tr-5 {
-    -webkit-transition: all .5s ease-in-out;
-    transition: all .5s ease-in-out;
+    -webkit-transition: all var(--sb-duration-500) ease-in-out;
+    transition: all var(--sb-duration-500) ease-in-out;
 }
 
 .sb-tr-6 {
@@ -38,8 +38,8 @@ body {
 }
 
 .sb-tr-7 {
-    -webkit-transition: all .7s ease-in-out;
-    transition: all .7s ease-in-out;
+    -webkit-transition: all var(--sb-duration-700) ease-in-out;
+    transition: all var(--sb-duration-700) ease-in-out;
 }
 
 .sb-tr-8 {
@@ -53,12 +53,51 @@ body {
 }
 
 .sb-tr-10 {
-    -webkit-transition: all 1s ease-in-out;
-    transition: all 1s ease-in-out;
+    -webkit-transition: all var(--sb-duration-1000) ease-in-out;
+    transition: all var(--sb-duration-1000) ease-in-out;
 }
 
 .sbi-bg-1 {
     background: #2A65DB;
+}
+
+/* SMASH-1378: reset UA button defaults for elements converted from <div>/<a>
+   to <button> during the Wave 1+2 a11y semantic upgrade. Wrapped in :where()
+   so the reset has specificity (0,0,0) and any per-control rule (e.g.
+   `.sb-control-imagechooser-btn { padding: 0 10px; background: #F3F4F5 }`)
+   wins automatically. UA defaults are also (0,0,0) but author rules in the
+   cascade come after, so author CSS still wins over UA without needing the
+   reset to declare anything redundant. We declare here only the properties
+   we want to neutralize when no per-control rule sets them. */
+:where(
+    button.sb-control-switcher-ctn,
+    button.sb-control-checkbox-ctn,
+    button.sb-control-checkbox,
+    button.sb-control-checkboxsection-open,
+    button.sb-control-colorpicker-btn,
+    button.sb-control-colorpicker-swatch,
+    button.sb-control-imagechooser-clear-icon,
+    button.sb-control-imagechooser-btn,
+    button.sb-control-input-info,
+    button.sb-customizer-sidebar-breadcrumb-link,
+    button.sb-control-elem-tltp-icon,
+    button.sbi-fb-popup-cls,
+    button.sbi-fd-lst-shortcode-cp,
+    button.sbi-addsource-type-btn,
+    button.sbi-selected-source-item-icon,
+    button.sbi-hashtag-item-delete
+) {
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: inherit;
+    line-height: inherit;
 }
 
 /****
@@ -74,8 +113,8 @@ Buttons
     outline: none;
     box-shadow: none;
     border: none;
-    -webkit-transition: all .15s ease-in-out;
-    transition: all .15s ease-in-out;
+    -webkit-transition: all var(--sb-duration-150) ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sb-button-standard {
@@ -235,7 +274,7 @@ Buttons
 .sbi-btn-grey[data-active="false"],
 .sbi-btn-dark[data-active="false"] {
     background: #E8E8EB !important;
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
 }
 
 /* Text */
@@ -291,7 +330,7 @@ Buttons
     font-weight: normal;
     font-size: 14px;
     line-height: 160%;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     margin: 0;
 }
 
@@ -301,7 +340,7 @@ Buttons
 }
 
 #sbi-builder-app .sbi-fb-source-inp::placeholder {
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     font-size: 14px;
     font-weight: normal;
 }
@@ -625,8 +664,8 @@ body.jetpack-masterbar .sbi-csz-header-insider {
     align-items: center;
     position: relative;
     border: 1px solid;
-    -webkit-transition: all .15s ease-in-out;
-    transition: all .15s ease-in-out;
+    -webkit-transition: all var(--sb-duration-150) ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-fb-hd-btn i {
@@ -634,8 +673,8 @@ body.jetpack-masterbar .sbi-csz-header-insider {
 }
 
 .sbi-fb-ft-action .sbi-fb-hd-btn {
-    -webkit-transition: background .15s ease-in-out;
-    transition: background .15s ease-in-out;
+    -webkit-transition: background var(--sb-duration-150) ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-fb-full-wrapper {
@@ -925,6 +964,22 @@ Welcome Screen Empty State
 #sbi-builder-app .sbi-fb-feedtypes-pp-ctn h4 {
     margin-bottom: 1px;
 }
+/* SMASH-1378: feed-creation step headings receive programmatic focus on step
+   change for screen-reader context only (tabindex=-1, not in the tab order),
+   so suppress the visible focus ring on the heading itself. */
+#sbi-builder-app .sbi-fb-create-ctn h4:focus,
+#sbi-builder-app .sbi-fb-create-ctn h4:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+/* SMASH-1378: install-plugin (other-plugin) dialog title gets programmatic focus
+   on open for SR context (tabindex=-1); suppress its ring like the step headings.
+   Not scoped to #sbi-builder-app because movePopUp() relocates the modal. */
+.sbi-install-plugin-modal h3:focus,
+.sbi-install-plugin-modal h3:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
 
 #sbi-builder-app .sbi-fb-feedtypes-pp-ctn .sbi-fb-types {
     margin-top: 20px;
@@ -937,7 +992,7 @@ Welcome Screen Empty State
     line-height: 160%;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sbi-fb-types-desc {
@@ -1330,7 +1385,7 @@ Source Screen
 }
 
 .sbi-fb-srcs-item[data-disabled="true"] .sbi-fb-srcs-item-inf {
-    opacity: .55;
+    opacity: var(--sb-opacity-disabled);
 
 }
 
@@ -1565,7 +1620,7 @@ Source Screen
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all .15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-icon-platform-wrap {
@@ -2009,7 +2064,7 @@ Source Screen
     justify-content: center;
     z-index: 10;
     border-radius: 8px;
-    transition: transform 0.15s ease, background 0.15s ease;
+    transition: transform var(--sb-duration-150) ease, background var(--sb-duration-150) ease;
     padding: 0;
 }
 
@@ -2126,7 +2181,7 @@ Source Screen
         0px 2px 5px 0px rgba(60, 66, 87, 0.12),
         0px 1px 1px 0px rgba(0, 0, 0, 0.08),
         inset 0px -1px 1px 0px rgba(0, 0, 0, 0.12);
-    transition: transform 0.15s ease, background 0.15s ease;
+    transition: transform var(--sb-duration-150) ease, background var(--sb-duration-150) ease;
     box-sizing: border-box;
 }
 
@@ -2268,7 +2323,7 @@ Source Screen
     font-weight: normal;
     font-size: 16px;
     line-height: 160%;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sbi-fb-sglelm-error-icon {
@@ -2329,7 +2384,7 @@ Source Screen
 .sbi-fb-sglelm-img-ctn span {
     font-size: 14px;
     line-height: 1.6em;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sbi-fb-sglelm-right {
@@ -2548,8 +2603,8 @@ tbody .sbi-fd-lst-chkbx {
     color: #141B38;
     border-radius: 2px;
     border: 1px solid #D8DADD;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
     background: #fff;
 }
 
@@ -2607,11 +2662,11 @@ tbody .sbi-fd-lst-chkbx {
 .sbi-fd-lst-dimmed .sbi-fd-lst-btn, .sbi-fd-lst-dimmed .sbi-fd-lst-btn:hover {
     background: #F3F4F5 !important;
     border-color: #D8DADD !important;
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
 }
 
 .sbi-fd-lst-dimmed .sbi-fd-lst-btn:hover svg {
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
 }
 
 .sbi-fb-tltp-parent {
@@ -2641,8 +2696,8 @@ tbody .sbi-fd-lst-chkbx {
     left: 50%;
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sbi-fb-tltp-elem span {
@@ -3006,8 +3061,8 @@ Feed Instance Popup
     padding: 10px 20px;
     opacity: 0;
     visibility: hidden;
-    -webkit-transition: all .2s ease-in-out, opacity .4s ease-in-out;
-    transition: all .2s ease-in-out, opacity .4s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out, opacity .4s ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out, opacity .4s ease-in-out;
     left: 50%;
     bottom: -20px;
     -webkit-transform: translateX(-50%);
@@ -3069,6 +3124,25 @@ body.folded .sb-customizer-sidebar {
     cursor: pointer;
 }
 
+/* SMASH-1378: native <button> reset so role="tab" elements match the prior
+   divs. The Wave 1 a11y upgrade converted these tabs from <div> to <button>,
+   but the author CSS only sets border-bottom, so the UA button border still
+   rendered on the top/left/right (the reported "border" on the builder
+   settings tabs). Keyboard focus is unaffected: the :focus-visible box-shadow
+   ring is provided by global.css. */
+button.sb-customizer-sidebar-tab {
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-align: center;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
 .sb-customizer-sidebar-tab[data-active="true"] {
     border-color: #0096CC;
 }
@@ -3085,14 +3159,31 @@ body.folded .sb-customizer-sidebar {
     align-items: center;
     color: #141B38;
     border-bottom: 1px solid #DCDDE1;
-    -webkit-transition: background .2s ease-in-out;
-    transition: background .2s ease-in-out;
+    -webkit-transition: background var(--sb-duration-200) ease-in-out;
+    transition: background var(--sb-duration-200) ease-in-out;
     padding: 0 20px;
 }
 
 .sb-customizer-sidebar-sec-el:hover {
     background: #F3F4F5;
     border-bottom: 1px solid #F3F4F5;
+}
+
+/* SMASH-1378: native <button> reset so role-row section buttons match the
+   prior divs. Converted from <div> to <button> in the a11y upgrade; the
+   author rule only sets border-bottom, so the UA button border showed on
+   the top/left/right of every SECTIONS row. Keyboard focus is unaffected
+   (the :focus-visible ring is provided by global.css). */
+button.sb-customizer-sidebar-sec-el {
+    width: 100%;
+    background: transparent;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    font: inherit;
+    text-align: left;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 .sb-customizer-sidebar-sec-el .sb-customizer-chevron svg {
@@ -3128,7 +3219,7 @@ body.folded .sb-customizer-sidebar {
     line-height: 160%;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sb-customizer-sidebar-header {
@@ -3167,7 +3258,8 @@ body.folded .sb-customizer-sidebar {
     transform: translateX(5px) translateY(0px);
 }
 
-.sb-customizer-sidebar-breadcrumb a, .sb-customizer-sidebar-breadcrumb span {
+.sb-customizer-sidebar-breadcrumb a, .sb-customizer-sidebar-breadcrumb span,
+.sb-customizer-sidebar-breadcrumb button.sb-customizer-sidebar-breadcrumb-link {
     display: inline-block;
     position: relative;
     cursor: pointer;
@@ -3179,6 +3271,22 @@ body.folded .sb-customizer-sidebar {
     padding: 0 17px;
     height: 20px;
     font-weight: 600;
+    /* a11y conversion: <button> UA defaults to text-align:center and
+       vertical-align:middle, which would push the breadcrumb text away from
+       the absolute-positioned chevron at left:4px and misalign sibling
+       breadcrumb buttons in a row. Anchors default to text-align:start and
+       vertical-align:baseline; restore those explicitly for the button. */
+    text-align: left;
+    vertical-align: baseline;
+    /* a11y conversion: <button> uses box-sizing:border-box by UA default
+       (vs <a>'s content-box) and can pick up implicit min-width sizing in
+       certain engines, making the back-link render wider than the original
+       anchor. Pin the box to shrink-to-fit content width so the chevron +
+       label + horizontal padding define the exact hit area, matching the
+       pre-a11y geometry. */
+    box-sizing: content-box;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 
 .sb-customizer-sidebar-breadcrumb span {
@@ -3438,8 +3546,8 @@ Controls Style
     border-radius: 25px;
     background: #fff;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sb-control-switcher-ctn[data-active="true"] .sb-control-switcher {
@@ -3531,6 +3639,30 @@ Controls Style
 /*Toggle SET Control*/
 .sb-control-toggle-set-ctn .sb-control-toggle-elm[data-active="true"] {
     border-radius: 0px;
+}
+
+/* SMASH-1378: Toggleset (radiogroup) focus indicator.
+   The Wave 1 fix added role="radio" + roving tabindex, but the global
+   box-shadow ring (#007ca8) is visually nearly identical to the selected
+   state border (#0096CC, var(--customizer-blue)) — the ring blended into
+   the existing selected border, making the selected+focused radio look
+   indistinguishable from the static selected state. QA reported "Layout
+   options are not tabbable" because there was no perceivable focus
+   change when Tab landed on the (already-selected) Grid option.
+   Fix: position:relative + z-index so the focus ring layers above
+   adjacent radios, and use outline-offset to push the ring outside the
+   selected-state 1px border so it reads as a distinct second ring. */
+.sb-control-toggle-set-ctn [role="radio"],
+.sb-control-togglebutton-ctn [role="radio"] {
+    position: relative;
+}
+
+.sb-control-toggle-set-ctn [role="radio"]:focus-visible,
+.sb-control-togglebutton-ctn [role="radio"]:focus-visible {
+    z-index: 2;
+    outline: 2px solid var(--sb-focus-ring, #007ca8) !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
 }
 
 /*Toggle Button Control*/
@@ -3756,6 +3888,18 @@ Controls Style
     background: #F3F4F5;
     z-index: 1;
     opacity: 0;
+}
+
+/* SMASH-1378: restore checkboxsection row layout after div→button a11y conversion.
+   Chevron moved inside .sb-control-checkboxsection-open; `> div{z-index:3}` no longer
+   matches the <button> children → chevron not far-right + hover overlay (z-index:1)
+   covered label+chevron. Flex the open-button (chevron right) + raise above overlay. */
+.sb-control-checkboxsection-open {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 3;
 }
 
 .sb-control-checkbox {
@@ -4416,13 +4560,13 @@ Controls Style
 }
 
 .sb-notification-ctn[data-active="hidden"] {
-    -webkit-animation: sbi-notification-hide .5s forwards linear;
-    animation: sbi-notification-hide .5s forwards linear;
+    -webkit-animation: sbi-notification-hide var(--sb-duration-500) forwards linear;
+    animation: sbi-notification-hide var(--sb-duration-500) forwards linear;
 }
 
 .sb-notification-ctn[data-active="shown"] {
-    -webkit-animation: sbi-notification-show .5s forwards linear;
-    animation: sbi-notification-show .5s forwards linear;
+    -webkit-animation: sbi-notification-show var(--sb-duration-500) forwards linear;
+    animation: sbi-notification-show var(--sb-duration-500) forwards linear;
 }
 
 @-webkit-keyframes sbi-notification-show {
@@ -5040,8 +5184,9 @@ Controls Style
     display: flex;
     justify-content: center;
     align-self: center;
+    border-top: 1px solid #E8E8EB;
     padding: 12px 20px;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
@@ -5103,7 +5248,7 @@ Controls Style
 }
 
 .sbi-fb-type-el[data-checked="true"] .sbi-fb-type-el-info * {
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
 }
 
 .sbi-fb-type-el-info .sb-control-elem-tltp,
@@ -5550,7 +5695,7 @@ Controls Style
     position: relative;
     float: left;
     border-radius: 2px;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sbi-moderation-toggle[data-type="active"] .sbi-moderation-checkmark {
@@ -5630,8 +5775,8 @@ Controls Style
 }
 
 #sb_instagram .sbi_item:not(.sbi_transition):hover .sbi_photo {
-    -webkit-transition: all .5s !important;
-    transition: all .5s !important;
+    -webkit-transition: all var(--sb-duration-500) !important;
+    transition: all var(--sb-duration-500) !important;
 }
 
 #sb_instagram .sbi_item .sbi_photo_shady {
@@ -5783,8 +5928,139 @@ Controls Style
     height: auto !important;
 }
 
-#sbi_lightbox.sbi-lightbox-dummy-ctn .sbi_lb-nav a {
+#sbi_lightbox.sbi-lightbox-dummy-ctn .sbi_lb-nav a,
+#sbi_lightbox.sbi-lightbox-dummy-ctn .sbi_lb-nav button {
     pointer-events: none;
+}
+
+/*
+ * Lightbox-preview button restyle.
+ * The a11y wave converted the lightbox prev/next/share/close <a> elements to
+ * <button>, but the frontend lightbox CSS (sbi-styles.css) keys its styling on
+ * `.sbi_lb-nav a` / `.sbi_lightbox_action a`, and its FontAwesome inline-SVG
+ * sizing (`height:1em`) is scoped to `#sb_instagram` — which the dummy preview
+ * is NOT inside. Without these rules the converted buttons inherit UA button
+ * chrome (grey box, border) and the FA SVGs balloon to their intrinsic viewBox
+ * size. Scope everything to the dummy container so the real frontend lightbox
+ * is untouched.
+ */
+.sbi-dummy-lightbox-ctn svg.svg-inline--fa {
+    display: inline-block;
+    height: 1em;
+    overflow: visible;
+    vertical-align: -0.125em;
+    width: auto;
+}
+
+.sbi-dummy-lightbox-ctn .sbi_lb-prev,
+.sbi-dummy-lightbox-ctn .sbi_lb-next,
+.sbi-dummy-lightbox-ctn .sbi_lb-close,
+.sbi-dummy-lightbox-ctn .sbi_share > button,
+.sbi-dummy-lightbox-ctn .sbi_share_close {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    line-height: inherit;
+    font: inherit;
+    color: inherit;
+}
+
+/* Port the frontend nav-arrow positioning (keyed on `a`) onto the buttons. */
+.sbi-dummy-lightbox-ctn .sbi_lb-nav .sbi_lb-prev,
+.sbi-dummy-lightbox-ctn .sbi_lb-nav .sbi_lb-next {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    height: 90%;
+    width: 50px;
+    padding: 0 10px;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.sbi-dummy-lightbox-ctn .sbi_lb-nav .sbi_lb-prev {
+    left: -70px;
+    float: left;
+}
+
+.sbi-dummy-lightbox-ctn .sbi_lb-nav .sbi_lb-next {
+    right: -70px;
+    float: right;
+}
+
+/* The prev/next arrow glyph is a sprite slice on `.sbi_lb-nav span`; the
+   per-direction background-position is keyed on `a.sbi_lb-prev span` /
+   `a.sbi_lb-next span`, which no longer match the converted <button> spans, so
+   both arrows showed the SAME wrong sprite slice. Re-key onto the buttons. */
+.sbi-dummy-lightbox-ctn .sbi_lb-nav .sbi_lb-prev span {
+    left: 20px;
+    background-position: -53px 0;
+}
+.sbi-dummy-lightbox-ctn .sbi_lb-nav .sbi_lb-next span {
+    left: auto;
+    right: 20px;
+    background-position: -18px 0;
+}
+
+/* Frontend keys `.sbi_lb-data .sbi_lb-close` w/o tag; reassert size/align on the
+   button so the UA reset above doesn't leave it mis-sized. */
+.sbi-dummy-lightbox-ctn .sbi_lb-data .sbi_lb-close {
+    display: block;
+    float: right;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    text-align: right;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+/* In the preview DOM the close button (`.sbi_lb-closeContainer`) is the LAST
+   child of `.sbi_lb-details`, so it rendered LOW — below the Share/Instagram
+   action row. The real frontend lightbox shows the close at the TOP-RIGHT of the
+   data panel. Pin it to the top-right of the data panel, scoped to the dummy
+   preview so the real frontend lightbox is untouched. */
+.sbi-dummy-lightbox-ctn .sbi_lb-data {
+    position: relative;
+}
+.sbi-dummy-lightbox-ctn .sbi_lb-closeContainer {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    z-index: 10;
+}
+
+.sbi-dummy-lightbox-ctn .sbi_share > button {
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Position the Share + Instagram action icons like the real frontend lightbox.
+   The layout lives in css/sb-instagram.css (`#sbi_lightbox .sbi_lightbox_action`),
+   which the admin builder doesn't load, so the preview stacked them vertically.
+   Replicate scoped to the dummy preview (Share is now a <button>, Instagram an <a>). */
+.sbi-dummy-lightbox-ctn .sbi_lightbox_action {
+    float: left;
+    position: relative;
+    padding: 0 0 0 10px;
+    margin: 5px 0 0 10px;
+    border-left: 1px solid #666;
+    font-size: 12px;
+}
+.sbi-dummy-lightbox-ctn .sbi_lightbox_action a,
+.sbi-dummy-lightbox-ctn .sbi_lightbox_action > button {
+    display: block;
+    float: left;
+    color: var(--sb-text-tertiary);
+    text-decoration: none;
+}
+.sbi-dummy-lightbox-ctn .sbi_lightbox_action svg {
+    margin-right: 5px;
+}
+.sbi-dummy-lightbox-ctn .sbi_lightbox_action.sbi_instagram svg {
+    font-size: 13px;
 }
 
 #sbi_lightbox.sbi-lightbox-dummy-ctn.sbi_lb-comments-disabled .sbi_lb-outerContainer {
@@ -5937,14 +6213,16 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     bottom: -13px;
 }
 
-.sb-onboarding-wizard-plugin-name h3 {
+.sb-onboarding-wizard-plugin-name h3,
+.sb-onboarding-wizard-plugin-name .sb-onboarding-wizard-plugin-name-heading {
     font-weight: 600 !important;
     color: #141B38;
     font-size: 32px !important;
     line-height: 1.1em !important;
+    display: block;
 }
 
-.sb-onboarding-wizard-plugin-name span {
+.sb-onboarding-wizard-plugin-name span:not(.sb-onboarding-wizard-plugin-name-heading) {
     font-weight: 600;
     color: #141B38;
     font-size: 20px;
@@ -6069,7 +6347,8 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     column-gap: 15px;
 }
 
-.sb-onboarding-wizard-step-welcome h3 {
+.sb-onboarding-wizard-step-welcome h3,
+.sb-onboarding-wizard-step-welcome h1.sb-onboarding-wizard-step-heading {
     font-size: 24px !important;
     font-weight: 600 !important;
     line-height: 29px !important;
@@ -6120,14 +6399,21 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     color: #696D80;
 }
 
-.sb-onboarding-wizard-step-top h4 {
+.sb-onboarding-wizard-step-top h4,
+.sb-onboarding-wizard-step-top h1.sb-onboarding-wizard-step-heading {
     font-size: 18px !important;
     font-weight: 600 !important;
     line-height: 25px !important;
-    color: #000;
+    /* The step heading was changed from <h4> to <h1> for a11y (SMASH-1378).
+       <h1> picks up a different global builder color (#141B38) and a different
+       UA bottom margin than the original <h4>; restore the pre-a11y appearance
+       (#000 text + 4px bottom margin) so the heading row height and color match. */
+    color: #000 !important;
+    margin: 0 0 4px 0 !important;
 }
 
-.sb-onboarding-wizard-step-top[data-large="true"] h4 {
+.sb-onboarding-wizard-step-top[data-large="true"] h4,
+.sb-onboarding-wizard-step-top[data-large="true"] h1.sb-onboarding-wizard-step-heading {
     font-size: 20px !important;
 }
 
@@ -6247,7 +6533,19 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     float: right;
 }
 
-.sb-onboarding-wizard-elem-toggle > div {
+/*
+ * The toggle switch was converted from <div> to <button role="switch"> for keyboard
+ * accessibility. The selectors below match both so the switch keeps its pill styling.
+ * A bare <button> inherits UA chrome that a <div> never had — most importantly
+ * `appearance: auto` (which paints the native push-button theme and breaks the pill
+ * fill / absolutely-positioned knob on macOS Safari & Chrome), plus a UA font
+ * (Arial 13.333px), `text-align: center` and a system color. We zero all of it out so
+ * the button is pixel-identical to the original div across browsers. The role/
+ * aria-checked state semantics live in the markup; the visible focus ring is added
+ * via :focus-visible below (box-shadow, so it never shifts layout).
+ */
+.sb-onboarding-wizard-elem-toggle > div,
+.sb-onboarding-wizard-elem-toggle > button {
     width: 36px;
     height: 16px;
     padding: 2px;
@@ -6255,19 +6553,42 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     background-color: #9295A6;
     position: relative;
     cursor: pointer;
+    border: 0;
+    /* content-box (the original <div>'s default): width/height are the inner pill
+       size, so the 2px padding renders OUTSIDE -> total pill = 40x20, matching the
+       pre-a11y div. border-box would shrink the pill to 36x16 and clip the
+       absolutely-positioned 16px knob at its left:22px "on" position. */
+    box-sizing: content-box;
+    display: block;
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    outline: none;
+}
+
+.sb-onboarding-wizard-elem-toggle > button:focus-visible {
+    /* Interactive control keeps a visible focus ring; box-shadow (not border/outline
+       offset) so it never changes the toggle's size or nudges the layout. */
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #0096CC;
 }
 
 
-.sb-onboarding-wizard-elem-toggle > div[data-color="green"][data-active="true"] {
+.sb-onboarding-wizard-elem-toggle > div[data-color="green"][data-active="true"],
+.sb-onboarding-wizard-elem-toggle > button[data-color="green"][data-active="true"] {
     background-color: #59AB46;
 }
 
-.sb-onboarding-wizard-elem-toggle > div[data-uncheck="true"] {
+.sb-onboarding-wizard-elem-toggle > div[data-uncheck="true"],
+.sb-onboarding-wizard-elem-toggle > button[data-uncheck="true"] {
     opacity: .5;
     cursor: auto;
 }
 
-.sb-onboarding-wizard-elem-toggle > div:before {
+.sb-onboarding-wizard-elem-toggle > div:before,
+.sb-onboarding-wizard-elem-toggle > button:before {
     content: '';
     position: absolute;
     width: 16px;
@@ -6277,15 +6598,17 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     left: 3px;
     background-color: #fff;
     box-shadow: 0px 1px 2px 0px #00000040;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
-.sb-onboarding-wizard-elem-toggle > div[data-active="true"]:before {
+.sb-onboarding-wizard-elem-toggle > div[data-active="true"]:before,
+.sb-onboarding-wizard-elem-toggle > button[data-active="true"]:before {
     left: 22px;
 }
 
-.sb-onboarding-wizard-elem-toggle > div[data-color="blue"][data-active="true"] {
+.sb-onboarding-wizard-elem-toggle > div[data-color="blue"][data-active="true"],
+.sb-onboarding-wizard-elem-toggle > button[data-color="blue"][data-active="true"] {
     background-color: #0096CC;
 }
 
@@ -6320,7 +6643,7 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     opacity: 0;
     height: 0px;
     transform: translateX(-20px);
-    transition: all .3s ease-in-out;
+    transition: all var(--sb-duration-300) ease-in-out;
 }
 
 .sb-onboarding-wizard-success-list[data-done="true"] .sb-onboarding-wizard-succes-elem {
@@ -6523,7 +6846,8 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     padding: 10px 20px;
 }
 
-.sb-onboarding-wizard-sources-list > div {
+.sb-onboarding-wizard-sources-list > div,
+.sb-onboarding-wizard-sources-list > button {
     display: flex;
     height: 52px;
     position: relative;
@@ -6531,6 +6855,12 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     margin-bottom: 10px;
 }
 
+/*
+ * .sb-onboarding-wizard-source-newitem was converted from <div> to <button> for
+ * keyboard accessibility. Reset UA button chrome (font, width) so it keeps its
+ * original full-width card appearance; the accessible name + button semantics
+ * remain in the markup.
+ */
 .sb-onboarding-wizard-source-newitem {
     justify-content: center;
     align-items: center;
@@ -6538,6 +6868,16 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     border: 1px solid #EBF5FF;
     color: #0096CC;
     cursor: pointer;
+    width: 100%;
+    font: inherit;
+    text-align: center;
+    /* A bare <button> keeps UA chrome the original <div> never had: the native
+       push-button theme (appearance:auto) and UA padding (1px 6px). Zero both so
+       the card and its centered icon+label render identically to the pre-a11y div. */
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0;
+    margin: 0;
 }
 
 .sb-onboarding-wizard-source-newitem span {
@@ -6578,6 +6918,12 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     bottom: -3px;
 }
 
+/*
+ * .sb-onboarding-wizard-source-item-delete was converted from <div> to <button>
+ * for keyboard accessibility. Reset UA button chrome (padding/border/background/
+ * font) so the trash icon keeps its original size; the accessible name + button
+ * semantics remain in the markup.
+ */
 .sb-onboarding-wizard-source-item-delete {
     display: flex;
     width: 20px;
@@ -6586,6 +6932,15 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     align-items: center;
     cursor: pointer;
     margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    /* Zero the remaining <button> UA chrome the original <div> never had so the
+       20x20 box / 10x12 trash icon render identically across browsers. */
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: content-box;
 }
 
 .sb-onboarding-wizard-source-item-delete svg {
@@ -6620,7 +6975,8 @@ body #sbi_lightbox.sbi_lightbox:not(.sbi-lightbox-dummy-ctn) {
     justify-content: center;
 }
 
-.sb-onboarding-wizard-upgrade-text h3 {
+.sb-onboarding-wizard-upgrade-text h3,
+.sb-onboarding-wizard-upgrade-text h2 {
     color: #fff;
 }
 
@@ -6820,8 +7176,8 @@ div:not(.sb-onboarding-wizard-welcome-btns) > button.sb-btn-wizard-next {
     visibility: hidden;
     top: -30px;
     left: 7px;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sb-onboarding-wizard-smash-inside .sb-control-elem-tltp:hover .sb-control-elem-tltp-content {
@@ -6863,10 +7219,14 @@ div:not(.sb-onboarding-wizard-welcome-btns) > button.sb-btn-wizard-next {
 
 }
 
-.sb-onboarding-wizard-gdpr-info h4 {
+.sb-onboarding-wizard-gdpr-info h4,
+.sb-onboarding-wizard-gdpr-info h2 {
     padding: 12px 16px;
     border-bottom: 1px solid #e6e6eb;
-    color: ##141B38;
+    color: #141B38;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
 }
 
 .sb-onboarding-wizard-gdpr-columns {

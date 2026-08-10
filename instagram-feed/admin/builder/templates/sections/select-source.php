@@ -7,7 +7,7 @@
 </div>
 <div class="sbi-fb-mr-feeds sbi-fb-fs" v-if="viewsActive.selectedFeedSection == 'selectSource'">
 	<div class="sbi-fb-mr-fd-img">
-		<svg width="335" height="185" viewBox="0 0 335 185" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<svg width="335" height="185" viewBox="0 0 335 185" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 			<g clip-path="url(#clip0)">
 				<rect width="335" height="185" fill="white"/>
 				<g opacity="0.3" filter="url(#filter0_f)">
@@ -173,7 +173,7 @@
 					<div class="sbi-fb-mr-fd-name sb-small-p sb-bold sb-dark-text">{{plugin['displayName']}}</div>
 				</div>
 				<div class="sbi-fb-mr-fd-ch">
-					<svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 						<path d="M1.3332 0L0.158203 1.175L3.97487 5L0.158203 8.825L1.3332 10L6.3332 5L1.3332 0Z"
 							  fill="#141B38"/>
 					</svg>

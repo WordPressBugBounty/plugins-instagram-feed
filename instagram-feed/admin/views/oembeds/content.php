@@ -1,4 +1,4 @@
-<div class="sbi-fb-full-wrapper sbi-fb-fs">
+<div class="sbi-fb-full-wrapper sbi-fb-fs" role="main">
 	<div class="sbi-oembeds-container">
 		<?php
 
@@ -11,7 +11,7 @@
 		do_action('sbi_admin_notices');
 		?>
 		<div class="sbi-section-header">
-			<h3>{{genericText.title}}</h3>
+			<h1>{{genericText.title}}</h1>
 			<p>{{genericText.description}}</p>
 		</div>
 
@@ -23,11 +23,13 @@
 				<span class="sbi-oembed-btn">
 
 					<button v-if="instagram.doingOembeds" @click="disableInstaoEmbed()" class="sbi-btn disable-oembed"
+							aria-label="<?php esc_attr_e('Disable Instagram oEmbeds', 'instagram-feed'); ?>"
 							:class="{loading: instaoEmbedLoader}">
 						<span v-if="instaoEmbedLoader" v-html="loaderSVG"></span>
 						{{genericText.disable}}
 					</button>
 					<button v-else @click="enableInstaoEmbed()" class="sbi-btn-blue sbi-btn"
+							aria-label="<?php esc_attr_e('Enable Instagram oEmbeds', 'instagram-feed'); ?>"
 							:class="{loading: instaoEmbedLoader}">
 						<span v-if="instaoEmbedLoader" v-html="loaderSVG"></span>
 						{{genericText.enable}}
@@ -41,11 +43,13 @@
 				<span class="sbi-oembed-btn">
 
 					<button v-if="facebook.doingOembeds" @click="disableFboEmbed()" class="sbi-btn disable-oembed"
+							aria-label="<?php esc_attr_e('Disable Facebook oEmbeds', 'instagram-feed'); ?>"
 							:class="{loading: fboEmbedLoader}">
 						<span v-if="fboEmbedLoader" v-html="loaderSVG"></span>
 						{{genericText.disable}}
 					</button>
 					<button v-else @click="FacebookShouldInstallOrEnable()" class="sbi-btn sbi-btn-blue"
+							aria-label="<?php esc_attr_e('Enable Facebook oEmbeds', 'instagram-feed'); ?>"
 							:class="{loading: fboEmbedLoader}">
 						<span v-if="fboEmbedLoader" v-html="loaderSVG"></span>
 						{{genericText.enable}}

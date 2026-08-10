@@ -43,6 +43,7 @@ $header_link_title = SB_Instagram_Display_Elements::get_header_link_title($setti
 ?>
 <div<?php echo $header_classes; ?> <?php echo $header_atts; ?>>
 	<a class="sbi_header_link" target="_blank"
+	   aria-label="<?php echo esc_attr(sprintf(__('%s on Instagram', 'instagram-feed'), $username)); ?>"
 	   rel="nofollow noopener"<?php echo $header_link ?><?php echo $header_link_title ?>>
 		<div<?php echo $header_text_class; ?>>
 			<div class="sbi_header_img"<?php echo $header_image_atts; ?>>

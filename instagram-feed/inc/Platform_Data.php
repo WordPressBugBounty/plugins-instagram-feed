@@ -313,7 +313,7 @@ class Platform_Data
 		}
 
 		if ($statuses['last_used'] < sbi_get_current_time() - (14 * DAY_IN_SECONDS)) {
-			$sb_instagram_posts_manager->add_error('unused_feed', __('Your Instagram feed has been not viewed in the last 14 days. Due to Instagram data privacy rules, all data for this feed will be deleted in 7 days time. To avoid automated data deletion, simply view the Instagram feed on your website within the next 7 days.', 'instagram-feed'));
+			$sb_instagram_posts_manager->add_error('unused_feed', __('Your Instagram feed has not been viewed in the last 14 days. Due to Instagram data privacy rules, all data for this feed will be deleted in 7 days time. To avoid automated data deletion, simply view the Instagram feed on your website within the next 7 days.', 'instagram-feed'));
 
 			$this->send_unused_feed_usage_notification_email();
 
@@ -333,7 +333,7 @@ class Platform_Data
 		$title = __('There has been a problem with your Instagram Feed.', 'instagram-feed');
 		$bold = __('Action Required Within 7 Days', 'instagram-feed');
 		$site_url = sprintf('<a href="%s">%s<a/>', esc_url(home_url()), __('your website', 'instagram-feed'));
-		$details = '<p>' . sprintf(__('An Instagram feed on %s has been not viewed in the last 14 days. Due to Instagram data privacy rules, all data for this feed will be deleted in 7 days time.', 'instagram-feed'), $site_url) . '</p>';
+		$details = '<p>' . sprintf(__('An Instagram feed on %s has not been viewed in the last 14 days. Due to Instagram data privacy rules, all data for this feed will be deleted in 7 days time.', 'instagram-feed'), $site_url) . '</p>';
 		$details .= '<p>' . __('To avoid automated data deletion, simply view the Instagram feed on your website within the next 7 days.', 'instagram-feed') . '</p>';
 
 		Email_Notification::send($title, $bold, $details);

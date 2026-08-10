@@ -174,7 +174,7 @@ class SBI_Settings_Tab
 				'moderationTypes' => [
 					'allow' => [
 						'label' => __('Allow List', 'instagram-feed'),
-						'description' => __('Hides post by default so you can select the ones you want to show', 'instagram-feed'),
+						'description' => __('Hides posts by default so you can select the ones you want to show', 'instagram-feed'),
 					],
 					'block' => [
 						'label' => __('Block List', 'instagram-feed'),

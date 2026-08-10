@@ -687,7 +687,7 @@ class SBI_Customize_Tab
 				'condition' => ['showheader' => [true]],
 				// 'conditionHide'       => true,
 				'label' => __('Show Bio Text', 'instagram-feed'),
-				'tooltip' => __('Use your own custom bio text in the feed header. This is automatically retrieved from Instagram for Business accounts, but it not available for Personal accounts.', 'instagram-feed'),
+				'tooltip' => __('Use your own custom bio text in the feed header. This is automatically retrieved from Instagram for Business accounts, but it is not available for Personal accounts.', 'instagram-feed'),
 				'stacked' => 'true',
 				'labelStrong' => 'true',
 				'options' => [
@@ -919,7 +919,7 @@ class SBI_Customize_Tab
 				'conditionHide' => true,
 				'stacked' => 'true',
 				'heading' => __('Resolution', 'instagram-feed'),
-				'description' => __('By default we auto-detect image width and fetch a optimal resolution.', 'instagram-feed'),
+				'description' => __('By default we auto-detect image width and fetch an optimal resolution.', 'instagram-feed'),
 				'options' => [
 					'auto' => __('Auto-detect (recommended)', 'instagram-feed'),
 					'thumb' => __('Thumbnail (150x150)', 'instagram-feed'),

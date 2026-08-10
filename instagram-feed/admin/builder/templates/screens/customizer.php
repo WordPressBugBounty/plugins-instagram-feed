@@ -4,5 +4,5 @@
 </div>
 <div v-html="feedStyleOutput != false ? feedStyleOutput : ''"></div>
 <script type="text/x-template" id="sbi-colorpicker-component">
-	<input type="text" v-bind:value="color" placeholder="Select">
+	<input type="text" v-bind:value="color" placeholder="Select" aria-label="<?php esc_attr_e('Color value', 'instagram-feed'); ?>">
 </script>

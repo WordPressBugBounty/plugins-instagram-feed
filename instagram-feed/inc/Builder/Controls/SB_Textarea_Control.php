@@ -42,6 +42,7 @@ class SB_Textarea_Control extends SB_Controls_Base
 		<div class="sb-control-textarea-ctn sbi-fb-fs">
 			<textarea class="sb-control-input-textrea sbi-fb-fs"
 					  v-model="<?php echo $controlEditingTypeModel ?>[control.id]"
+					  :aria-label="control.heading || control.label || 'Text'"
 					  :placeholder="control.placeholder ? control.placeholder : ''"
 					  @focusout.prevent.default="changeSettingValue(false,false,false, control.ajaxAction ? control.ajaxAction : false)"></textarea>
 		</div>

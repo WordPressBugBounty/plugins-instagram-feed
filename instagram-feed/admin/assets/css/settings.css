@@ -151,6 +151,22 @@
     width: 1px;
 }
 
+/* SMASH-1378 F-028: redirect focus ring from visually-hidden checkbox to
+   visible pill toggle. Box-shadow + transparent outline matches the unified
+   admin treatment in admin/builder/assets/css/global.css so the ring is
+   visually consistent with every other focusable element. */
+.sbi-checkbox input[type=checkbox]:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.sbi-checkbox input[type=checkbox]:focus-visible + .toggle-track {
+    outline: 2px solid transparent !important;
+    outline-offset: 0 !important;
+    box-shadow: 0 0 0 2px var(--sb-focus-ring) !important;
+    border-radius: 31px;
+}
+
 .toggle-track {
     width: 36px;
     height: 20px;
@@ -168,7 +184,7 @@
     position: absolute;
     left: 2px;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
-    transition: all .3s cubic-bezier(0.23, 1, 0.320, 1);
+    transition: all var(--sb-duration-300) cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .sbi-checkbox input[type=checkbox]:checked + .toggle-track .toggle-indicator {
@@ -231,7 +247,7 @@
 }
 
 .sb-form-field .sbi-textarea::placeholder {
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sb-form-field .sbi-textarea:focus {
@@ -256,7 +272,7 @@
     color: #141B38;
     letter-spacing: 0.2px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-btn:hover {
@@ -377,13 +393,13 @@
 }
 
 .sb-notification-ctn[data-active="hidden"] {
-    -webkit-animation: sbi-notification-hide .5s forwards linear;
-    animation: sbi-notification-hide .5s forwards linear;
+    -webkit-animation: sbi-notification-hide var(--sb-duration-500) forwards linear;
+    animation: sbi-notification-hide var(--sb-duration-500) forwards linear;
 }
 
 .sb-notification-ctn[data-active="shown"] {
-    -webkit-animation: sbi-notification-show .5s forwards linear;
-    animation: sbi-notification-show .5s forwards linear;
+    -webkit-animation: sbi-notification-show var(--sb-duration-500) forwards linear;
+    animation: sbi-notification-show var(--sb-duration-500) forwards linear;
 }
 
 @-webkit-keyframes sbi-notification-show {
@@ -569,7 +585,7 @@
     border: 1px solid #DCDDE1;
     position: relative;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: all var(--sb-duration-300) ease;
 }
 
 .sbi-fb-hd-btn:hover {
@@ -635,6 +651,22 @@
     z-index: -1;
 }
 
+/* Reset UA button defaults so <button class="tab"> renders as a tab strip, not a row of boxed buttons (Tabs-S follow-up).
+   NOTE: do NOT use `font: inherit` here — the `.sb-tabs-container .sb-tabs .tab` rule below sets explicit
+   font-size/font-weight, but `button.tab` has higher specificity than `.tab`, so `font: inherit` would win
+   and shrink labels to the parent's smaller font-size. We let the `.tab` rule define typography. */
+.sb-tabs-container .sb-tabs button.tab {
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: 0;
+    margin: 0;
+    color: inherit;
+    text-align: left;
+    box-shadow: none;
+    border-radius: 0;
+}
+
 .sb-tabs-container .sb-tabs .tab {
     position: relative;
     padding: 9px 25px 15px 25px;
@@ -642,12 +674,12 @@
     font-weight: 500;
     font-size: 16px;
     line-height: 160%;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     text-decoration: none;
     cursor: pointer;
-    -webkit-transition: linear 0.2s;
-    -ms-transition: linear 0.2s;
-    transition: linear 0.2s;
+    -webkit-transition: linear var(--sb-duration-200);
+    -ms-transition: linear var(--sb-duration-200);
+    transition: linear var(--sb-duration-200);
 }
 
 .sb-tabs-container .sb-tabs .tab:not(:last-child) {
@@ -665,17 +697,17 @@
     background-color: #0068A0;
     width: 200px;
     height: 2px;
-    transition: all 0.3s cubic-bezier(0.22, 0.51, 0.53, 0.88);
+    transition: all var(--sb-duration-300) cubic-bezier(0.22, 0.51, 0.53, 0.88);
 }
 
 .slide-fade-enter-active {
-    transition: all 0.3s ease;
+    transition: all var(--sb-duration-300) ease;
     position: absolute;
 }
 
 .slide-fade-leave-active {
     position: absolute;
-    transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+    transition: all var(--sb-duration-300) cubic-bezier(1, 0.5, 0.8, 1);
 }
 
 .slide-fade-enter,
@@ -745,7 +777,7 @@
 .sb-tab-content .sb-tab-box p {
     font-size: 14px;
     line-height: 160%;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     margin: 0px;
 }
 
@@ -768,7 +800,7 @@
 .sb-tab-content .sb-tab-box .tab-label .sb-help-text {
     font-size: 14px;
     line-height: 160%;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sb-tab-content .license-status {
@@ -1184,12 +1216,12 @@
 
 .sbi-btn[disabled="disabled"] {
     cursor: not-allowed;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     background: #F3F4F5;
 }
 
 .sbi-btn[disabled="disabled"]:hover {
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sbi-btn[disabled="disabled"]:not(.import-btn) .icon path {
@@ -1335,7 +1367,7 @@
 }
 
 .sbi-table tbody .sbi-input::placeholder {
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sbi-table tbody .sbi-input:focus {
@@ -1383,7 +1415,7 @@
 }
 
 .sb-feed-issue-box #report-emails::placeholder {
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sb-feed-issue-box .feed-issues-fields {
@@ -1525,7 +1557,7 @@
     color: #0068A0;
     background: #F9F9FA;
     font-weight: 400;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     border: 1px solid #E8E8EB;
 }
 
@@ -1627,7 +1659,7 @@
     margin-left: auto;
     border: 1px solid #D0D1D7;
     border-radius: 2px;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-fb-srcs-info-icon:hover {
@@ -1700,7 +1732,7 @@
 .sb-srcs-item-cog,
 .sb-srcs-item-angle-up {
     color: #434960;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     border-radius: 4px;
 }
 
@@ -1718,7 +1750,7 @@
 
 .sb-srcs-item-delete {
     color: #D72C2C;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     border-radius: 4px;
 }
 
@@ -1862,8 +1894,8 @@ Sources Instance Popup
     color: #141B38;
     border-radius: 2px;
     border: 1px solid #D8DADD;
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
     background: #fff;
 }
 
@@ -1883,8 +1915,8 @@ Sources Instance Popup
     left: 50%;
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
+    -webkit-transition: all var(--sb-duration-200) ease-in-out;
+    transition: all var(--sb-duration-200) ease-in-out;
 }
 
 .sbi-fb-tltp-elem span {
@@ -2049,7 +2081,7 @@ Sources Instance Popup
     align-items: center;
     padding: 11px 13px;
     border-bottom: 1px solid #DCDDE1;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-stck-el:hover {
@@ -2085,7 +2117,7 @@ Sources Instance Popup
     background: var(--cl-orange);
     color: #fff;
     position: relative;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-chevron {
@@ -2152,7 +2184,7 @@ Sources Instance Popup
     align-items: center;
     margin-left: 4px;
     border-radius: 2px;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-stck-flw-links svg {
@@ -2409,7 +2441,7 @@ Sources Instance Popup
     box-shadow: 0px 2px 5px rgba(60, 66, 87, 0.05), 0px 1px 1px rgba(0, 0, 0, 0.05), inset 0px -1px 1px rgba(0, 0, 0, 0.12);
     border-radius: 4px;
     padding: 7px 11px;
-    transition: all .2s ease-in;
+    transition: all var(--sb-duration-200) ease-in;
 }
 
 .sb-tab-content .sbi-uo-install-notice .sbi-tab-notice .sbi-notice-right .sbi-notice-learn-more:hover {

@@ -71,10 +71,10 @@
     -webkit-border-radius: 5px;
     border-radius: 5px;
 
-    -moz-transition: all 0.5s ease-in-out;
-    -webkit-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
+    -moz-transition: all var(--sb-duration-500) ease-in-out;
+    -webkit-transition: all var(--sb-duration-500) ease-in-out;
+    -o-transition: all var(--sb-duration-500) ease-in-out;
+    transition: all var(--sb-duration-500) ease-in-out;
 }
 
 #sbi_admin .sbi_admin_btn {
@@ -94,10 +94,10 @@
     background-color: #3880c4;
     color: #fff;
 
-    -moz-transition: all 0.1s ease-in-out;
-    -webkit-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
+    -moz-transition: all var(--sb-duration-100) ease-in-out;
+    -webkit-transition: all var(--sb-duration-100) ease-in-out;
+    -o-transition: all var(--sb-duration-100) ease-in-out;
+    transition: all var(--sb-duration-100) ease-in-out;
 }
 
 .sb_get_token .submit {
@@ -749,10 +749,10 @@
     -webkit-border-radius: 4px;
     border-radius: 4px;
 
-    -moz-transition: all 0.5s ease-in-out;
-    -webkit-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
+    -moz-transition: all var(--sb-duration-500) ease-in-out;
+    -webkit-transition: all var(--sb-duration-500) ease-in-out;
+    -o-transition: all var(--sb-duration-500) ease-in-out;
+    transition: all var(--sb-duration-500) ease-in-out;
 }
 
 #sbi_admin .sbi-pro-notice img {
@@ -762,10 +762,10 @@
 #sbi_admin .sbi-pro-notice:hover {
     opacity: 0.95;
 
-    -moz-transition: all 0.1s ease-in-out;
-    -webkit-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
+    -moz-transition: all var(--sb-duration-100) ease-in-out;
+    -webkit-transition: all var(--sb-duration-100) ease-in-out;
+    -o-transition: all var(--sb-duration-100) ease-in-out;
+    transition: all var(--sb-duration-100) ease-in-out;
 }
 
 /* Connected Accounts */
@@ -893,11 +893,11 @@
     background: #fff;
 
     -webkit-animation-name: sbi_flash;
-    -webkit-animation-duration: 700ms;
+    -webkit-animation-duration: var(--sb-duration-700);
     -webkit-animation-iteration-count: 1;
     -webkit-animation-timing-function: linear;
     -moz-animation-name: sbi_flash;
-    -moz-animation-duration: 700ms;
+    -moz-animation-duration: var(--sb-duration-700);
     -moz-animation-iteration-count: 1;
     -moz-animation-timing-function: linear;
 }
@@ -1673,11 +1673,11 @@
     border: 1px solid #ccc;
     background: rgba(255, 255, 255, 0.5);
     border-radius: 3px;
-    transition: opacity 0.5s;
+    transition: opacity var(--sb-duration-500);
 }
 
 #sbi_admin #sbi_admin_share_links.sbi_show {
-    transition: opacity 0.5s;
+    transition: opacity var(--sb-duration-500);
     opacity: 1;
 }
 
@@ -1778,7 +1778,7 @@
     padding: 7px;
     margin-bottom: 0;
     opacity: 1;
-    transition: all .3s ease-in-out;
+    transition: all var(--sb-duration-300) ease-in-out;
     max-height: 100px;
     overflow: hidden
 }
@@ -2184,7 +2184,7 @@
 
 #sbi-admin-about #sbi-admin-addons .addon-item .action-button .button:hover, #sbi-admin-about #sbi-admin-addons .addon-item .action-button .button:focus {
     background: #fafafa;
-    border-color: #999;
+    border-color: var(--sb-text-tertiary);
     color: #23282d
 }
 
@@ -2215,7 +2215,7 @@
 
 #sbi-admin-about #sbi-admin-addons .addon-item .action-button .button.button-secondary:hover, #sbi-admin-about #sbi-admin-addons .addon-item .action-button .button.button-secondary:focus {
     background: #fafafa;
-    border-color: #999;
+    border-color: var(--sb-text-tertiary);
     color: #23282d
 }
 
@@ -2462,7 +2462,7 @@
 }
 
 #sbi-admin-addons .addon-item .action-button button.status-download .fa {
-    color: #999
+    color: var(--sb-text-tertiary)
 }
 
 #sbi-admin-addons .addon-item .action-button button.disabled {
@@ -2503,7 +2503,7 @@
 }
 
 .sbi-admin-tabs li a:hover {
-    border-color: #999
+    border-color: var(--sb-text-tertiary)
 }
 
 .sbi-admin-tabs li a.active {
@@ -3112,10 +3112,10 @@
     position: relative;
     background-color: #0096CC;
     color: #0096CC;
-    -webkit-animation: sb-source-redirect 1s infinite linear alternate;
-    animation: sb-source-redirect 1s infinite linear alternate;
-    -webkit-animation-delay: .5s;
-    animation-delay: .5s;
+    -webkit-animation: sb-source-redirect var(--sb-duration-1000) infinite linear alternate;
+    animation: sb-source-redirect var(--sb-duration-1000) infinite linear alternate;
+    -webkit-animation-delay: var(--sb-duration-500);
+    animation-delay: var(--sb-duration-500);
 }
 
 .sbi-source-redirect-ld div:before,
@@ -3133,8 +3133,8 @@
     border-radius: 50px;
     background-color: #0096CC;
     color: #0096CC;
-    -webkit-animation: sb-source-redirect 1s infinite alternate;
-    animation: sb-source-redirect 1s infinite alternate;
+    -webkit-animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
+    animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
     -webkit-animation-delay: 0s;
     animation-delay: 0s;
 }
@@ -3146,10 +3146,10 @@
     border-radius: 50px;
     background-color: #0096CC;
     color: #0096CC;
-    -webkit-animation: sb-source-redirect 1s infinite alternate;
-    animation: sb-source-redirect 1s infinite alternate;
-    -webkit-animation-delay: 1s;
-    animation-delay: 1s;
+    -webkit-animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
+    animation: sb-source-redirect var(--sb-duration-1000) infinite alternate;
+    -webkit-animation-delay: var(--sb-duration-1000);
+    animation-delay: var(--sb-duration-1000);
 }
 
 
@@ -3196,7 +3196,7 @@
     padding: 7px;
     margin-bottom: 0;
     opacity: 1;
-    transition: all .3s ease-in-out;
+    transition: all var(--sb-duration-300) ease-in-out;
     max-height: 100px;
     overflow: hidden;
     background: #1B8A2A;
@@ -3262,7 +3262,7 @@
     font-size: 12px;
     line-height: 19px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     text-decoration: none;
 }
 
@@ -3407,7 +3407,7 @@
     font-size: 12px;
     line-height: 19px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     text-decoration: none;
     border: 1px solid #0068A0;
     margin-right: 8px;
@@ -4011,7 +4011,7 @@ body .sbi_review_step1_notice .sbi-btn-link:not(:last-child) {
     font-size: 12px;
     line-height: 19px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     text-decoration: none;
     border: 1px solid #0068A0;
     margin-right: 8px;
@@ -4202,7 +4202,7 @@ body .sbi_review_step1_notice .sbi-btn-link:not(:last-child) {
     height: 38px;
     padding: 8px 20px;
     box-sizing: border-box;
-    transition: all .15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     border-radius: 2px;
     width: 100%;
     margin-top: 28px;
@@ -4245,7 +4245,7 @@ body .sbi_review_step1_notice .sbi-btn-link:not(:last-child) {
 }
 
 .sbi-install-plugin-btn:disabled {
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
     background: #E8E8EB !important;
     cursor: not-allowed;
 }

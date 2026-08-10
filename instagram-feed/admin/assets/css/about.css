@@ -173,7 +173,7 @@
     border: 1px solid #DCDDE1;
     position: relative;
     text-decoration: none;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-fb-hd-btn:focus {
@@ -220,7 +220,7 @@
 .sbi-section-header p {
     font-size: 13px;
     line-height: 18px;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
     margin: 0;
 }
 
@@ -270,7 +270,7 @@
     letter-spacing: 0.2px;
     cursor: pointer;
     text-decoration: none;
-    transition: all 0.15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     box-shadow: 0px -1px 1px 0px #0000001F inset;
 }
 
@@ -483,7 +483,7 @@
     margin: 0;
     font-size: 13px;
     line-height: 18px;
-    color: #8C8F9A;
+    color: var(--sb-text-secondary);
 }
 
 .sb-recommended-plugins .sb-plugins-box .sb-box-description {
@@ -599,7 +599,7 @@
     align-items: center;
     padding: 11px 13px;
     border-bottom: 1px solid #DCDDE1;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
     font-size: 12px;
 }
 
@@ -636,7 +636,7 @@
     background: var(--cl-orange);
     color: #fff;
     position: relative;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
     font-weight: 600;
 }
 
@@ -704,7 +704,7 @@
     align-items: center;
     margin-left: 4px;
     border-radius: 2px;
-    transition: background .15s ease-in-out;
+    transition: background var(--sb-duration-150) ease-in-out;
 }
 
 .sbi-stck-flw-links svg {

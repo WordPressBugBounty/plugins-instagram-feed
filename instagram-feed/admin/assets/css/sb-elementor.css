@@ -204,7 +204,7 @@
     height: 38px;
     padding: 8px 20px;
     box-sizing: border-box;
-    transition: all .15s ease-in-out;
+    transition: all var(--sb-duration-150) ease-in-out;
     border-radius: 2px;
     width: 100%;
     margin-top: 28px;
@@ -216,7 +216,7 @@
 }
 
 .sb-install-plugin-body .sb-install-plugin-content .sb-btn-orange:disabled {
-    color: #8C8F9A !important;
+    color: var(--sb-text-secondary) !important;
     background: #E8E8EB !important;
     cursor: not-allowed;
 }

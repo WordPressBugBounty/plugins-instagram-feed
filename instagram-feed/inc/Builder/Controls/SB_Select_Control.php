@@ -41,6 +41,7 @@ class SB_Select_Control extends SB_Controls_Base
 		?>
 		<div class="sb-control-input-ctn sbi-fb-fs">
 			<select class="sb-control-input sbi-fb-fs" v-model="<?php echo $controlEditingTypeModel ?>[control.id]"
+					:aria-label="control.heading || control.label || 'Select option'"
 					@change.prevent.default="changeSettingValue(control.id,false,false, control.ajaxAction ? control.ajaxAction : false)">
 				<option v-for="(opName, opValue) in control.options" :value="opValue">{{opName}}</option>
 			</select>

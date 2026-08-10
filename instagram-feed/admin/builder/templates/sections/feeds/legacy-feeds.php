@@ -12,21 +12,21 @@
                     <div v-html="svgIcons['information']"></div>
                 </div>
                 <div class="sbi-fb-onbrd-tltp-elem" :data-active="viewsActive.enabledToolTip == this">
-                    <div class="sbi-fb-popup-cls" @click.prevent.default="closeTooltipBig()">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <button type="button" class="sbi-fb-popup-cls" aria-label="<?php esc_attr_e( 'Close', 'instagram-feed' ); ?>" @click.prevent.default="closeTooltipBig()">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="M11.8346 1.34175L10.6596 0.166748L6.0013 4.82508L1.34297 0.166748L0.167969 1.34175L4.8263 6.00008L0.167969 10.6584L1.34297 11.8334L6.0013 7.17508L10.6596 11.8334L11.8346 10.6584L7.1763 6.00008L11.8346 1.34175Z"
                                   fill="#141B38"/>
                         </svg>
-                    </div>
+                    </button>
                     <div class="sbi-fb-onbrd-tltp-txt sb-small-p sb-lighter"
                          v-for="legFeedTltp in allFeedsScreen.legacyFeeds.toolTipExpanded" v-html="legFeedTltp">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
                                   fill="#141B38"/>
                         </svg>
                     </div>
                     <div class="sb-pointer">
-                        <svg width="21" height="11" viewBox="0 0 21 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="21" height="11" viewBox="0 0 21 11" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="M8.59642 0.811655C9.39546 -0.135356 10.8545 -0.135357 11.6536 0.811654L20.25 11H0L8.59642 0.811655Z"
                                   fill="white"/>
                         </svg>
@@ -96,19 +96,19 @@
                     <td class="sbi-fd-lst-actions sbi-fd-lst-dimmed sbi-fb-onbrd-tltp-parent" data-tltp-pos="right"
                         @click.prevent.default="openTooltipBig()">
                         <div class="sbi-fb-onbrd-tltp-elem sbi-fb-onbrd-tltp-elem-2" data-active="false">
-                            <div class="sbi-fb-popup-cls" @click.prevent.default="closeTooltipBig()">
+                            <button type="button" class="sbi-fb-popup-cls" aria-label="<?php esc_attr_e( 'Close', 'instagram-feed' ); ?>" @click.prevent.default="closeTooltipBig()">
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
+                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                     <path d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
                                           fill="#141B38"/>
                                 </svg>
-                            </div>
+                            </button>
                             <div class="sbi-fb-onbrd-tltp-txt sb-small-p sb-lighter"
                                  v-for="legFeedTltp in allFeedsScreen.legacyFeeds.toolTipExpandedAction"
                                  v-html="legFeedTltp"></div>
                             <div class="sb-pointer">
                                 <svg width="21" height="11" viewBox="0 0 21 11" fill="none"
-                                     xmlns="http://www.w3.org/2000/svg">
+                                     xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                     <path d="M8.59642 0.811655C9.39546 -0.135356 10.8545 -0.135357 11.6536 0.811654L20.25 11H0L8.59642 0.811655Z"
                                           fill="white"/>
                                 </svg>
@@ -134,11 +134,11 @@
              :data-active="viewsActive.legacyFeedsShown" @click.prevent.default="activateView('legacyFeedsShown')">
             <span>{{viewsActive.legacyFeedsShown ? allFeedsScreen.legacyFeeds.hide : allFeedsScreen.legacyFeeds.show}}</span>
             <svg v-if="! viewsActive.legacyFeedsShown" width="11" height="7" viewBox="0 0 11 7" fill="none"
-                 xmlns="http://www.w3.org/2000/svg">
+                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                 <path d="M1.675 0.158447L5.5 3.97511L9.325 0.158447L10.5 1.33345L5.5 6.33345L0.5 1.33345L1.675 0.158447Z"
                       fill="#004D77"/>
             </svg>
-            <svg v-else width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg v-else width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                 <path d="M9.325 6.84167L5.5 3.02501L1.675 6.84168L0.5 5.66668L5.5 0.666676L10.5 5.66668L9.325 6.84167Z"
                       fill="#0068A0"/>
             </svg>

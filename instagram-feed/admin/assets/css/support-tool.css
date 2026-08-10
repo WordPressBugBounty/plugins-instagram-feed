@@ -11,7 +11,7 @@
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
-    transition: 0.3s;
+    transition: var(--sb-duration-300);
     font-size: 16px;
     font-weight: 600;
     color: #3c434a;

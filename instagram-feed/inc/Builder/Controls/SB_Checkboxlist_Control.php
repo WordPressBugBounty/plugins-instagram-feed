@@ -32,18 +32,23 @@ class SB_Checkboxlist_Control extends SB_Controls_Base
 	/**
 	 * Output Control
 	 *
-	 * @return HTML
+	 * @return void
 	 * @since 4.0
 	 * @access public
 	 */
 	public function get_control_output($controlEditingTypeModel)
 	{
 		?>
-		<div class="sb-control-checkbox-ctn sbi-fb-fs" v-for="option in control.options"
-			 @click.prevent.default="changeCheckboxListValue(control.id, option.value)">
-			<div class="sb-control-checkbox"
-				 :data-active="<?php echo $controlEditingTypeModel ?>[control.id].includes(option.value)"></div>
-			<div class="sb-control-label sb-small-p sb-dark-text" v-html="option.label"></div>
+		<div role="group" :aria-label="control.heading || control.label">
+			<button type="button" class="sb-control-checkbox-ctn sbi-fb-fs" v-for="option in control.options"
+					role="checkbox"
+					:aria-checked="<?php echo $controlEditingTypeModel ?>[control.id].includes(option.value) ? 'true' : 'false'"
+					:aria-label="option.label"
+					@click.prevent="changeCheckboxListValue(control.id, option.value)">
+				<span class="sb-control-checkbox" aria-hidden="true"
+					  :data-active="<?php echo $controlEditingTypeModel ?>[control.id].includes(option.value)"></span>
+				<span class="sb-control-label sb-small-p sb-dark-text" aria-hidden="true" v-html="option.label"></span>
+			</button>
 		</div>
 		<?php
 	}

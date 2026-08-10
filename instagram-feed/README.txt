@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 7.0
-Stable tag: 6.11.4
+Stable tag: 6.12.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,11 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.12.0 =
+* New - The feed builder and your feeds are now far easier to use with a keyboard and a screen reader. Controls are properly labelled and reachable by Tab, popups can be closed with Escape, feeds announce newly loaded posts, and focus outlines are visible throughout.
+* Fix - Corrected a number of typos and grammatical errors in text throughout the settings and admin screens, including three places that referred to "tweets" instead of Instagram posts.
+* Fix - Plugin security hardening.
 
 = 6.11.4 =
 * New - Photos, Videos, and Reels filter toggles are now available in Instagram Feed Free.

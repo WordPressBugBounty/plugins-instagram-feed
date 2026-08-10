@@ -1,4 +1,4 @@
-<div v-if="selected === 'app-3'">
+<div v-if="selected === 'app-3'" id="sbi-panel-advanced" role="tabpanel" aria-labelledby="sbi-settings-tab-advanced" tabindex="0">
     <div class="sb-tab-header">
         <h3>{{advancedTab.optimizeBox.header}}</h3>
         <button type="button" class="sbi-btn ml-10 optimize-image-btn" @click="clearImageResizeCache()">
@@ -15,7 +15,8 @@
             <div class="sb-form-field">
                 <label for="enable-resize" class="sbi-checkbox">
                     <input type="checkbox" name="enable-resize" id="enable-resize"
-                           v-model="model.advanced.sbi_enable_resize">
+                           v-model="model.advanced.sbi_enable_resize"
+                           :aria-label="advancedTab.optimizeBox.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -42,7 +43,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="legacy-css-settings" class="sbi-checkbox">
-                    <input type="checkbox" id="legacy-css-settings" v-model="model.advanced.enqueue_legacy_css">
+                    <input type="checkbox" id="legacy-css-settings" v-model="model.advanced.enqueue_legacy_css"
+                           :aria-label="advancedTab.legacyCSSBox.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -59,7 +61,8 @@
         <div class="sbi-tab-form-field">
             <div class="sb-form-field">
                 <label for="ajax-box-settings" class="sbi-checkbox">
-                    <input type="checkbox" id="ajax-box-settings" v-model="model.advanced.sbi_ajax">
+                    <input type="checkbox" id="ajax-box-settings" v-model="model.advanced.sbi_ajax"
+                           :aria-label="advancedTab.ajaxBox.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -94,7 +97,8 @@
             <div class="sb-form-field">
                 <label for="usage-tracking" class="sbi-checkbox">
                     <input type="checkbox" name="usage-tracking" id="usage-tracking"
-                           v-model="model.advanced.usage_tracking">
+                           v-model="model.advanced.usage_tracking"
+                           :aria-label="advancedTab.usageBox.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -113,7 +117,8 @@
             <div class="sb-form-field">
                 <label for="sb_ajax_initial" class="sbi-checkbox">
                     <input type="checkbox" name="sb_ajax_initial" id="sb_ajax_initial"
-                           v-model="model.advanced.sb_ajax_initial">
+                           v-model="model.advanced.sb_ajax_initial"
+                           :aria-label="advancedTab.ajaxInitial.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -133,7 +138,8 @@
             <div class="sb-form-field">
                 <label for="enqueue_js_in_head" class="sbi-checkbox">
                     <input type="checkbox" name="enqueue_js_in_head" id="enqueue_js_in_head"
-                           v-model="model.advanced.sbi_enqueue_js_in_head">
+                           v-model="model.advanced.sbi_enqueue_js_in_head"
+                           :aria-label="advancedTab.enqueueHead.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -153,7 +159,8 @@
             <div class="sb-form-field">
                 <label for="enqueue_css_in_shortcode" class="sbi-checkbox">
                     <input type="checkbox" name="enqueue_css_in_shortcode" id="enqueue_css_in_shortcode"
-                           v-model="model.advanced.sbi_enqueue_css_in_shortcode">
+                           v-model="model.advanced.sbi_enqueue_css_in_shortcode"
+                           :aria-label="advancedTab.enqueueShortcode.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -173,7 +180,8 @@
             <div class="sb-form-field">
                 <label for="enable_js_image_loading" class="sbi-checkbox">
                     <input type="checkbox" name="enable_js_image_loading" id="enable_js_image_loading"
-                           v-model="model.advanced.sbi_enable_js_image_loading">
+                           v-model="model.advanced.sbi_enable_js_image_loading"
+                           :aria-label="advancedTab.jsImages.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -194,7 +202,8 @@
             <div class="sb-form-field">
                 <label for="disable-admin-error" class="sbi-checkbox">
                     <input type="checkbox" name="disable-admin-error" id="disable-admin-error"
-                           v-model="model.advanced.enable_admin_notice">
+                           v-model="model.advanced.enable_admin_notice"
+                           :aria-label="advancedTab.adminErrorBox.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -214,7 +223,8 @@
             <div class="sb-form-field">
                 <label for="enable-email-report" class="sbi-checkbox">
                     <input type="checkbox" name="enable-email-report" id="enable-email-report"
-                           v-model="model.advanced.enable_email_report">
+                           v-model="model.advanced.enable_email_report"
+                           :aria-label="advancedTab.feedIssueBox.title">
                     <span class="toggle-track">
                         <div class="toggle-indicator"></div>
                     </span>
@@ -224,7 +234,8 @@
                         {{advancedTab.feedIssueBox.sendReport}}
                     </span>
                     <select id="sbi-send-report" class="sbi-select size-sm mr-3"
-                            v-model="model.advanced.email_notification">
+                            v-model="model.advanced.email_notification"
+                            :aria-label="advancedTab.feedIssueBox.sendReport">
                         <option v-for="(name, key) in advancedTab.feedIssueBox.weekDays" :value="name.val">
                             {{name.label}}
                         </option>
@@ -234,7 +245,8 @@
                     </span>
                     <input type="text" name="report-emails" id="report-emails" class="sbi-form-field"
                            :placeholder="advancedTab.feedIssueBox.placeholder"
-                           v-model="model.advanced.email_notification_addresses">
+                           v-model="model.advanced.email_notification_addresses"
+                           :aria-label="advancedTab.feedIssueBox.emailLabel">
                 </div>
                 <div class="help-text">
                     <span v-html="advancedTab.feedIssueBox.helpText"></span>

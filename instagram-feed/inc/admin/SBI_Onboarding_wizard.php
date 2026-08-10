@@ -206,7 +206,7 @@ class SBI_Onboarding_wizard extends SBI_Feed_Builder
 					'id' => 'success-page',
 					'template' => SBI_BUILDER_DIR . 'templates/onboarding/success-page.php',
 					'heading' => __('Awesome. You are all set up!', 'instagram-feed'),
-					'description' => __('Here\'s an overview of everything that is setup', 'instagram-feed'),
+					'description' => __('Here\'s an overview of everything that is set up', 'instagram-feed'),
 					'upgradeContent' => [
 						'heading' => __('Upgrade to unlock hashtag feeds, tagged feeds, a popup lightbox and more', 'instagram-feed'),
 						'description' => __('To unlock these features and much more, upgrade to Pro and enter your license key below.', 'instagram-feed'),

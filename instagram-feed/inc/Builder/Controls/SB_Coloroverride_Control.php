@@ -46,9 +46,9 @@ class SB_Coloroverride_Control extends SB_Controls_Base
 				<div class="sb-control-coloroverride-swatch"
 					 :style="'background:'+<?php echo $controlEditingTypeModel ?>[control.id]"></div>
 			</div>
-			<div class="sb-control-colorpicker-btn" @click.prevent.default="resetColorOverride(control.id)">
+			<button type="button" class="sb-control-colorpicker-btn" @click.prevent.default="resetColorOverride(control.id)">
 				{{genericText.reset}}
-			</div>
+			</button>
 		</div>
 		<?php
 	}
