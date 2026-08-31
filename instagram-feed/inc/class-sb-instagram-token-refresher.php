@@ -136,21 +136,27 @@ class SB_Instagram_Token_Refresher
 			$this->report['error_log'] = $connection;
 		}
 
+		$this->record_refresh_failure();
+
 		return false;
 	}
 
 	/**
-	 * Updates data related to when the last attempt was made to refresh
-	 * the access token for a connected account and saves it in the database.
+	 * Records when the refresh attempt was made, before it is made,
+	 * so repeated attempts are throttled even when they fail.
 	 */
 	public function update_last_attempt_timestamp()
 	{
-		sbi_update_connected_account($this->connected_account['user_id'], array('last_updated' => time()));
+		$this->update_refresh_state(array('last_refresh_attempt' => sbi_get_current_timestamp()));
 	}
 
 	/**
 	 * Updates data related to the renewed access token
 	 * for a connected account and saves it in the database.
+	 *
+	 * The successful-refresh timestamp and the token data are saved
+	 * in a single database write so a partial store can't record a
+	 * success without the rotated token.
 	 *
 	 * @param $token_data
 	 */
@@ -163,7 +169,109 @@ class SB_Instagram_Token_Refresher
 			'access_token' => $token_data['access_token'],
 			'expires' => date('Y-m-d H:i:s', $expires_timestamp),
 		);
-		sbi_update_connected_account($this->connected_account['user_id'], $to_update);
+		$this->update_refresh_state(
+			array(
+				'last_refresh_success' => sbi_get_current_timestamp(),
+				'refresh_failure_count' => 0,
+				'last_refresh_error' => false,
+			),
+			$to_update
+		);
+	}
+
+	/**
+	 * Records a failed refresh attempt so repeated failures are
+	 * distinguishable from healthy refreshes when inspecting stored state.
+	 */
+	private function record_refresh_failure()
+	{
+		$info = $this->get_source_info();
+		$failure_count = isset($info['refresh_failure_count']) ? (int)$info['refresh_failure_count'] + 1 : 1;
+
+		$this->update_refresh_state(
+			array(
+				'refresh_failure_count' => $failure_count,
+				'last_refresh_error' => array(
+					'time' => sbi_get_current_timestamp(),
+					'reason' => isset($this->report['reason']) ? $this->report['reason'] : '',
+					'code' => $this->get_last_error_code(),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Returns the connected account's stored info data as an array,
+	 * an empty array when none is stored, false when a non-empty blob
+	 * can't be read (an unreadable blob must never be overwritten),
+	 * or null when the source is not in the database.
+	 *
+	 * @return array|false|null
+	 */
+	private function get_source_info()
+	{
+		$results = InstagramFeed\Builder\SBI_Db::source_query(array('id' => $this->connected_account['user_id']));
+
+		if (empty($results)) {
+			return null;
+		}
+
+		if (empty($results[0]['info'])) {
+			return array();
+		}
+
+		$encryption = new SB_Instagram_Data_Encryption();
+		$decrypted = $encryption->decrypt($results[0]['info']);
+		// A legacy blob may be stored as plain JSON, which decrypt() rejects.
+		$raw = !empty($decrypted) ? $decrypted : $results[0]['info'];
+		$info = json_decode($raw, true);
+
+		return is_array($info) ? $info : false;
+	}
+
+	/**
+	 * Merges refresh-health values into the connected account's stored
+	 * info data and saves it, along with any column changes, in a single
+	 * database write. Setting a value to false removes the key.
+	 *
+	 * A no-op when the source is not in the database yet (a refresh
+	 * attempted at connect time), matching how updates behaved before
+	 * refresh state was tracked. When the stored info blob can't be
+	 * read, it is left untouched — column changes (a rotated token and
+	 * its expiry) are still saved so a successful refresh is never lost,
+	 * and the row's last_updated still advances so the attempt throttle
+	 * keeps working.
+	 *
+	 * @param array $refresh_state Refresh-health keys to merge into the info data.
+	 * @param array $columns Source table column values to save in the same write.
+	 */
+	private function update_refresh_state($refresh_state, $columns = array())
+	{
+		$info = $this->get_source_info();
+
+		if (is_null($info)) {
+			return;
+		}
+
+		$to_update = array_merge(
+			$columns,
+			array(
+				'id' => $this->connected_account['user_id'],
+			)
+		);
+
+		if (false !== $info) {
+			foreach ($refresh_state as $key => $value) {
+				if (false === $value) {
+					unset($info[$key]);
+				} else {
+					$info[$key] = $value;
+				}
+			}
+			$to_update['info'] = $info;
+		}
+
+		InstagramFeed\Builder\SBI_Source::update_or_insert($to_update);
 	}
 
 	/**

@@ -17,6 +17,57 @@ if (!defined('ABSPATH')) {
 class SB_Instagram_Display_Elements
 {
 	/**
+	 * Customizer-only `v-pre` attribute.
+	 *
+	 * The customizer preview compiles the server-rendered feed HTML as a runtime
+	 * Vue template, so any Vue mustache (`{{ }}`) that survives inside an
+	 * API-derived text node would be evaluated as JavaScript. Emitting `v-pre`
+	 * on the text-bearing element tells Vue to skip compilation of that element
+	 * (and its children), rendering mustaches as literal text. On the front end
+	 * there is no Vue and `sbi_doing_customizer()` is false, so this returns an
+	 * empty string and the output is unchanged. [SMASH-1916]
+	 *
+	 * @param array $settings The settings array for the feed.
+	 *
+	 * @return string ' v-pre' in the customizer, '' otherwise.
+	 */
+	public static function vue_pre_attr($settings)
+	{
+		return sbi_doing_customizer($settings) ? ' v-pre' : '';
+	}
+
+	/**
+	 * Customizer-only opening `<span v-pre>` wrapper.
+	 *
+	 * Used where the untrusted text lives inside an element that itself carries
+	 * a Vue directive (v-html, v-if, :data-*) — putting `v-pre` on that element
+	 * would disable its directive, so instead the echo is wrapped in a dedicated
+	 * `<span v-pre>`. Both the tags AND the directive are gated on the
+	 * customizer, so the front end (no Vue) emits nothing extra and output is
+	 * byte-identical. Pair with vue_pre_close(). [SMASH-1916]
+	 *
+	 * @param array $settings The settings array for the feed.
+	 *
+	 * @return string '<span v-pre>' in the customizer, '' otherwise.
+	 */
+	public static function vue_pre_open($settings)
+	{
+		return sbi_doing_customizer($settings) ? '<span v-pre>' : '';
+	}
+
+	/**
+	 * Customizer-only closing `</span>` for vue_pre_open().
+	 *
+	 * @param array $settings The settings array for the feed.
+	 *
+	 * @return string '</span>' in the customizer, '' otherwise.
+	 */
+	public static function vue_pre_close($settings)
+	{
+		return sbi_doing_customizer($settings) ? '</span>' : '';
+	}
+
+	/**
 	 * Images are hidden initially with the new/transition classes
 	 * except if the js image loading is disabled using the plugin
 	 * settings
@@ -1201,7 +1252,7 @@ class SB_Instagram_Display_Elements
 
 		$caption = self::sanitize_caption($caption);
 
-		return ' ' . self::display_vue_condition('showcaption') . ' v-html="$parent.getPostCaption(\'' . htmlspecialchars($caption) . '\', ' . $post_id . ')"';
+		return ' ' . self::display_vue_condition('showcaption') . ' v-html="$parent.getPostCaption(\'' . htmlspecialchars( str_replace('\\', '\\\\', $caption) ) . '\', ' . $post_id . ')"';
 	}
 
 	/**
@@ -1402,5 +1453,30 @@ class SB_Instagram_Display_Elements
 			return self::create_condition_vue($customizer, '!$parent.getModerationShoppableMode');
 		}
 		return '';
+	}
+
+	/**
+	 * A11Y: tabindex="-1" for feed links that are decorative inside the customizer preview.
+	 *
+	 * The feed preview rendered inside the customizer is a live copy of the front-end feed,
+	 * sitting inside an aria-hidden="true" container so screen readers don't announce the feed
+	 * twice. aria-hidden over keyboard-focusable content is a WCAG 4.1.2 failure (axe:
+	 * aria-hidden-focus), so nothing under that container may be a tab stop. Its links (view on
+	 * Instagram, header link, follow button, load more) also duplicate controls the customizer
+	 * sidebar already owns, so tabbing through the sidebar should never wander into the preview.
+	 *
+	 * They stay mouse-operable: tabindex="-1" removes an element from the tab order without
+	 * blocking clicks, which is what the preview's lightbox-jump interactions rely on.
+	 *
+	 * Returns an empty string outside the customizer so the front-end tab order is untouched.
+	 *
+	 * @param array $settings The settings array for the feed.
+	 *
+	 * @return string ' tabindex="-1"' in the customizer, '' otherwise.
+	 * @since 6.12.1
+	 */
+	public static function get_customizer_decorative_tabindex($settings)
+	{
+		return sbi_doing_customizer($settings) ? ' tabindex="-1"' : '';
 	}
 }

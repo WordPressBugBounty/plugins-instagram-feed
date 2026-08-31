@@ -74,7 +74,9 @@ class SB_Colorpicker_Control extends SB_Controls_Base
 				</button>
 			</div>
 
-			<button type="button" class="sb-control-colorpicker-btn" v-if="control.pickerType == 'reset'">{{genericText.reset}}</button>
+			<button type="button" class="sb-control-colorpicker-btn" v-if="control.pickerType == 'reset'"
+				 @click.stop.prevent="toggleColorPickerPospup(control.id)"
+				 @keydown.esc.prevent="customizerScreens.activeColorPicker == control.id ? hideColorPickerPospup(control.id) : null">{{genericText.reset}}</button>
 		</div>
 		<?php
 	}

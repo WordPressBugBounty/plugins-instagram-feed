@@ -44,7 +44,7 @@ $header_link_title = SB_Instagram_Display_Elements::get_header_link_title($setti
 <div<?php echo $header_classes; ?> <?php echo $header_atts; ?>>
 	<a class="sbi_header_link" target="_blank"
 	   aria-label="<?php echo esc_attr(sprintf(__('%s on Instagram', 'instagram-feed'), $username)); ?>"
-	   rel="nofollow noopener"<?php echo $header_link ?><?php echo $header_link_title ?>>
+	   rel="nofollow noopener"<?php echo $header_link ?><?php echo $header_link_title ?><?php echo SB_Instagram_Display_Elements::get_customizer_decorative_tabindex($settings); ?>>
 		<div<?php echo $header_text_class; ?>>
 			<div class="sbi_header_img"<?php echo $header_image_atts; ?>>
 				<?php if ($avatar !== '' || $doing_cutomizer) : ?>
@@ -58,7 +58,7 @@ $header_link_title = SB_Instagram_Display_Elements::get_header_link_title($setti
 			</div>
 
 			<div class="sbi_feedtheme_header_text">
-				<h3<?php echo $header_text_color_style . $header_heading_attribute; ?>><?php echo esc_html($username); ?></h3>
+				<h3<?php echo $header_text_color_style . $header_heading_attribute; ?>><?php echo SB_Instagram_Display_Elements::vue_pre_open($settings); ?><?php echo esc_html($username); ?><?php echo SB_Instagram_Display_Elements::vue_pre_close($settings); ?></h3>
 				<?php if ($should_show_bio) : ?>
 					<p class="sbi_bio"<?php echo $header_text_color_style . $bio_attribute; ?>><?php echo str_replace('&lt;br /&gt;', '<br>', esc_html(nl2br($bio))); ?></p>
 				<?php endif; ?>

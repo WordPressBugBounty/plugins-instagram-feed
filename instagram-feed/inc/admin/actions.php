@@ -283,10 +283,131 @@ function sbi_connect_new_account($access_token, $account_id)
 }
 
 add_action('admin_init', 'sbi_admin_error_notices');
+add_action('admin_init', 'sbi_backup_cache_staleness_notice');
+
+/**
+ * Registers (or clears) the backup-cache staleness notice.
+ *
+ * Rendered on every admin page — the whole point is catching a dead feed
+ * without the owner opening this plugin's settings screen. Type `error` is
+ * deliberate: SBNotices drops `warning`/`information` notices whenever the
+ * plugin has admin errors, which is precisely when this notice matters.
+ *
+ * @since SMASH-1808
+ */
+function sbi_backup_cache_staleness_notice()
+{
+	global $sbi_notices;
+
+	$state = \InstagramFeed\BackupCacheMonitor::evaluate();
+	$previous = \InstagramFeed\BackupCacheMonitor::get_registered_notice();
+	$current_id = $state['tier'] > 0 ? \InstagramFeed\BackupCacheMonitor::notice_id($state['tier']) : '';
+
+	// Remove anything that is not the current notice. The two well-known ids
+	// are always swept — the stored id can be lost to option-corruption
+	// healing, and an orphaned error notice would otherwise persist forever.
+	$known_ids = array_unique(array_filter(array(
+		$previous['id'],
+		\InstagramFeed\BackupCacheMonitor::NOTICE_ID,
+		\InstagramFeed\BackupCacheMonitor::notice_id(2),
+	)));
+	foreach ($known_ids as $known_id) {
+		if ($known_id !== $current_id) {
+			$sbi_notices->remove_notice($known_id);
+		}
+	}
+
+	// SBNotices ignores add_notice for an existing id, so when the rendered
+	// numbers move (day 7 -> day 8) the notice is re-added with fresh copy.
+	// Dismissals live in per-user meta keyed on the id and are unaffected.
+	if ($current_id === $previous['id']
+		&& ($state['worst_days'] !== $previous['days'] || $state['feed_count'] !== $previous['feeds'])
+	) {
+		$sbi_notices->remove_notice($current_id);
+	}
+
+	\InstagramFeed\BackupCacheMonitor::set_registered_notice($current_id, $state['worst_days'], $state['feed_count']);
+
+	if ('' === $current_id) {
+		return;
+	}
+
+	if ($state['tier'] >= 2) {
+		$title = sprintf(
+			__('Action needed: your Instagram feed has been showing old posts for %d days', 'instagram-feed'),
+			$state['worst_days']
+		);
+		$message = __('Instagram Feed has not been able to get new posts from Instagram for a long time, so visitors are seeing an old saved copy of your feed. Your website looks normal, which makes this easy to miss — but new Instagram posts will not appear until the connection is fixed.', 'instagram-feed');
+	} else {
+		$title = sprintf(
+			__('Your Instagram feed has not updated in %d days', 'instagram-feed'),
+			$state['worst_days']
+		);
+		$message = __('Instagram Feed is showing visitors a saved copy of your feed because it cannot get new posts from Instagram. This usually means the connection to Instagram needs attention.', 'instagram-feed');
+	}
+
+	if ($state['feed_count'] > 1) {
+		$message .= ' ' . sprintf(
+			__('%d feeds on this site are affected.', 'instagram-feed'),
+			$state['feed_count']
+		);
+	}
+
+	$sbi_notices->add_notice(
+		$current_id,
+		'error',
+		array(
+			'class' => 'sbi-admin-notices sbi-admin-notices-spaced-p',
+			'title' => array(
+				'text' => $title,
+				'class' => 'sb-notice-title',
+				'tag' => 'h3',
+			),
+			'message' => '<p>' . $message . '</p>',
+			'dismissible' => true,
+			'dismiss' => array(
+				'class' => 'sbi-notice-dismiss',
+				'icon' => SBI_PLUGIN_URL . 'admin/assets/img/sbi-dismiss-icon.svg',
+				'tag' => 'a',
+				'href' => array(
+					// Keyed to the id actually rendered, never a literal: the
+					// tier 2 id rotates weekly, and SBNotices resolves the
+					// dismissal by looking up this value in its notice array.
+					// A hardcoded id would dismiss the wrong notice or, once
+					// the week rolled over, silently nothing at all.
+					'args' => array(
+						'sb-dismiss-notice' => $current_id,
+					),
+					'action' => 'sb_dismiss_notice_nonce',
+					'nonce' => '_sb_notice_nonce',
+				),
+			),
+			'capability' => 'manage_options',
+			'priority' => 2,
+			'buttons' => array(
+				array(
+					'text' => __('Check my feed connection', 'instagram-feed'),
+					'url' => admin_url('admin.php?page=sbi-settings'),
+					'class' => 'sbi-btn-blue sbi-notice-btn',
+					'tag' => 'a',
+				),
+			),
+			'buttons_wrap_start' => '<p class="sbi-error-directions">',
+			'buttons_wrap_end' => '</p>',
+			'icon' => array(
+				'src' => SBI_PLUGIN_URL . 'admin/assets/img/sbi-error.svg',
+				'wrap' => '<span class="sb-notice-icon sb-error-icon"><img {src} {alt}></span>',
+				'alt' => '',
+			),
+			'wrap_schema' => '<div {id} {class}>{icon}<div class="sbi-notice-body">{title}{message}</div>{dismiss}{buttons}</div>',
+		)
+	);
+}
 
 function sbi_admin_error_notices()
 {
 	global $sb_instagram_posts_manager;
+	global $sbi_notices;
 
 	if (isset($_GET['page']) && in_array($_GET['page'], array('sbi-settings'), true)) {
 		$errors = $sb_instagram_posts_manager->get_errors();
@@ -369,6 +490,15 @@ function sbi_admin_error_notices()
 			}
 		}
 
+		// SBNotices ignores add_notice for an id that already exists, so the
+		// critical-error notice would keep its FIRST copy even after the error's
+		// routing changes (a token error later re-classified, or the copy the
+		// per-cause routing produces after a plugin update). That let the banner
+		// show stale text — e.g. a "7-day data deletion" warning when the current
+		// error no longer warrants it. Remove it first so it is rebuilt from the
+		// CURRENT error state on each load (and cleared when no critical error
+		// remains) — same remove-before-add the staleness notice already uses.
+		$sbi_notices->remove_notice('critical_error');
 		$critical_errors = $sb_instagram_posts_manager->get_critical_errors();
 		if ($sb_instagram_posts_manager->are_critical_errors()) {
 			addErrorNotice(

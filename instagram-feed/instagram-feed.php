@@ -4,7 +4,7 @@
 Plugin Name: Smash Balloon Instagram Feed
 Plugin URI: https://smashballoon.com/instagram-feed
 Description: Display beautifully clean, customizable, and responsive Instagram feeds.
-Version: 6.12.0
+Version: 6.13.0
 Requires PHP: 7.4
 Author: Smash Balloon
 Author URI: https://smashballoon.com/
@@ -53,7 +53,7 @@ if (!defined('SBI_PLUGIN_NAME')) {
 	define('SBI_PLUGIN_NAME', 'Instagram Feed Free');
 }
 if (!defined('SBIVER')) {
-	define('SBIVER', '6.12.0');
+	define('SBIVER', '6.13.0');
 }
 if ( ! defined( 'SBI_SMASH_USAGE_TRACKING_API_URL' ) ) {
 	define( 'SBI_SMASH_USAGE_TRACKING_API_URL', 'https://usage.smashballoon.com/api' );
@@ -1199,6 +1199,8 @@ if (!function_exists('sb_instagram_feed_init')) {
 			delete_option( 'sbi_smash_usage_tracking_site_token' );
 			delete_option( 'sbi_smash_usage_tracking_schedule' );
 			delete_option( 'sbi_smash_usage_events' );
+			delete_option( 'sbi_smash_usage_error_counts' );
+			delete_option( 'sbi_backup_cache_status' );
 			delete_option( 'sbi_smash_usage_active_dates' );
 			delete_option( 'sbi_smash_usage_session_durations' );
 		}

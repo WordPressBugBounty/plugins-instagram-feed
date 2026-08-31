@@ -2,8 +2,8 @@
 Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
-Tested up to: 7.0
-Stable tag: 6.12.0
+Tested up to: 7.1
+Stable tag: 6.13.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,16 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.13.0 =
+* New - A notice now warns you when a feed has quietly been showing an older saved copy of its posts because Instagram could not be reached, so you find out before your visitors do. The notice becomes more urgent if the connection stays broken.
+* Tweak - Confirmed compatibility with WordPress 7.1.
+* Tweak - The weekly Feed Issue Email Report now also tells you when a feed has quietly been showing an older saved copy of its posts for days, not just when there is an outright connection error.
+* Fix - Rate limits and temporary throttling from Instagram no longer make a working connection look broken or ask you to reconnect. Your feed keeps showing its saved posts and retries on its own once the limit clears.
+* Fix - Repeated failures to refresh a connected account's access token are now recorded properly, so a connection that keeps failing no longer appears up to date.
+* Fix - Keyboard navigation in the feed customizer no longer gets stuck: with a color picker open, Tab moves through the page normally, switching settings sections no longer pulls focus into the open picker, and tabbing no longer detours into the feed preview.
+* Fix - The connection error notice no longer keeps showing an out-of-date message - including a warning that your Instagram data would be deleted within 7 days - after the problem has changed or been resolved. It now reflects the current state of your connection and clears when there is nothing wrong.
+* Fix - Plugin security hardening.
 
 = 6.12.0 =
 * New - The feed builder and your feeds are now far easier to use with a keyboard and a screen reader. Controls are properly labelled and reachable by Tab, popups can be closed with Escape, feeds announce newly loaded posts, and focus outlines are visible throughout.

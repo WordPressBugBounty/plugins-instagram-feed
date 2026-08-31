@@ -1,12 +1,23 @@
 /**
  * Admin popup focus trap (SMASH-1378 / F-002).
  *
- * Watches for [role="dialog"] elements appearing in the DOM (the 14 IG Free
- * admin popups now declared as dialogs via the popup-dialog-roles PR), and:
+ * Watches for modal dialogs -- [role="dialog"][aria-modal="true"] -- appearing
+ * in the DOM (the IG Free admin popups declared as dialogs via the
+ * popup-dialog-roles PR) and:
  *  - saves the element that had focus before the popup opened
  *  - moves focus to the first focusable element inside the popup on open
  *  - traps Tab / Shift+Tab within the popup
  *  - restores focus to the trigger element on close
+ *
+ * The aria-modal="true" qualifier (SMASH-1915) scopes the trap to genuine
+ * modals. Audited across the Free tree there are 16 role="dialog" nodes:
+ *  - 13 declare aria-modal="true" -- the real blocking overlays, all trapped
+ *  - 2 declare aria-modal="false" -- the onboarding coach-mark tooltips, which
+ *    sit beside a dimmer but are non-blocking by design and are v-for'd (every
+ *    step mounts at once), so treating them as modals made the trap target an
+ *    arbitrary step
+ *  - 1 omits aria-modal -- the colour-picker popover, a v-show popover that
+ *    must stay Tab-transparent (see DIALOG_SELECTOR below)
  *
  * Pure vanilla JS -- no jQuery dependency. The popups are toggled via Vue's
  * v-if, so we can't hook into a single Vue lifecycle; instead we observe
@@ -25,6 +36,25 @@
 		'textarea:not([disabled]):not([tabindex="-1"])',
 		'[tabindex]:not([tabindex="-1"])'
 	].join(', ');
+
+	// SMASH-1915: only REAL modal dialogs get the focus trap. Every Smash
+	// Balloon builder popup declares aria-modal="true"; the colour-picker
+	// popover (.sb-control-colorpicker-popup) carries role="dialog" +
+	// tabindex="-1" but is a NON-modal v-show popover with NO aria-modal.
+	// Trapping it broke Tab (couldn't leave an open picker), yanked focus into
+	// an open picker from anywhere on the page, and drove spurious focus
+	// restores on its mount/unmount. Keying every dialog lookup on
+	// [role="dialog"][aria-modal="true"] scopes the trap to genuine modals and
+	// excludes the picker from ALL trap behaviours.
+	var DIALOG_SELECTOR = '[role="dialog"][aria-modal="true"]';
+
+	// Single-node predicate mirroring DIALOG_SELECTOR, for the
+	// MutationObserver paths that inspect one added/removed node at a time.
+	function isModalDialog(node) {
+		return node.getAttribute
+			&& node.getAttribute('role') === 'dialog'
+			&& node.getAttribute('aria-modal') === 'true';
+	}
 
 	// Map dialog element -> the element that had focus when it opened.
 	// Keys are weakly referenced via WeakMap so we don't leak when Vue
@@ -94,11 +124,11 @@
 		}
 	}
 
-	// Resolve the topmost visible [role="dialog"] -- a click in the
+	// Resolve the topmost visible modal dialog -- a click in the
 	// customizer can open a second-level popup over the first, so Tab/Esc
 	// should always target the innermost / most recently opened dialog.
 	function getTopmostVisibleDialog() {
-		var dialogs = document.querySelectorAll('[role="dialog"]');
+		var dialogs = document.querySelectorAll(DIALOG_SELECTOR);
 		for (var i = dialogs.length - 1; i >= 0; i--) {
 			if (isDialogVisible(dialogs[i])) return dialogs[i];
 		}
@@ -166,14 +196,14 @@
 	var observer = new MutationObserver(function (mutations) {
 		for (var i = 0; i < mutations.length; i++) {
 			var m = mutations[i];
-			// Added nodes -- check if any are (or contain) a [role="dialog"].
+			// Added nodes -- check if any are (or contain) a modal dialog.
 			for (var a = 0; a < m.addedNodes.length; a++) {
 				var added = m.addedNodes[a];
 				if (added.nodeType !== 1) continue;
-				if (added.getAttribute && added.getAttribute('role') === 'dialog') {
+				if (isModalDialog(added)) {
 					onDialogOpen(added);
 				} else if (added.querySelectorAll) {
-					var nested = added.querySelectorAll('[role="dialog"]');
+					var nested = added.querySelectorAll(DIALOG_SELECTOR);
 					for (var n = 0; n < nested.length; n++) onDialogOpen(nested[n]);
 				}
 			}
@@ -181,10 +211,10 @@
 			for (var r = 0; r < m.removedNodes.length; r++) {
 				var removed = m.removedNodes[r];
 				if (removed.nodeType !== 1) continue;
-				if (removed.getAttribute && removed.getAttribute('role') === 'dialog') {
+				if (isModalDialog(removed)) {
 					onDialogClose(removed);
 				} else if (removed.querySelectorAll) {
-					var nestedR = removed.querySelectorAll('[role="dialog"]');
+					var nestedR = removed.querySelectorAll(DIALOG_SELECTOR);
 					for (var nr = 0; nr < nestedR.length; nr++) onDialogClose(nestedR[nr]);
 				}
 			}
@@ -197,7 +227,7 @@
 		// Pick up any dialogs already in the DOM at script-load time
 		// (defensive -- unlikely but possible if the builder mounts before
 		// this script runs).
-		var existing = document.querySelectorAll('[role="dialog"]');
+		var existing = document.querySelectorAll(DIALOG_SELECTOR);
 		for (var i = 0; i < existing.length; i++) {
 			if (isDialogVisible(existing[i])) onDialogOpen(existing[i]);
 		}

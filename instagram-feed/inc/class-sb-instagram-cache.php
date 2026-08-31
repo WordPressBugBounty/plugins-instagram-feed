@@ -153,6 +153,18 @@ class SB_Instagram_Cache
 	}
 
 	/**
+	 * The feed id rows are stored under, including any customizer suffix.
+	 *
+	 * @return string
+	 *
+	 * @since SMASH-1808
+	 */
+	public function get_feed_id()
+	{
+		return $this->feed_id;
+	}
+
+	/**
 	 * Set all caches based on available data.
 	 *
 	 * @since 6.0

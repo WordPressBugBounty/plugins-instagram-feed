@@ -19,7 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class InstagramFreeReporter implements ReporterInterface {
 
-	const SCHEMA_VERSION = '1.0';
+	// 1.1: errors.by_type accumulates across the reporting period (previously
+	// a cron-time sample) and errors.expiring_token_errors is produced.
+	const SCHEMA_VERSION = '1.1';
 
 	/**
 	 * Plugin slug for payload root.
@@ -82,7 +84,7 @@ class InstagramFreeReporter implements ReporterInterface {
 			'period_start'     => $period_start,
 			'period_end'       => $period_end,
 			'performance'      => $this->get_performance_metrics(),
-			'errors'           => $this->get_error_metrics(),
+			'errors'           => $this->get_error_metrics( $ts_start, $ts_end ),
 			'events'           => $this->get_events_for_period( $ts_start, $ts_end ),
 			'days_active'      => $this->get_days_active( $period_start, $period_end ),
 			'session_duration' => $this->get_session_duration(),
@@ -489,8 +491,11 @@ return null; }
 	/**
 	 * Map an Instagram API error code to a category.
 	 *
-	 * Instagram Graph API uses OAuth/permission error codes from Facebook's error taxonomy.
-	 * Additional Instagram-specific codes are mapped here.
+	 * Delegates to the Token_Health routing table so telemetry and the
+	 * user-facing layer share one taxonomy (the previous local list called
+	 * 100 not_found while the copy says token-invalid, and called 18 server
+	 * while the runtime treats it as a hashtag limit). The Instagram-platform
+	 * expiry codes are not map rows (AgDR-0085), so they are bucketed here.
 	 *
 	 * @param int|string $code
 	 * @return string
@@ -498,42 +503,30 @@ return null; }
 	private function categorise_error_code( $code ): string {
 		$code = (int) $code;
 
-		// Auth / token errors
-		if ( in_array( $code, array( 102, 190, 458, 460, 461, 463, 467, 999 ), true ) ) {
-return 'auth';
-        }
-		// Instagram token expiry specific
-		if ( in_array( $code, array( 10900, 10901, 10902 ), true ) ) {
-return 'auth';
-        }
-		// Rate limiting
-		if ( in_array( $code, array( 4, 17, 32, 341, 613, 2207050, 2207051 ), true ) ) {
-return 'rate_limit';
-        }
-		// Permission errors
-		if ( 10 === $code || ($code >= 200 && $code <= 299) ) {
-return 'permission';
-        }
-		// Not found
-		if ( in_array( $code, array( 100, 803 ), true ) ) {
-return 'not_found';
-        }
-		// Server errors
-		if ( in_array( $code, array( 1, 2, 18 ), true ) ) {
-return 'server';
-        }
+		if ( in_array( $code, \InstagramFeed\UsageTracking\ErrorAccumulator::EXPIRY_CODES, true ) ) {
+			return 'auth';
+		}
 
-		return 'other';
+		$route = \InstagramFeed\Token_Health\MetaErrorMap::route( $code );
+
+		return $route['telemetry_category'];
 	}
 
 	/**
-	 * Error metrics: categorised counts and latest 10 errors.
+	 * Error metrics: period-accurate categorised counts and latest 10 errors.
 	 *
-	 * Instagram stores errors under the `sb_instagram_errors` option.
+	 * Instagram stores errors under the `sb_instagram_errors` option; that
+	 * option is a live snapshot, so `by_type` and `expiring_token_errors`
+	 * come from the per-day ErrorAccumulator instead — errors recorded and
+	 * cleared mid-week still count. `latest` stays a sample of what is in
+	 * the option right now. One failure recorded at two layers may increment
+	 * a bucket twice; counts are decision-grade trends, not exact totals.
 	 *
+	 * @param int $ts_start Period start timestamp.
+	 * @param int $ts_end   Period end timestamp.
 	 * @return array
 	 */
-	private function get_error_metrics() {
+	private function get_error_metrics( $ts_start, $ts_end ) {
 		$reporter = get_option( 'sb_instagram_errors', array() );
 		if ( ! is_array( $reporter ) ) {
 			$reporter = array();
@@ -554,35 +547,41 @@ return 'server';
 
 		$latest = $this->build_latest_errors_array( $reporter, $error_log, $connection, $accounts );
 
-		$by_type        = array(
-			'auth'       => 0,
-			'rate_limit' => 0,
-			'permission' => 0,
-			'not_found'  => 0,
-			'server'     => 0,
-			'network'    => 0,
-			'other'      => 0,
+		$by_type = array(
+			'auth'             => 0,
+			'rate_limit'       => 0,
+			'permission'       => 0,
+			'not_found'        => 0,
+			'server'           => 0,
+			'network'          => 0,
+			'misconfiguration' => 0,
+			'other'            => 0,
 		);
+
+		$accumulated = \InstagramFeed\UsageTracking\ErrorAccumulator::totals_for_period( $ts_start, $ts_end );
+		foreach ( $accumulated['by_type'] as $cat => $count ) {
+			if ( array_key_exists( $cat, $by_type ) ) {
+				$by_type[ $cat ] += (int) $count;
+			} else {
+				$by_type['other'] += (int) $count;
+			}
+		}
+
 		$critical_count = 0;
 		foreach ( $latest as $err ) {
-			$cat = $err['category'] ?? 'other';
-			if ( array_key_exists( $cat, $by_type ) ) {
-++$by_type[ $cat ];
-			} else {
-++$by_type['other'];
-            }
 			if ( ! empty( $err['critical'] ) ) {
 ++$critical_count;
             }
 		}
 
 		return array(
-			'api_failures'     => $api_failures,
-			'provider_errors'  => $provider_errors,
-			'by_type'          => $by_type,
-			'critical_count'   => $critical_count,
-			'revoked_accounts' => count( $revoked ),
-			'latest'           => array_slice( $latest, 0, 10 ),
+			'api_failures'          => $api_failures,
+			'provider_errors'       => $provider_errors,
+			'by_type'               => $by_type,
+			'expiring_token_errors' => $accumulated['expiring_token_errors'],
+			'critical_count'        => $critical_count,
+			'revoked_accounts'      => count( $revoked ),
+			'latest'                => array_slice( $latest, 0, 10 ),
 		);
 	}
 

@@ -30,8 +30,8 @@ $footer_attributes = SB_Instagram_Display_Elements::get_footer_attributes($setti
 
 	<?php if ($use_pagination || sbi_doing_customizer($settings)) : ?>
 		<button class="sbi_load_btn"
-			type="button" <?php echo $load_btn_style; ?><?php echo SB_Instagram_Display_Elements::get_button_data_attributes($settings); ?>>
-			<span class="sbi_btn_text" <?php echo SB_Instagram_Display_Elements::get_button_attribute($settings); ?>><?php echo esc_html($load_button_text); ?></span>
+			type="button" <?php echo $load_btn_style; ?><?php echo SB_Instagram_Display_Elements::get_button_data_attributes($settings); ?><?php echo SB_Instagram_Display_Elements::get_customizer_decorative_tabindex($settings); ?>>
+			<span class="sbi_btn_text" <?php echo SB_Instagram_Display_Elements::get_button_attribute($settings); ?>><?php echo SB_Instagram_Display_Elements::vue_pre_open($settings); ?><?php echo esc_html($load_button_text); ?><?php echo SB_Instagram_Display_Elements::vue_pre_close($settings); ?></span>
 			<span class="sbi_loader sbi_hidden" style="background-color: rgb(255, 255, 255);" aria-hidden="true"></span>
 		</button>
 	<?php endif; ?>
@@ -39,9 +39,9 @@ $footer_attributes = SB_Instagram_Display_Elements::get_footer_attributes($setti
 	<?php if (($first_username && $show_follow_button) || sbi_doing_customizer($settings)) : ?>
 		<span class="sbi_follow_btn<?php echo esc_attr($follow_btn_classes); ?>" <?php echo SB_Instagram_Display_Elements::get_follow_data_attributes($settings); ?>>
 			<a target="_blank"
-				rel="nofollow noopener" <?php echo SB_Instagram_Display_Elements::get_header_link($settings, $first_username) ?><?php echo $follow_btn_style; ?>>
+				rel="nofollow noopener" <?php echo SB_Instagram_Display_Elements::get_header_link($settings, $first_username) ?><?php echo $follow_btn_style; ?><?php echo SB_Instagram_Display_Elements::get_customizer_decorative_tabindex($settings); ?>>
 				<?php echo SB_Instagram_Display_Elements::get_icon('instagram', 'svg'); ?>
-				<span<?php echo SB_Instagram_Display_Elements::get_follow_attribute($settings); ?>><?php echo esc_html($follow_button_text); ?></span>
+				<span<?php echo SB_Instagram_Display_Elements::get_follow_attribute($settings); ?>><?php echo SB_Instagram_Display_Elements::vue_pre_open($settings); ?><?php echo esc_html($follow_button_text); ?><?php echo SB_Instagram_Display_Elements::vue_pre_close($settings); ?></span>
 			</a>
 		</span>
 	<?php endif; ?>

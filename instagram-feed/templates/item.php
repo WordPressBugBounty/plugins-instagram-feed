@@ -60,8 +60,8 @@ $img_screenreader = apply_filters('sbi_img_screenreader', $img_screenreader, $po
 	<div class="sbi_photo_wrap">
 		<a class="sbi_photo" href="<?php echo esc_url($permalink); ?>" target="_blank" rel="noopener nofollow"
 			data-full-res="<?php echo esc_url($media_full_res); ?>"
-			data-img-src-set="<?php echo esc_attr(sbi_json_encode($media_all_sizes_json)); ?>">
-			<span class="sbi-screenreader"><?php echo esc_html($img_screenreader); ?></span>
+			data-img-src-set="<?php echo esc_attr(sbi_json_encode($media_all_sizes_json)); ?>"<?php echo SB_Instagram_Display_Elements::get_customizer_decorative_tabindex($settings); ?>>
+			<span class="sbi-screenreader"<?php echo SB_Instagram_Display_Elements::vue_pre_attr($settings); ?>><?php echo esc_html($img_screenreader); ?></span>
 			<?php echo $maybe_carousel_icon; ?>
 			<?php echo $maybe_video_icon; ?>
 			<img src="<?php echo esc_url($media_url); ?>" alt="<?php echo esc_attr($img_alt); ?>" aria-hidden="true">

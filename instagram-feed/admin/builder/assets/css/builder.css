@@ -301,7 +301,13 @@ Buttons
     letter-spacing: 0;
 }
 
-#sbi-builder-app h3:not(#sb_instagram h3):not(.sb_instagram_header h3) {
+/* `:not()` takes the specificity of its argument, so the two `#…` exclusions
+   below make this selector outrank `#sbi-builder-app .sbi-admin-notices
+   .sb-notice-title` in sb-instagram-admin.css — which is why an admin notice
+   rendered its heading at 24px on the All Feeds screen and 18px everywhere
+   else. Excluding the notice heading here is narrower than escalating the
+   notice rule's specificity, and fixes every notice that uses the class. */
+#sbi-builder-app h3:not(#sb_instagram h3):not(.sb_instagram_header h3):not(.sb-notice-title) {
     font-style: normal;
     font-weight: 600;
     font-size: 24px;

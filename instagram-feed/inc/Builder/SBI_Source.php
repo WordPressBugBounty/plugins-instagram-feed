@@ -251,6 +251,22 @@ class SBI_Source
 			$source_data['info']['private'] = $connected_account['private'];
 		}
 
+		if ($account_type === 'business') {
+			$stashed = get_transient('sbi_connect_baseline_' . get_current_user_id());
+			$token_matches = !empty($stashed['token_hash'])
+				&& is_string($stashed['token_hash'])
+				&& !empty($connected_account['access_token'])
+				&& is_string($connected_account['access_token'])
+				&& hash_equals($stashed['token_hash'], hash('sha256', $connected_account['access_token']));
+			if ($token_matches && !empty($stashed['baseline']) && is_array($stashed['baseline'])) {
+				$info_array = json_decode($source_data['info'], true);
+				if (is_array($info_array)) {
+					$info_array['connect_baseline'] = $stashed['baseline'];
+					$source_data['info'] = sbi_json_encode($info_array);
+				}
+			}
+		}
+
 		if (empty($source_data['error']) || $connect_if_error) {
 			$args = array(
 				'username' => $source_data['username'],
@@ -448,6 +464,112 @@ class SBI_Source
 	}
 
 	/**
+	 * Retrieves the permissions granted to the connecting user's token,
+	 * parsed into granted and declined scope lists for the connect
+	 * baseline. Returns null when the request fails so a connect is
+	 * never blocked by this call.
+	 *
+	 * @param string $access_token The user access token from the connect flow.
+	 *
+	 * @return array|null
+	 */
+	public static function fetch_connect_permissions($access_token)
+	{
+		$url = 'https://graph.facebook.com/me/permissions?access_token=' . $access_token;
+		$args = array(
+			'timeout' => 60,
+		);
+		$result = wp_safe_remote_get($url, $args);
+
+		if (is_wp_error($result)) {
+			return null;
+		}
+
+		$permissions_data = json_decode($result['body'], true);
+
+		if (!is_array($permissions_data) || !isset($permissions_data['data'])) {
+			return null;
+		}
+
+		$permission_sets = array(
+			'scopes' => array(),
+			'declined_scopes' => array(),
+		);
+		foreach ($permissions_data['data'] as $permission) {
+			if (empty($permission['permission']) || empty($permission['status'])) {
+				continue;
+			}
+			if ($permission['status'] === 'granted') {
+				$permission_sets['scopes'][] = $permission['permission'];
+			} elseif ($permission['status'] === 'declined') {
+				$permission_sets['declined_scopes'][] = $permission['permission'];
+			}
+		}
+
+		return $permission_sets;
+	}
+
+	/**
+	 * Builds the connect-time baseline stored with each source: the
+	 * granted/declined scope set, the asset ids visible to the token,
+	 * and the data-access expiry when the flow provides one. Fields the
+	 * current flow can't provide are stored as null so sources with a
+	 * baseline are distinguishable from sources connected before one
+	 * was captured.
+	 *
+	 * Asset lists are bounded by the connect flow's limit=500 accounts
+	 * request — the stored size budget depends on that cap.
+	 *
+	 * @param array|null $permission_sets Parsed sets from fetch_connect_permissions(), or null when unavailable.
+	 * @param array|null $accounts_data Response of /me/accounts, or null when unavailable.
+	 * @param int|null   $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 *
+	 * @return array
+	 */
+	public static function build_connect_baseline($permission_sets, $accounts_data, $data_access_expires_at = null)
+	{
+		$defaults = array(
+			'scopes' => null,
+			'declined_scopes' => null,
+		);
+		$permission_sets = is_array($permission_sets) ? array_merge($defaults, $permission_sets) : $defaults;
+
+		$asset_targets = null;
+		$page_assets = isset($accounts_data['data']) ? $accounts_data['data'] : null;
+		if (null !== $page_assets) {
+			$asset_targets = array(
+				'pages' => array(),
+				'instagram_business' => array(),
+			);
+			foreach ((array)$page_assets as $asset) {
+				if (!empty($asset['id'])) {
+					$asset_targets['pages'][] = (string)$asset['id'];
+				}
+				if (!empty($asset['instagram_business_account']['id'])) {
+					$asset_targets['instagram_business'][] = (string)$asset['instagram_business_account']['id'];
+				}
+			}
+		}
+
+		// States why scopes are null: the token family exposes no scope
+		// surface at all, or a scope surface exists but the fetch failed.
+		$capture_status = 'scopes_captured';
+		if (null === $permission_sets['scopes']) {
+			$capture_status = null === $asset_targets ? 'no_scope_surface' : 'scopes_unavailable';
+		}
+
+		return array(
+			'baseline_version' => 1,
+			'capture_status' => $capture_status,
+			'captured_at' => time(),
+			'data_access_expires_at' => !empty($data_access_expires_at) ? (int)$data_access_expires_at : null,
+			'scopes' => $permission_sets['scopes'],
+			'declined_scopes' => $permission_sets['declined_scopes'],
+			'asset_targets' => $asset_targets,
+		);
+	}
+
+	/**
 	 * Used as a listener for the account connection process. If
 	 * data is returned from the account connection processed it's used
 	 * to generate the list of possible sources to chose from.
@@ -462,10 +584,16 @@ class SBI_Source
 		if (!wp_verify_nonce($nonce, 'sbi_con')) {
 			return false;
 		}
+
+		// Not sent by the broker yet; captured the moment it starts forwarding one.
+		$data_access_expires_at = !empty($_GET['sbi_data_access_expiration_time'])
+			? (int)$_GET['sbi_data_access_expiration_time']
+			: null;
+
 		if (isset($_GET['sbi_access_token']) && isset($_GET['sbi_graph_api'])) {
-			return self::retrieve_available_advanced_business_accounts();
+			return self::retrieve_available_advanced_business_accounts($data_access_expires_at);
 		} elseif (isset($_GET['sbi_access_token']) && isset($_GET['sbi_account_type'])) {
-			return self::retrieve_available_basic_accounts();
+			return self::retrieve_available_basic_accounts($data_access_expires_at);
 		}
 
 		return false;
@@ -474,11 +602,13 @@ class SBI_Source
 	/**
 	 * Uses the Facebook API to retrieve a list of business accounts
 	 *
+	 * @param int|null $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 *
 	 * @return array|bool
 	 *
 	 * @since 6.0
 	 */
-	public static function retrieve_available_advanced_business_accounts()
+	public static function retrieve_available_advanced_business_accounts($data_access_expires_at = null)
 	{
 
 		$return = array(
@@ -543,6 +673,25 @@ class SBI_Source
 		}
 		$return['numFound'] = count($pages_data_arr['data']);
 
+		$connect_baseline = self::build_connect_baseline(
+			self::fetch_connect_permissions($access_token),
+			$pages_data_arr,
+			$data_access_expires_at
+		);
+		// Held briefly so the source rows written when the user picks accounts
+		// (a separate request) receive the baseline. The token fingerprint pins
+		// it to this connect's token — other write paths can never adopt it.
+		// Deliberately not deleted on first use: one connect can persist
+		// several picked sources across requests within the TTL.
+		set_transient(
+			'sbi_connect_baseline_' . get_current_user_id(),
+			array(
+				'token_hash' => hash('sha256', $access_token),
+				'baseline' => $connect_baseline,
+			),
+			15 * MINUTE_IN_SECONDS
+		);
+
 		foreach ($pages_data_arr['data'] as $page_data) {
 			if (isset($page_data['instagram_business_account'])) {
 				$instagram_business_id = $page_data['instagram_business_account']['id'];
@@ -560,6 +709,7 @@ class SBI_Source
 
 					$instagram_biz_img = isset($instagram_account_data['profile_picture_url']) ? $instagram_account_data['profile_picture_url'] : false;
 					$instagram_account_data['connect_type'] = 'business_advanced';
+					$instagram_account_data['connect_baseline'] = $connect_baseline;
 					$source_data = array(
 						'access_token' => $access_token,
 						'id' => $instagram_business_id,
@@ -612,11 +762,13 @@ class SBI_Source
 	 * Uses the Instagram Basic Display API to get available personal
 	 * accounts
 	 *
+	 * @param int|null $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 *
 	 * @return array|bool
 	 *
 	 * @since 6.0
 	 */
-	public static function retrieve_available_basic_accounts()
+	public static function retrieve_available_basic_accounts($data_access_expires_at = null)
 	{
 		$encryption = new SB_Instagram_Data_Encryption();
 		$return = array(
@@ -658,6 +810,11 @@ class SBI_Source
 			$header_details_array = self::merge_account_details($header_details_array, $source_data);
 			$source_data['username'] = $header_details_array['username'];
 			$header_details_array['connect_type'] = $connect_type;
+			// No scope or asset surface exists for Instagram-Login tokens; the
+			// baseline still records when the source was connected and any
+			// data-access expiry the flow forwards.
+			$header_details_array['connect_baseline'] =
+				self::build_connect_baseline(null, null, $data_access_expires_at);
 			$header_details = sbi_json_encode($header_details_array);
 		} else {
 			$source_data['error'] = $connection;
@@ -923,6 +1080,18 @@ class SBI_Source
 
 			if (!empty($info['biography'])) {
 				$connected_account['bio'] = $info['biography'];
+			}
+
+			if (!empty($info['last_refresh_attempt'])) {
+				$connected_account['last_refresh_attempt'] = (int)$info['last_refresh_attempt'];
+			}
+
+			if (!empty($info['last_refresh_success'])) {
+				$connected_account['last_refresh_success'] = (int)$info['last_refresh_success'];
+			}
+
+			if (!empty($info['refresh_failure_count'])) {
+				$connected_account['refresh_failure_count'] = (int)$info['refresh_failure_count'];
 			}
 
 			$connected_account['local_avatar_url'] = SB_Instagram_Connected_Account::maybe_local_avatar($source_datum['username'], $avatar);

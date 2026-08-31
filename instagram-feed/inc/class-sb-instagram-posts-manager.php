@@ -16,6 +16,9 @@ if (!defined('ABSPATH')) {
  *
  * @since 2.0/4.0
  */
+use InstagramFeed\Token_Health\MetaErrorMap;
+use InstagramFeed\UsageTracking\ErrorAccumulator;
+
 class SB_Instagram_Posts_Manager
 {
 	/**
@@ -144,17 +147,28 @@ class SB_Instagram_Posts_Manager
 		$account_id = $connected_account['user_id'];
 		$this->errors['accounts'][$account_id][$error_type] = $details;
 
+		$error = MetaErrorMap::extract($details);
+		$route = MetaErrorMap::route($error['code'], $error['subcode'], $error['message']);
+
 		if ($error_type === 'api') {
 			$this->errors['accounts'][$account_id][$error_type]['clear_time'] = time() + 60 * 3;
 		}
 
-		if (
-			isset($details['error']['code'])
-			&& (int)$details['error']['code'] === 18
-		) {
-			$this->errors['accounts'][$account_id][$error_type]['clear_time'] = time() + 60 * 15;
+		// A rate limit or a throttled hashtag needs longer than the general
+		// window, and the table is where those durations live now.
+		if (!empty($route['retry_after'])) {
+			$this->errors['accounts'][$account_id][$error_type]['clear_time'] = time() + (int)$route['retry_after'];
 		}
-		SBI_Source::add_error($account_id, $details);
+
+		// Only write the source's error column when the source is genuinely
+		// unusable. That column is what paints "Source Invalid" with a
+		// Reconnect link in the builder, so a rate limit must not reach it.
+		// Deliberately only skipped, never cleared: a source already marked
+		// invalid by a real failure stays marked when a rate limit follows,
+		// and the existing success path is what clears it.
+		if ($route['invalidates_source']) {
+			SBI_Source::add_error($account_id, $details);
+		}
 	}
 
 	/**
@@ -175,6 +189,18 @@ class SB_Instagram_Posts_Manager
 		if ($connected_account_term) {
 			$connected_account = is_array($connected_account_term) ? $connected_account_term : SB_Instagram_Connected_Account::lookup($connected_account_term);
 			$this->add_connected_account_error($connected_account, $type, $details);
+		}
+
+		// Accumulate API-error telemetry per day so weekly usage reports cover
+		// the whole period instead of sampling this option at cron time.
+		// 'hashtag_limit' is how the API connect layer dispatches code 18.
+		if (in_array($type, array('api', 'wp_remote_get', 'hashtag', 'hashtag_limit'), true)) {
+			$extracted = MetaErrorMap::extract($details);
+			if ($extracted['code'] > 0) {
+				ErrorAccumulator::record_api_error($extracted['code'], $extracted['subcode'], $extracted['message']);
+			} else {
+				ErrorAccumulator::record_category('wp_remote_get' === $type ? 'network' : 'other');
+			}
 		}
 
 		// $details is an array for 'api', 'wp_remote_get', and 'hashtag' types, while it's a string for the rest.
@@ -267,16 +293,9 @@ class SB_Instagram_Posts_Manager
 	 */
 	public function is_critical_error($details)
 	{
-		$error_code = (int)$details['error']['code'];
+		$error = MetaErrorMap::extract($details);
 
-		$critical_codes = array(
-			803, // ID doesn't exist
-			100, // access token or permissions
-			190, // access token or permissions
-			10, // app permissions or scopes
-		);
-
-		return in_array($error_code, $critical_codes, true);
+		return MetaErrorMap::isCritical($error['code'], $error['subcode'], $error['message']);
 	}
 
 	/**
@@ -354,24 +373,60 @@ class SB_Instagram_Posts_Manager
 			return $error_message_return;
 		}
 		$hash = '#' . (int)$response['error']['code'];
+		$error = MetaErrorMap::extract($response);
+		$route = MetaErrorMap::route($error['code'], $error['subcode'], $error['message']);
+		// One sentence per cause in the dead-token family, all of them fixed by
+		// reconnecting; the differences are why, which is what support needs.
+		$dead_token_copy = array(
+			'app_removed' => __('Error: The Smash Balloon app is no longer authorized for this Instagram account. Feed will not update.', 'instagram-feed'),
+			'password_changed' => __('Error: The account password was changed, which invalidated the stored access token. Feed will not update.', 'instagram-feed'),
+			'session_expired' => __('Error: The stored access token has expired. Feed will not update.', 'instagram-feed'),
+			'token_invalid' => __('Error: The stored access token is no longer valid. Feed will not update.', 'instagram-feed'),
+			'user_checkpointed' => __('Error: Instagram has placed a security checkpoint on this account. The account owner needs to log in to Instagram to clear it.', 'instagram-feed'),
+			'unconfirmed_user' => __('Error: This Instagram account is unconfirmed. The account owner needs to confirm it with Instagram.', 'instagram-feed'),
+			'decryption_failed' => __('Error: The stored access token could not be decrypted on this site. Feed will not update.', 'instagram-feed'),
+		);
 
 		if (isset($response['error']['message'])) {
-			if ((int)$response['error']['code'] === 100) {
+			if ($route['copy_key'] === 'source_unresolvable') {
 				$error_message_return['error_message'] = __('Error: Access Token is not valid or has expired.', 'instagram-feed') . ' ' . __('Feed will not update.', 'instagram-feed');
 				$error_message_return['admin_only'] = sprintf(__('API error %s:', 'instagram-feed'), $response['error']['code']) . ' ' . $response['error']['message'];
 				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
-			} elseif ((int)$response['error']['code'] === 18) {
+			} elseif ($route['copy_key'] === 'hashtag_limit') {
 				$error_message_return['error_message'] = __('Error: Hashtag limit of 30 unique hashtags per week has been reached.', 'instagram-feed');
 				$error_message_return['admin_only'] = __('If you need to display more than 30 hashtag feeds on your site, consider connecting an additional business account from a separate Instagram Identity and Facebook page. Connecting an additional Instagram business account from the same Facebook page will not raise the limit.', 'instagram-feed');
 				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
-			} elseif ((int)$response['error']['code'] === 10) {
-				$error_message_return['error_message'] = sprintf(__('Error: Connected account for the user %s does not have permission to use this feed type.', 'instagram-feed'), $connected_account['username']);
-				$error_message_return['admin_only'] = __('Try using the big blue button on the "Configure" tab to reconnect the account and update its permissions.', 'instagram-feed');
+			} elseif ($route['copy_key'] === 'permission_regrant') {
+				$error_message_return['error_message'] = sprintf(__('Error: Connected account for the user %s is missing a permission this feed type needs.', 'instagram-feed'), $connected_account['username']);
+				$error_message_return['admin_only'] = __('Open the account on the "Sources" tab and approve the missing permission. The stored access token is still valid, so a full reconnection is not required.', 'instagram-feed');
 				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
-			} elseif ((int)$response['error']['code'] === 24) {
+			} elseif ($route['copy_key'] === 'hashtag_not_found') {
 				$error_message_return['error_message'] = __('Error: Cannot retrieve posts for this hashtag.', 'instagram-feed');
 				$error_message_return['admin_only'] = $response['error']['error_user_msg'];
 				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+			} elseif ($route['copy_key'] === 'rate_limited' || $route['copy_key'] === 'temporarily_blocked') {
+				// Nothing is broken and nothing needs reconnecting; the feed keeps
+				// serving its cached posts until the window passes.
+				$error_message_return['error_message'] = __('Instagram is temporarily limiting requests from this site. The feed will retry automatically.', 'instagram-feed');
+				/* translators: Error code */
+				$error_message_return['admin_only'] = $route['copy_key'] === 'temporarily_blocked'
+					? sprintf(__('API error %s: Instagram has temporarily blocked requests for this account. This clears on its own; no reconnection is needed.', 'instagram-feed'), $response['error']['code'])
+					: sprintf(__('API error %s: rate limit reached. Increasing the caching time in the feed settings reduces how often this happens.', 'instagram-feed'), $response['error']['code']);
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+			} elseif ($route['copy_key'] === 'page_role_lost_or_2fa') {
+				// Observed: one signal carries two causes and reconnecting fixes
+				// neither, so name both and ask the user which applies.
+				$error_message_return['error_message'] = __('Error: This account no longer has access to the connected page.', 'instagram-feed');
+				$error_message_return['admin_only'] = __('Either the connected account lost its administrator, editor or moderator role on the linked Facebook page, or that page now requires Two Factor Authentication which this account has not enabled. Restore the page role, or enable Two Factor Authentication, then retry the feed.', 'instagram-feed');
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
+			} elseif (isset($dead_token_copy[ $route['copy_key'] ])) {
+				// The 190 family. Instagram Feed had no per-subcode copy at all
+				// before this, so every cause read as one generic failure; these
+				// mirror the subcode guidance the Facebook plugins already ship.
+				$error_message_return['error_message'] = $dead_token_copy[ $route['copy_key'] ];
+				/* translators: Error code and message */
+				$error_message_return['admin_only'] = sprintf(__('API error %s:', 'instagram-feed'), $response['error']['code']) . ' ' . $response['error']['message'];
+				$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 			} else {
 				$error_message_return['error_message'] = __('There has been a problem with your Instagram Feed.', 'instagram-feed');
 				$error_message_return['admin_only'] = sprintf(__('API error %s:', 'instagram-feed'), $response['error']['code']) . ' ' . $response['error']['message'];
@@ -1034,11 +1089,18 @@ class SB_Instagram_Posts_Manager
 			$accounts_revoked_string = sprintf(__('Instagram Feed related data for the account(s) %s was removed due to permission for the Smash Balloon App on Facebook or Instagram being revoked. <br><br> To prevent the automated data deletion for the account, please reconnect your account within 7 days.', 'instagram-feed'), $accounts_revoked);
 		}
 
-		if (isset($this->errors['connection']['critical'])) {
+		// Same value-not-presence check as are_critical_errors(); these two
+		// must agree on what critical means or the banner and its gate diverge.
+		if (!empty($this->errors['connection']['critical'])) {
 			$errors = $this->get_errors();
 			$error_message = '';
 
-			if ($errors['connection']['error_id'] === 190) {
+			// Gated on an actual revoke rather than on code 190: this block
+			// names a 7-day data-deletion deadline that only exists once the
+			// revoke fired, and claiming the whole 190 family here meant the
+			// per-cause copy (expired, password changed, app removed) never
+			// reached the admin notice at all.
+			if ($this->was_app_permission_related_error()) {
 				$error_message .= '<strong>' . __('Action Required Within 7 Days', 'instagram-feed') . '</strong><br>';
 				$error_message .= __('An account admin has deauthorized the Smash Balloon app used to power the Instagram Feed plugin.', 'instagram-feed');
 				$error_message .= ' ' . sprintf(__('If the Instagram source is not reconnected within 7 days then all Instagram data will be automatically deleted on your website for this account (ID: %s) due to Facebook data privacy rules.', 'instagram-feed'), $accounts_revoked);
@@ -1116,7 +1178,10 @@ class SB_Instagram_Posts_Manager
 	 */
 	public function are_critical_errors()
 	{
-		if (isset($this->errors['connection']['critical'])) {
+		// Deliberately a value check, not isset(): handleConnectionError() sets
+		// this key on every stored error, so isset() reported a critical error
+		// for a transient rate limit and lit every alarm surface at once.
+		if (!empty($this->errors['connection']['critical'])) {
 			return true;
 		} else {
 			$connected_accounts = SB_Instagram_Connected_Account::get_all_connected_accounts();
@@ -1128,11 +1193,25 @@ class SB_Instagram_Posts_Manager
 					return true;
 				}
 
-				$user_id = !empty($connected_account['user_id']) ? $connected_account['user_id'] : 0;
-				$user_id = empty($user_id) && !empty($connected_account['account_id']) ? $connected_account['account_id'] : 0;
+				// This fallback used to be unreachable in practice, because the
+				// isset() above always returned first. It is load-bearing now,
+				// so the id resolution is fixed (the old second assignment
+				// evaluated to 0 whenever the first had found an id, so the
+				// lookup never matched) and a non-critical account no longer
+				// ends the scan early — otherwise a dead token on one source
+				// goes unreported when another source's transient error was
+				// the last one stored.
+				$user_id = !empty($connected_account['user_id']) ? $connected_account['user_id'] : '';
+				if (empty($user_id) && !empty($connected_account['account_id'])) {
+					$user_id = $connected_account['account_id'];
+				}
 
-				if (isset($this->errors['accounts'][$user_id]['api']) && isset($this->errors['accounts'][$user_id]['api']['error'])) {
-					return $this->is_critical_error($this->errors['accounts'][$user_id]['api']);
+				if (empty($user_id) || !isset($this->errors['accounts'][$user_id]['api']['error'])) {
+					continue;
+				}
+
+				if ($this->is_critical_error($this->errors['accounts'][$user_id]['api'])) {
+					return true;
 				}
 			}
 		}
