@@ -1241,8 +1241,11 @@ function sb_instagram_clear_page_caches()
 /**
  * Registers the local design-tokens stylesheet so consumer styles can
  * declare it as a dependency. Hooked at priority 1 on both the frontend
- * and admin enqueue actions so the handle is always available before
- * any consumer style registers.
+ * and admin enqueue actions, and also called directly by
+ * sb_instagram_scripts_enqueue() — those two hooks alone do not cover
+ * every pass that registers consumer styles (notably the block editor's
+ * iframed canvas asset list and REST editor-settings requests), so the
+ * handle must also be registered where it is consumed.
  *
  * The file is a snapshot of @smashballoons/tokens (npm) — see
  * assets/tokens/sb-tokens-local.css for the version pin and migration
@@ -1287,6 +1290,14 @@ function sb_instagram_scripts_enqueue($enqueue = false)
 	} else {
 		wp_register_script('sbi_scripts', trailingslashit(SBI_PLUGIN_URL) . $js_file, array('jquery'), SBIVER, true);
 	}
+
+	// The design-tokens handle is a hard dependency of sbi_styles below, so it
+	// must be registered here rather than relying solely on the priority 1
+	// enqueue hooks: the block editor builds its iframed canvas asset list (and
+	// serves REST editor-settings requests) before/without admin_enqueue_scripts,
+	// and an unregistered dependency makes WP_Dependencies silently drop
+	// sbi_styles. wp_register_style() is idempotent, so the hooks stay harmless.
+	sb_instagram_register_tokens_local_style();
 
 	if (isset($sb_instagram_settings['enqueue_css_in_shortcode']) && $sb_instagram_settings['enqueue_css_in_shortcode']) {
 		wp_register_style('sbi_styles', trailingslashit(SBI_PLUGIN_URL) . $css_file, array('sbi-tokens-local'), SBIVER);
