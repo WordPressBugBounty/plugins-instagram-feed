@@ -4,7 +4,7 @@
 Plugin Name: Smash Balloon Instagram Feed
 Plugin URI: https://smashballoon.com/instagram-feed
 Description: Display beautifully clean, customizable, and responsive Instagram feeds.
-Version: 6.14.0
+Version: 6.15.0
 Requires PHP: 7.4
 Author: Smash Balloon
 Author URI: https://smashballoon.com/
@@ -53,7 +53,7 @@ if (!defined('SBI_PLUGIN_NAME')) {
 	define('SBI_PLUGIN_NAME', 'Instagram Feed Free');
 }
 if (!defined('SBIVER')) {
-	define('SBIVER', '6.14.0');
+	define('SBIVER', '6.15.0');
 }
 if ( ! defined( 'SBI_SMASH_USAGE_TRACKING_API_URL' ) ) {
 	define( 'SBI_SMASH_USAGE_TRACKING_API_URL', 'https://usage.smashballoon.com/api' );
@@ -292,6 +292,11 @@ if (!function_exists('sb_instagram_feed_init')) {
 
 		$sbi_oembed = new InstagramFeed\Admin\SBI_oEmbeds();
 		$sbi_global_settings = new InstagramFeed\Admin\SBI_Global_Settings();
+		// WordPress core Abilities API integration (WP 6.9+; silent no-op below
+		// that). Unconditional — like SBI_Global_Settings above, this must run on
+		// REST requests too, not only in wp-admin, since the abilities register
+		// on `wp_abilities_api_init`. See inc/Abilities/SBI_Abilities.php.
+		$sbi_abilities = new InstagramFeed\Abilities\SBI_Abilities();
 		$sbi_support = new InstagramFeed\Admin\SBI_Support();
 		$sbi_upgrader = new InstagramFeed\Admin\SBI_Upgrader();
 		$sbi_upgrader->hooks();
@@ -1154,6 +1159,12 @@ if (!function_exists('sb_instagram_feed_init')) {
 		$wpdb->query("DELETE FROM $table_name WHERE `option_name` LIKE ('%\_transient\_&sbi\_%')");
 		$wpdb->query("DELETE FROM $table_name WHERE `option_name` LIKE ('%\_transient\_timeout\_&sbi\_%')");
 
+		// Abilities API state tokens + slots (SBI_State_Token::PREFIX). They no longer
+		// start with `sbi_`, so the patterns around this block do not reach them;
+		// remove the transient and its timeout row explicitly.
+		$wpdb->query("DELETE FROM $table_name WHERE `option_name` LIKE ('\_transient\_sb\_abilities\_sbi\_state\_%')");
+		$wpdb->query("DELETE FROM $table_name WHERE `option_name` LIKE ('\_transient\_timeout\_sb\_abilities\_sbi\_state\_%')");
+
 		/*
 		 Regular Caches */
 		// Delete all transients.
@@ -1192,6 +1203,7 @@ if (!function_exists('sb_instagram_feed_init')) {
 		$wpdb->query("DELETE FROM $table_name WHERE `option_name` LIKE ('%\_transient\_\$sbi\_%')");
 		$wpdb->query("DELETE FROM $table_name WHERE `option_name` LIKE ('%\_transient\_timeout\_\$sbi\_%')");
 		delete_option('sbi_db_version');
+		delete_option('sbi_cache_version');
 
 		$feed_caches_table_name = $wpdb->prefix . 'sbi_feed_caches';
 		$wpdb->query("DROP TABLE IF EXISTS $feed_caches_table_name");
@@ -1259,6 +1271,9 @@ if (!function_exists('sb_instagram_feed_init')) {
 		delete_option('sb_instagram_settings');
 		// Locator token revocation epoch (SMASH-1630); kept when settings are preserved.
 		delete_option('sbi_locator_token_epoch');
+		// Abilities write-gate epoch. Must stay AFTER delete_option('sb_instagram_settings') above:
+		// that delete fires the gate's delete_option hook, which would otherwise re-create it.
+		delete_option('sb_abilities_sbi_gate_epoch');
 		delete_option('sbi_ver');
 		delete_option('sb_expired_tokens');
 		delete_option('sbi_cron_report');

@@ -3,6 +3,7 @@
 namespace InstagramFeed\Builder;
 
 use InstagramFeed\Helpers\Util;
+use InstagramFeed\UsageTracking\EventRecorder;
 use SB_Instagram_API_Connect;
 use SB_Instagram_Connected_Account;
 use SB_Instagram_Data_Encryption;
@@ -92,6 +93,18 @@ class SBI_Source
 		}
 
 		if (isset($_POST['sourcesList']) && !empty($_POST['sourcesList']) && is_array($_POST['sourcesList'])) {
+			// Legacy connect-funnel baseline (SMASH-1856): "completed" is counted
+			// once per FLOW, not per source. This ajax action (nonce + capability
+			// checked above) runs once per broker return, but the loop below saves
+			// every account picked in the multi-account selector -- recording
+			// inside it would count N completions against 1 started beacon and
+			// push the completion rate past 100%. The flow counts only when the
+			// site goes from no connected source to at least one across this
+			// save. That is the same site-level test the started side applies
+			// when the beacon arrives (has_connected_sources()), so numerator
+			// and denominator include and exclude exactly the same flows.
+			$types_before_save = self::get_connected_account_types();
+
 			foreach ($_POST['sourcesList'] as $single_source) :
 				$source_data = array(
 					'access_token' => sanitize_text_field($single_source['access_token']),
@@ -111,6 +124,10 @@ class SBI_Source
 
 				self::process_connecting_source_data($source_data);
 			endforeach;
+
+			if (self::site_gained_first_source($types_before_save, self::get_connected_account_types())) {
+				EventRecorder::record('connection_flow_completed_legacy');
+			}
 		}
 		echo sbi_json_encode(SBI_Feed_Builder::get_source_list());
 		wp_die();
@@ -464,6 +481,88 @@ class SBI_Source
 	}
 
 	/**
+	 * Distinct account_type values present in the sources table.
+	 *
+	 * The one snapshot both sides of the connect-funnel baseline
+	 * (SMASH-1856) read, and only its emptiness matters to them. The started
+	 * side asks it through has_connected_sources() when the beacon arrives;
+	 * the completed side takes it before and after each broker-return save
+	 * and hands the pair to site_gained_first_source(). Both read the table
+	 * at request time, never a value cached at page load, so a source the
+	 * user deleted in-page before clicking connect is already gone from it.
+	 *
+	 * @return string[]
+	 *
+	 * @since 6.13 (SMASH-1856)
+	 */
+	private static function get_connected_account_types()
+	{
+		global $wpdb;
+		$sources_table = $wpdb->prefix . 'sbi_sources';
+		$table_exists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $sources_table)) === $sources_table;
+		if (!$table_exists) {
+			return array();
+		}
+
+		$types = $wpdb->get_col("SELECT DISTINCT account_type FROM {$sources_table}"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name derived from $wpdb->prefix, not user input.
+
+		return is_array($types) ? $types : array();
+	}
+
+	/**
+	 * Whether the site has at least one connected Instagram source.
+	 *
+	 * The started-side gate of the connect-funnel baseline (SMASH-1856):
+	 * SmashUsageTracking::ajax_record_event() drops the
+	 * connection_flow_started_legacy beacon when this is true, so only
+	 * first connects enter the funnel. It runs when the beacon arrives, at
+	 * click time, and reads the same snapshot the completed side takes just
+	 * before its save, so both sides classify a flow the same way.
+	 * Reconnects, extra accounts and account-type conversions all start on
+	 * a site that already has a source, so they are left out of both counts.
+	 *
+	 * @return bool
+	 *
+	 * @since 6.13 (SMASH-1856)
+	 */
+	public static function has_connected_sources()
+	{
+		return !empty(self::get_connected_account_types());
+	}
+
+	/**
+	 * True when the pre/post-save snapshots show the site going from no
+	 * connected source to at least one: the flow-level "first connect
+	 * completed" signal of the connect-funnel baseline (SMASH-1856).
+	 *
+	 * The metric is the first-connect completion rate: of the connect
+	 * attempts started on a site with no connected source, the share that
+	 * end with at least one source saved from the broker return. The
+	 * started side applies the same test at click time
+	 * (has_connected_sources()), so a flow is counted on both sides or on
+	 * neither. The account type is chosen on the broker, after the handoff,
+	 * and this test does not depend on which one the user picked. A retry
+	 * is a new attempt, so N starts and 1 completion is the right reading.
+	 *
+	 * Saving several accounts from the multi-account selector is still one
+	 * transition, so one completion. A later call in the same flow (the
+	 * builder screen runs maybe_source_connection_data() twice per request,
+	 * and a reloaded return URL runs it again) takes its pre-save snapshot
+	 * after the first save, so it cannot record a second completion.
+	 *
+	 * @param string[] $types_before account_type values before the save.
+	 * @param string[] $types_after  account_type values after the save.
+	 *
+	 * @return bool
+	 *
+	 * @since 6.13 (SMASH-1856)
+	 */
+	private static function site_gained_first_source($types_before, $types_after)
+	{
+		return empty($types_before) && !empty($types_after);
+	}
+
+	/**
 	 * Retrieves the permissions granted to the connecting user's token,
 	 * parsed into granted and declined scope lists for the connect
 	 * baseline. Returns null when the request fails so a connect is
@@ -735,6 +834,8 @@ class SBI_Source
 						SBI_Db::delete_source($results[0]['id']);
 						self::update_or_insert($source_data);
 					} elseif ($matches_existing_personal && $return['numFound'] === 1) {
+						// No connection_flow_completed_legacy here (SMASH-1856): this
+						// converts an existing source, so it is never a first connect.
 						$return['didQuickUpdate'] = true;
 						SBI_Db::delete_source($results[0]['id']);
 						self::update_or_insert($source_data);
@@ -863,6 +964,15 @@ class SBI_Source
 
 			$return['notice'] = __('The Instagram account you are logged into is already connected as a "business" account. Remove the business account if you\'d like to connect as a basic account instead (not recommended).', 'instagram-feed');
 		} else {
+			// Legacy connect-funnel baseline (SMASH-1856): the personal/basic
+			// return handler inserts the source directly and sets didQuickUpdate,
+			// which skips the picker and builder_update_multiple() entirely --
+			// without the check HERE, a first connect through Basic would fire
+			// started but never completed. The snapshot is taken before the
+			// delete below, so a reconnect's delete-and-reinsert never looks
+			// like the site gaining its first source.
+			$types_before_save = self::get_connected_account_types();
+
 			if ($matches_existing_personal) {
 				$return['matchingExistingAccounts'] = $results[0];
 				SBI_Db::delete_source($results[0]['id']);
@@ -877,6 +987,10 @@ class SBI_Source
 						'details' => __('Failed to update or insert the source data.', 'instagram-feed'),
 					),
 				);
+			}
+
+			if (self::site_gained_first_source($types_before_save, self::get_connected_account_types())) {
+				EventRecorder::record('connection_flow_completed_legacy');
 			}
 
 			$return['didQuickUpdate'] = true;

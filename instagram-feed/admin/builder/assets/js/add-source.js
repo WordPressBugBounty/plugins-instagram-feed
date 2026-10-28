@@ -313,6 +313,20 @@ Vue.component('sb-add-source-component', {
                 }
             }
 
+            // Legacy connect-funnel baseline (SMASH-1856): record "started" right
+            // before the handoff navigates away. Uses sendBeacon (see
+            // smash-usage-session.js), not the $.post-based recordEvent bridge --
+            // that bridge is async and races form.submit(), which would drop the
+            // event, under-count the denominator, and inflate the completion rate.
+            // The beacon fires on every handoff. Whether the attempt counts is
+            // decided server-side when it arrives: ajax_record_event() drops it if
+            // the site already has a connected source, the same test the completed
+            // side runs. The page can't decide it: the account type is chosen on
+            // the broker after this point, and sources can change in-page after load.
+            if (typeof window.sbiSmashUsageRecordEventBeacon === 'function') {
+                window.sbiSmashUsageRecordEventBeacon('connection_flow_started_legacy');
+            }
+
             document.body.appendChild(form);
             form.submit();
         },

@@ -8,6 +8,7 @@
 
 namespace InstagramFeed\UsageTracking;
 
+use InstagramFeed\Builder\SBI_Source;
 use InstagramFeed\UsageTracking\Core\RegisterSite;
 use InstagramFeed\UsageTracking\Core\Sender;
 use InstagramFeed\UsageTracking\Core\PayloadBuilder;
@@ -175,7 +176,20 @@ class SmashUsageTracking {
 			'setup_wizard_completed',
 			'setup_wizard_abandoned',
 			'upgrade_prompt_shown',
+			// Legacy connect-funnel baseline (SMASH-1856) -- fired via sendBeacon
+			// from the add-source handoff, see admin/builder/assets/js/add-source.js.
+			'connection_flow_started_legacy',
 		);
+		// Legacy connect-funnel baseline (SMASH-1856): the funnel measures first
+		// connects only, so a start on a site that already has a connected
+		// source is dropped. The browser can't make that call -- the account
+		// type is chosen on the broker after the handoff, and the source list
+		// can change in-page after load -- so it is made here, at click time,
+		// with the same test the completed side runs just before its save.
+		// See SBI_Source::site_gained_first_source().
+		if ('connection_flow_started_legacy' === $event_name && SBI_Source::has_connected_sources()) {
+			wp_send_json_success();
+		}
 		if ( '' !== $event_name && in_array( $event_name, $allowed, true ) ) {
 			EventRecorder::record( $event_name );
 		}

@@ -121,6 +121,7 @@ var settings_data = {
     loadingBar: true,
     wpconsentBtnStatus: 'normal',
     disableWPConsentBtn: false,
+    wpvibeInstallStatus: null, // null | 'loading' | 'failed'
 };
 
 // The tab component
@@ -684,6 +685,12 @@ var sbiSettings = new Vue({
                     this.cronNextCheck = data.data.cronNextCheck;
                     this.btnStatus = 'success';
                     this.loadedConsent = sentConsent;
+                    if (typeof data.data.aiWriteEnabled !== 'undefined') {
+                        // Resync MCP Write Access with what the server stored, and
+                        // refresh the loaded marker so a later flip in this tab counts.
+                        this.model.advanced.sbi_ai_write_enabled = !!data.data.aiWriteEnabled;
+                        this.model.advanced.sbi_ai_write_enabled_loaded = !!data.data.aiWriteEnabled;
+                    }
                     setTimeout(function () {
                         this.btnStatus = null;
                         this.pressedBtnName = null;
@@ -1220,6 +1227,82 @@ var sbiSettings = new Vue({
                 return this.checkmarCircleSVG;
             }
             return this.model.wpconsentScreen.installSVG;
+        },
+
+        /**
+         * AI Agents card state, including a client-only 'installFailed'
+         * state on top of the server-reported status.
+         *
+         * @since 6.14.0
+         *
+         * @return string 'not_installed' | 'inactive' | 'active' | 'installFailed'
+         */
+        aiAgentsState: function () {
+            if (this.wpvibeInstallStatus === 'failed') {
+                return 'installFailed';
+            }
+            return this.generalTab.aiAgents.status;
+        },
+
+        /**
+         * Open WPVibe's own admin page.
+         *
+         * @since 6.14.0
+         */
+        openWPVibe: function () {
+            window.location.href = this.generalTab.aiAgents.adminUrl;
+        },
+
+        /**
+         * Install or activate WPVibe for the AI Agents card.
+         *
+         * Reuses the same sbi_install_addon / sbi_activate_addon AJAX
+         * actions as the WPConsent integration above -- no new installer,
+         * capability, or nonce is introduced.
+         *
+         * @since 6.14.0
+         */
+        installOrActivateWPVibe: function () {
+            let self = this,
+                aiAgents = self.generalTab.aiAgents,
+                isInstalled = aiAgents.status !== 'not_installed',
+                action = isInstalled ? 'sbi_activate_addon' : 'sbi_install_addon',
+                pluginParam = isInstalled ? aiAgents.basename : aiAgents.installDownloadUrl;
+
+            self.wpvibeInstallStatus = 'loading';
+
+            let data = new FormData();
+            data.append('action', action);
+            data.append('nonce', self.nonce);
+            data.append('type', 'plugin');
+            data.append('plugin', pluginParam);
+            fetch(self.ajaxHandler, {
+                method: "POST",
+                credentials: 'same-origin',
+                body: data
+            })
+                .then(response => response.json())
+                .then(function (response) {
+                    if (response.success !== true) {
+                        self.wpvibeInstallStatus = 'failed';
+                        return;
+                    }
+
+                    self.wpvibeInstallStatus = null;
+
+                    if (action === 'sbi_install_addon') {
+                        if (response.data && response.data.basename) {
+                            aiAgents.basename = response.data.basename;
+                        }
+                        aiAgents.status = (response.data && response.data.is_activated) ? 'active' : 'inactive';
+                        return;
+                    }
+
+                    aiAgents.status = 'active';
+                })
+                .catch(function () {
+                    self.wpvibeInstallStatus = 'failed';
+                });
         }
     }
 });
