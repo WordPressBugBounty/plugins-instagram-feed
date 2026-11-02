@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 7.1
-Stable tag: 6.15.0
+Stable tag: 6.15.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,10 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.15.1 =
+* Fix: The data-sharing popup no longer locks you out of your WordPress admin when your choice can't be saved. You can always close it and keep working.
+* Fix: Deactivating the plugin before WordPress has finished loading (for example with WP-CLI) no longer causes a fatal error.
 
 = 6.15.0 =
 * New: Ask AI assistants like Claude, ChatGPT and Cursor about your Instagram feeds and settings, through the WordPress Abilities API (WordPress 6.9 and newer). They can also make changes once you turn on "MCP Write Access" under Settings > General. Connect an assistant with the free WPVibe plugin, linked from the settings page. [See what Instagram Feed Pro adds](https://smashballoon.com/instagram-feed/instagram-lite-upgrade/?utm_source=changelog&utm_medium=aiagents&utm_campaign=instagram-free-readme)
