@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 7.1
-Stable tag: 6.15.1
+Stable tag: 6.16.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,17 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.16.0 =
+* New: The Embed button in the feed builder now opens a new Embed Feed window. Search for a page or post and add your feed to it, show it on every page through the Site Editor or in a widget, or copy the shortcode. On WordPress versions older than 5.8 the Embed button shows the feed shortcode instead.
+* Tweak: If you had opted in to usage tracking, that choice now carries over to the Data Sharing setting.
+* Fix: Choosing "Add to Page" now opens the page with the Instagram Feed block already added for your feed.
+* Fix: Feed errors are now shown to admins in the block editor instead of an empty box.
+* Fix: Feeds no longer stay hidden when the CookieYes cookie banner script fails to load.
+* Fix: The feed builder no longer freezes when a connected account can no longer be read, for example after your site's security keys change. The account is flagged with a Reconnect link instead.
+* Fix: Saving a feed with no changes no longer shows an "Error saving Feed" message.
+* Fix: With several Smash Balloon plugins active, admin-only notices on your site no longer cover each other.
+* Fix: Plugin security hardening.
 
 = 6.15.1 =
 * Fix: The data-sharing popup no longer locks you out of your WordPress admin when your choice can't be saved. You can always close it and keep working.

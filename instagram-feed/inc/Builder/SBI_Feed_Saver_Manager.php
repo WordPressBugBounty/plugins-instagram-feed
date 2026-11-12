@@ -140,7 +140,7 @@ class SBI_Feed_Saver_Manager
 			'feed_id' => false
 		);
 
-		if ($feed_saver->update_or_insert()) {
+		if (false !== $feed_saver->update_or_insert()) {
 			$return = array(
 				'success' => true,
 				'feed_id' => $feed_saver->get_feed_id()
@@ -834,7 +834,10 @@ class SBI_Feed_Saver_Manager
 		if (isset($_POST['bio']) && isset($_POST['id'])) {
 			$account_bio = sanitize_text_field(stripslashes($_POST['bio']));
 			$id = sanitize_text_field(wp_unslash($_POST['id']));
-			SBI_Source::update_personal_account_bio($id, $account_bio);
+			if (!SBI_Source::update_personal_account_bio($id, $account_bio)) {
+				// Nothing was saved, most often because the account's saved details no longer decrypt.
+				wp_send_json_error(array('message' => esc_html__('Could not save the bio. Reconnect this account, then try again.', 'instagram-feed')));
+			}
 		}
 		$response = array(
 			'success' => true,

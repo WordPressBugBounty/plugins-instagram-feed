@@ -142,7 +142,9 @@ class SB_Instagram_API_Connect
 	public function get_wp_error()
 	{
 		if ($this->is_wp_error()) {
-			return array('response' => $this->response, 'url' => $this->url);
+			// The URL carries the access token: redact it so no consumer can store or print it.
+			$url = preg_replace('/access_token=[^&\s]+/', 'access_token=[redacted]', (string) $this->url);
+			return array('response' => $this->response, 'url' => $url);
 		} else {
 			return false;
 		}

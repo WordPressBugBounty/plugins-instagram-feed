@@ -100,7 +100,7 @@ class SBI_Support
 			'global-style',
 			SBI_PLUGIN_URL . 'admin/builder/assets/css/global.css',
 			false,
-			SBIVER
+			SBIVER . '.' . filemtime(SBI_PLUGIN_DIR . 'admin/builder/assets/css/global.css')
 		);
 
 		wp_enqueue_style(
@@ -736,10 +736,18 @@ class SBI_Support
 			if (is_array($errors['connection'])) {
 				foreach ($errors['connection'] as $con_error) {
 					if (is_array($con_error)) {
-						foreach ($con_error as $subcon_error) {
-							$output .= esc_html($subcon_error) . '</br>';
+						// Headline and admin text; frontend_directions is HTML for the frontend notice.
+						$message = trim(($con_error['error_message'] ?? '') . ' ' . ($con_error['admin_only'] ?? ''));
+						if ($message !== '' && !empty($con_error['time'])) {
+							$message .= ' (' . date_i18n('Y-m-d H:i', (int) $con_error['time']) . ' UTC' . ')';
 						}
-					} else {
+						$con_error = $message;
+					}
+					// Scalars too: error_id, critical and post_id are support context.
+					if (is_scalar($con_error) && (string) $con_error !== '') {
+						$con_error = (string) $con_error;
+						// System Info is pasted into support tickets: never print the access token.
+						$con_error = preg_replace('/access_token=[^&\s]+/', 'access_token=[redacted]', $con_error);
 						$output .= esc_html($con_error) . '</br>';
 					}
 				}

@@ -28,7 +28,6 @@ include_once SBI_BUILDER_DIR . 'templates/sections/popup/extensions-popup.php';
 include_once SBI_BUILDER_DIR . 'templates/sections/popup/feedtypes-popup.php';
 include_once SBI_BUILDER_DIR . 'templates/sections/popup/feedtypes-customizer-popup.php';
 include_once SBI_BUILDER_DIR . 'templates/sections/popup/confirm-dialog-popup.php';
-include_once SBI_BUILDER_DIR . 'templates/sections/popup/embed-popup.php';
 include_once SBI_BUILDER_DIR . 'templates/sections/popup/onboarding-popup.php';
 include_once SBI_BUILDER_DIR . 'templates/sections/popup/onboarding-customizer-popup.php';
 include_once SBI_BUILDER_DIR . 'templates/sections/popup/install-plugin-popup.php';

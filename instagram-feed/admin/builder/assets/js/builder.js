@@ -40,9 +40,6 @@ sbiBuilder = new Vue({
         pluginType: sbi_builder.pluginType,
         genericText: sbi_builder.genericText,
         ajaxHandler: sbi_builder.ajax_handler,
-        adminPostURL: sbi_builder.adminPostURL,
-        widgetsPageURL: sbi_builder.widgetsPageURL,
-        themeSupportsWidgets: sbi_builder.themeSupportsWidgets,
         translatedText: sbi_builder.translatedText,
         socialShareLink: sbi_builder.socialShareLink,
         licenseType: sbi_builder.licenseType,
@@ -54,7 +51,6 @@ sbiBuilder = new Vue({
         allFeedsScreen: sbi_builder.allFeedsScreen,
         extensionsPopup: sbi_builder.extensionsPopup,
         mainFooterScreen: sbi_builder.mainFooterScreen,
-        embedPopupScreen: sbi_builder.embedPopupScreen,
 
         selectSourceScreen: sbi_builder.selectSourceScreen,
         customizeScreensText: sbi_builder.customizeScreens,
@@ -121,9 +117,6 @@ sbiBuilder = new Vue({
             clipboardCopiedNotif: false,
             legacyFeedsShown: false,
             editName: false,
-            embedPopup: false,
-            embedPopupScreen: 'step_1',
-            embedPopupSelectedPage: null,
 
             moderationMode: false,
 
@@ -193,7 +186,6 @@ sbiBuilder = new Vue({
 
         customizerFeedDataInitial: null,
         customizerFeedData: sbi_builder.customizerFeedData,
-        wordpressPageLists: sbi_builder.wordpressPageLists,
         iscustomizerScreen: (sbi_builder.customizerFeedData != undefined && sbi_builder.customizerFeedData != false),
 
         customizerSidebarBuilder: sbi_builder.customizerSidebarBuilder,
@@ -406,6 +398,54 @@ sbiBuilder = new Vue({
         },
 
         /**
+         * Save the feed, then open the sb-customizer Embed Feed modal.
+         */
+        openEmbedModal: function () {
+            var self = this,
+                notify = function (type, text, ms) {
+                    var note = self.notificationElement = {type: type, text: text, shown: 'shown'};
+                    setTimeout(function () {
+                        note.shown = 'hidden';
+                    }, ms || 3000);
+                    return note;
+                },
+                showShortcode = function (textKey) {
+                    // processNotification keeps save toasts off this notice while it shows.
+                    self.embedNotice = notify('error', self.genericText[textKey].replace('%s', '[instagram-feed feed=' + self.customizerFeedData.feed_info.id + ']'), 15000);
+                },
+                modal = null;
+            // Quiet save: the success toast would replace the Embed notices below.
+            self.saveFeedSettings(false, true);
+            // Add to a Page relies on the feed block, which registers through block.json (WordPress 5.8+).
+            if (!window.SBEmbedModal || !sbi_builder.embedModalSupported) {
+                showShortcode('embedUnavailable');
+                return;
+            }
+            try {
+                modal = window.SBEmbedModal.open({
+                    feedId: self.customizerFeedData.feed_info.id,
+                    canCreatePages: !!sbi_builder.canCreatePages,
+                    onCopy: function (text) {
+                        notify('success', text);
+                    },
+                    onCopyFailed: function () {
+                        notify('error', self.genericText.copyFailed);
+                    },
+                    onCreateFailed: function (error) {
+                        // Close the modal so the builder toast is visible.
+                        if (modal && modal.close) {
+                            modal.close();
+                        }
+                        notify('error', (error && error.message) || self.genericText.createPageFailed, 8000);
+                    }
+                });
+            } catch (e) {
+                // The modal could not mount: give the shortcode instead.
+                showShortcode('embedOpenFailed');
+            }
+        },
+
+        /**
          * Show & Hide View
          *
          * @since 6.0
@@ -440,9 +480,6 @@ sbiBuilder = new Vue({
 
             if (viewName == 'editName') {
                 document.getElementById("sbi-csz-hd-input").focus();
-            }
-            if (viewName == 'embedPopup' && ajaxAction == true) {
-                self.saveFeedSettings();
             }
 
             if ((viewName == 'sourcePopup' || viewName == 'sourcePopupType') && sourcePopupType == 'creationRedirect') {
@@ -2771,7 +2808,7 @@ sbiBuilder = new Vue({
          *
          * @since 4.0
          */
-        saveFeedSettings: function (leavePage = false) {
+        saveFeedSettings: function (leavePage = false, quiet = false) {
             var self = this,
                 sources = [],
                 updateFeedData = {
@@ -2796,7 +2833,11 @@ sbiBuilder = new Vue({
             self.ajaxPost(updateFeedData, function (_ref) {
                 var data = _ref.data;
                 if (data && data.success === true) {
-                    self.processNotification('feedSaved');
+                    if (quiet) {
+                        self.loadingBar = false;
+                    } else {
+                        self.processNotification('feedSaved');
+                    }
                     self.statusMessage = self.genericText.saved;
                     self.customizerFeedDataInitial = self.customizerFeedData;
                     if (leavePage === true) {
@@ -3028,13 +3069,19 @@ sbiBuilder = new Vue({
             var self = this,
                 notification = self.genericText.notification[notificationType];
             self.loadingBar = false;
-            self.notificationElement = {
+            // A save answering late (manual or quiet, success or failure) must not replace the Embed shortcode notice.
+            if ((notificationType === 'feedSaved' || notificationType === 'feedSavedError') && self.embedNotice && self.embedNotice.shown === 'shown') {
+                return;
+            }
+            // Hide only this notice, so a later notice in the same slot keeps its own timer.
+            var el = {
                 type: notification.type,
                 text: notification.text,
                 shown: "shown"
             };
+            self.notificationElement = el;
             setTimeout(function () {
-                self.notificationElement.shown = "hidden";
+                el.shown = "hidden";
             }, 5000);
         },
 

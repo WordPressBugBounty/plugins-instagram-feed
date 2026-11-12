@@ -67,6 +67,24 @@ Vue.component('sb-personal-account-component', {
 
 
         /*
+         * Show why the info wasn't saved, in the page's notification (the builder and the Settings page
+         * both have one), and keep the popup open
+         *
+        */
+        showUpdateError: function (message) {
+            let parent = this.$parent;
+            parent.notificationElement = {
+                type: 'error',
+                text: message,
+                shown: 'shown'
+            };
+            setTimeout(function () {
+                parent.notificationElement.shown = 'hidden';
+            }, 5000);
+        },
+
+
+        /*
          * Update Personal account info
          * send ajax info
          *
@@ -96,6 +114,9 @@ Vue.component('sb-personal-account-component', {
                         self.$parent.sourcesList = data.sourcesList;
                         self.personalAccountPopup = false;
                         self.$parent.successPersonalAccountUpdate();
+                    } else if (data.data && data.data.message) {
+                        // Nothing was saved, for example because the account's saved details no longer decrypt.
+                        self.showUpdateError(data.data.message);
                     }
                     self.loading = false;
                 });

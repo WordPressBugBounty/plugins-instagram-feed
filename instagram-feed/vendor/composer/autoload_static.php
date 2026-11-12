@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc5372f45acf70f7a7014a9c4e855ac6d
+class ComposerStaticInit95c95d6db708f7e953e8feb23e4f3bd6
 {
     public static $files = array (
         'sb_ig_b1eb330aa001ae4915f07005b4e993c2' => __DIR__ . '/..' . '/smashballoon/framework/Utilities/functions.php',
@@ -19,6 +19,7 @@ class ComposerStaticInitc5372f45acf70f7a7014a9c4e855ac6d
         'I' =>
         array (
             'InstagramFeed\\Vendor\\Smashballoon\\Framework\\' => 44,
+            'InstagramFeed\\Vendor\\Smashballoon\\Customizer\\V2\\' => 48,
             'InstagramFeed\\Vendor\\Psr\\Container\\' => 35,
             'InstagramFeed\\Vendor\\PhpDocReader\\' => 34,
             'InstagramFeed\\Vendor\\Laravel\\SerializableClosure\\' => 49,
@@ -36,6 +37,10 @@ class ComposerStaticInitc5372f45acf70f7a7014a9c4e855ac6d
         'InstagramFeed\\Vendor\\Smashballoon\\Framework\\' =>
         array (
             0 => __DIR__ . '/..' . '/smashballoon/framework',
+        ),
+        'InstagramFeed\\Vendor\\Smashballoon\\Customizer\\V2\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/smashballoon/customizer/app/V2',
         ),
         'InstagramFeed\\Vendor\\Psr\\Container\\' =>
         array (
@@ -70,9 +75,9 @@ class ComposerStaticInitc5372f45acf70f7a7014a9c4e855ac6d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc5372f45acf70f7a7014a9c4e855ac6d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc5372f45acf70f7a7014a9c4e855ac6d::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitc5372f45acf70f7a7014a9c4e855ac6d::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit95c95d6db708f7e953e8feb23e4f3bd6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit95c95d6db708f7e953e8feb23e4f3bd6::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit95c95d6db708f7e953e8feb23e4f3bd6::$classMap;
 
         }, null, ClassLoader::class);
     }

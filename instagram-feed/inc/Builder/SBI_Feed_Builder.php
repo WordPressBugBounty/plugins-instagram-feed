@@ -5,6 +5,8 @@ namespace InstagramFeed\Builder;
 use InstagramFeed\admin\SBI_Onboarding_wizard;
 use InstagramFeed\Builder\Tabs\SBI_Builder_Customizer_Tab;
 use InstagramFeed\Helpers\Util;
+use InstagramFeed\Vendor\Smashballoon\Customizer\V2\EmbedModal;
+use InstagramFeed\Vendor\Smashballoon\Customizer\V2\EmbedTargets;
 use SB_Instagram_Connected_Account;
 use SB_Instagram_Data_Encryption;
 use SB_Instagram_Feed_Locator;
@@ -43,6 +45,11 @@ class SBI_Feed_Builder
 			SBI_Feed_Saver_Manager::hooks();
 			SBI_Source::hooks();
 			self::hooks();
+		}
+
+		// The Embed modal's page search route. Older sb-customizer builds lack it.
+		if (method_exists(EmbedTargets::class, 'register_route')) {
+			add_action('rest_api_init', array(EmbedTargets::class, 'register_route'));
 		}
 	}
 
@@ -299,11 +306,10 @@ class SBI_Feed_Builder
 					'nonce' => wp_create_nonce('sbi-admin'),
 					'admin_nonce' => wp_create_nonce('sbi_admin_nonce'),
 
-					'adminPostURL' => admin_url('post.php'),
-					'widgetsPageURL' => admin_url('widgets.php'),
-					'themeSupportsWidgets' => current_theme_supports('widgets'),
 					'supportPageUrl' => admin_url('admin.php?page=sbi-support'),
 					'genericText' => self::get_generic_text(),
+					'embedModalSupported' => version_compare(get_bloginfo('version'), '5.8', '>='),
+					'canCreatePages' => current_user_can('edit_pages'),
 					'welcomeScreen' => array(
 						'mainHeading' => __('All Feeds', 'instagram-feed'),
 						'createFeed' => __('Create your Feed', 'instagram-feed'),
@@ -400,14 +406,6 @@ class SBI_Feed_Builder
 						'description' => __('Includes all Smash Balloon plugins for one low price: Instagram, Facebook, Twitter, YouTube, and Social Wall', 'instagram-feed'),
 						'promo' => sprintf(__('%1$sBonus%2$s Lite users get %3$s50&#37; Off%4$s automatically applied at checkout', 'instagram-feed'), '<span class="sbi-bld-ft-bns">', '</span>', '<strong>', '</strong>'),
 					),
-					'embedPopupScreen' => array(
-						'heading' => __('Embed Feed', 'instagram-feed'),
-						'description' => __('Add the unique shortcode to any page, post, or widget:', 'instagram-feed'),
-						'description_2' => current_theme_supports('widgets') ? __('Or use the built in WordPress block or widget', 'instagram-feed') : __('Or use the built in WordPress block', 'instagram-feed'),
-						'addPage' => __('Add to a Page', 'instagram-feed'),
-						'addWidget' => __('Add to a Widget', 'instagram-feed'),
-						'selectPage' => __('Select Page', 'instagram-feed'),
-					),
 					'links' => self::get_links_with_utm(),
 					'pluginsInfo' => array(
 						'social_wall' => array(
@@ -448,7 +446,31 @@ class SBI_Feed_Builder
 					sb_instagram_scripts_enqueue(true);
 					$sbi_builder['customizerFeedData'] = $maybe_feed_customizer_data;
 					$sbi_builder['customizerSidebarBuilder'] = SBI_Builder_Customizer_Tab::get_customizer_tabs();
-					$sbi_builder['wordpressPageLists'] = $this->get_wp_pages();
+					$cap = current_user_can('manage_instagram_feed_options') ? 'manage_instagram_feed_options' : 'manage_options';
+					$embed_strings = self::embed_modal_strings();
+					$embed_gettext = function ($translation, $text) use ($embed_strings) {
+						return isset($embed_strings[$text]) ? $embed_strings[$text] : $translation;
+					};
+					add_filter('gettext_reviews-feed', $embed_gettext, 10, 2);
+					EmbedModal::enqueue(
+						array(
+							'capability' => apply_filters('sbi_settings_pages_capability', $cap),
+							'block_title' => __('Instagram Feed', 'instagram-feed'),
+							'wizard_arg' => 'sbi_wizard',
+							'shortcode' => '[instagram-feed feed=%s]',
+						)
+					);
+					remove_filter('gettext_reviews-feed', $embed_gettext, 10);
+					// wp_add_inline_script needs WP 4.5. The modal itself needs WP 5.8, see embedModalSupported.
+					if (!empty($embed_strings) && function_exists('wp_add_inline_script')) {
+						wp_add_inline_script(
+							EmbedModal::HANDLE,
+							'wp.i18n.setLocaleData(' . wp_json_encode(array_map(function ($translation) {
+								return array($translation);
+							}, $embed_strings)) . ', "reviews-feed");',
+							'before'
+						);
+					}
 					$sbi_builder['instagram_feed_dismiss_lite'] = get_transient('instagram_feed_dismiss_lite');
 
 					if (!isset($_GET['feed_id']) || $_GET['feed_id'] === 'legacy') {
@@ -518,8 +540,12 @@ class SBI_Feed_Builder
 					'sbi-builder-style',
 					SBI_PLUGIN_URL . 'admin/builder/assets/css/builder.css',
 					false,
-					SBIVER
+					SBIVER . '.' . filemtime(SBI_PLUGIN_DIR . 'admin/builder/assets/css/builder.css')
 				);
+				// The shared modal offers "Create a new page" to everyone, and wp/v2/pages refuses users without edit_pages.
+				if (!current_user_can('edit_pages')) {
+					wp_add_inline_style('sbi-builder-style', '.sb-embed-create{display:none!important}');
+				}
 
 				self::global_enqueue_ressources_scripts();
 
@@ -529,7 +555,7 @@ class SBI_Feed_Builder
 					'sbi-builder-app',
 					SBI_PLUGIN_URL . 'admin/builder/assets/js/builder.js',
 					array('feed-builder-svgs'),
-					SBIVER,
+					SBIVER . '.' . filemtime(SBI_PLUGIN_DIR . 'admin/builder/assets/js/builder.js'),
 					true
 				);
 				// SMASH-1378 F-002: focus trap for popups declared as role="dialog".
@@ -612,6 +638,12 @@ class SBI_Feed_Builder
 			'location' => __('Location', 'instagram-feed'),
 			'page' => __('Page', 'instagram-feed'),
 			'copiedClipboard' => __('Copied to Clipboard', 'instagram-feed'),
+			/* translators: %s: The feed shortcode. */
+			'embedUnavailable' => __('The Embed Feed modal needs WordPress 5.8 or newer. Use this shortcode instead: %s', 'instagram-feed'),
+			/* translators: %s: The feed shortcode. */
+			'embedOpenFailed' => __('Could not open the Embed Feed modal. Use this shortcode instead: %s', 'instagram-feed'),
+			'createPageFailed' => __('The page could not be created. Please try again.', 'instagram-feed'),
+			'copyFailed' => __('Could not copy. Select the text and copy it manually.', 'instagram-feed'),
 			'feedImported' => __('Feed imported successfully', 'instagram-feed'),
 			'failedToImportFeed' => __('Failed to import feed', 'instagram-feed'),
 			'timeline' => __('Timeline', 'instagram-feed'),
@@ -1438,6 +1470,10 @@ class SBI_Feed_Builder
 		$return = array();
 		foreach ($source_data as $source) {
 			$info = !empty($source['info']) ? json_decode($encryption->decrypt($source['info']), true) : array();
+			if (!is_array($info)) {
+				// An info blob that no longer decrypts (changed WordPress keys or salts, a migration) decodes to null.
+				$info = array();
+			}
 			$source['header_data'] = $info;
 
 			$settings = array('gdpr' => 'no');
@@ -1702,30 +1738,74 @@ class SBI_Feed_Builder
 	}
 
 	/**
-	 * Get WP Pages List
+	 * The Embed modal's strings, translated in this plugin's text domain.
+	 *
+	 * The shared sb-customizer modal tags its strings `reviews-feed`, which this
+	 * plugin does not ship. They are listed here so they translate as
+	 * `instagram-feed`, then mapped onto `reviews-feed` for the modal. Keep in
+	 * sync with the modal's strings when sb-customizer changes them.
+	 *
+	 * @return array<string, string> Source string => translation, translated ones only.
+	 */
+	public static function embed_modal_strings()
+	{
+		$strings = array(
+			'Back' => __('Back', 'instagram-feed'),
+			'Choose a different page' => __('Choose a different page', 'instagram-feed'),
+			'Page title' => __('Page title', 'instagram-feed'),
+			'New page title' => __('New page title', 'instagram-feed'),
+			'Cancel and search instead' => __('Cancel and search instead', 'instagram-feed'),
+			'Search for a page or a post' => __('Search for a page or a post', 'instagram-feed'),
+			'Nothing matched that search.' => __('Nothing matched that search.', 'instagram-feed'),
+			'No pages or posts yet.' => __('No pages or posts yet.', 'instagram-feed'),
+			'Create page' => __('Create page', 'instagram-feed'),
+			'Create a new page' => __('Create a new page', 'instagram-feed'),
+			'Embed Feed' => __('Embed Feed', 'instagram-feed'),
+			'Embed feed' => __('Embed feed', 'instagram-feed'),
+			'Save first. The shortcode and links become available once this exists on the site.' => __('Save first. The shortcode and links become available once this exists on the site.', 'instagram-feed'),
+			'Post or a Page' => __('Post or a Page', 'instagram-feed'),
+			'We will redirect you to Gutenberg editor' => __('We will redirect you to Gutenberg editor', 'instagram-feed'),
+			'Create Page and Go' => __('Create Page and Go', 'instagram-feed'),
+			'Add and Go to Page' => __('Add and Go to Page', 'instagram-feed'),
+			/* translators: %s: the word draft. */
+			'Saved as a %s. Nothing is public until you publish it.' => __('Saved as a %s. Nothing is public until you publish it.', 'instagram-feed'),
+			'draft' => __('draft', 'instagram-feed'),
+			'Show this on every page' => __('Show this on every page', 'instagram-feed'),
+			/* translators: %s: the block title. */
+			'Search “%s” and drop it in.' => __('Search “%s” and drop it in.', 'instagram-feed'),
+			'Add it once in the Site Editor.' => __('Add it once in the Site Editor.', 'instagram-feed'),
+			'Open Site Editor' => __('Open Site Editor', 'instagram-feed'),
+			'Add to a Widget' => __('Add to a Widget', 'instagram-feed'),
+			'Drop it into a sidebar or footer area.' => __('Drop it into a sidebar or footer area.', 'instagram-feed'),
+			'Open Widgets' => __('Open Widgets', 'instagram-feed'),
+			'Use a shortcode' => __('Use a shortcode', 'instagram-feed'),
+			'Shortcode copied' => __('Shortcode copied', 'instagram-feed'),
+			'Copy' => __('Copy', 'instagram-feed'),
+			'Available once you save' => __('Available once you save', 'instagram-feed'),
+			'The page could not be created. Please try again.' => __('The page could not be created. Please try again.', 'instagram-feed'),
+			'Something went wrong. Please try again.' => __('Something went wrong. Please try again.', 'instagram-feed'),
+			'Draft' => __('Draft', 'instagram-feed'),
+			'Pending' => __('Pending', 'instagram-feed'),
+			'Scheduled' => __('Scheduled', 'instagram-feed'),
+			'Private' => __('Private', 'instagram-feed'),
+			/* translators: %d: the post ID. */
+			'(no title) #%d' => __('(no title) #%d', 'instagram-feed'),
+		);
+
+		return array_filter($strings, function ($translation, $text) {
+			return $translation !== $text;
+		}, ARRAY_FILTER_USE_BOTH);
+	}
+
+	/**
+	 * Mark the shortcode atts as the customizer preview feed.
+	 *
+	 * @param array $atts Shortcode atts.
 	 *
 	 * @return array
 	 *
 	 * @since 6.0
 	 */
-	public function get_wp_pages()
-	{
-		$pagesList = get_pages();
-		$pagesResult = array();
-		if (is_array($pagesList)) {
-			foreach ($pagesList as $page) {
-				array_push(
-					$pagesResult,
-					array(
-						'id' => $page->ID,
-						'title' => $page->post_title
-					)
-				);
-			}
-		}
-		return $pagesResult;
-	}
-
 	public static function add_customizer_att($atts)
 	{
 		if (!is_array($atts)) {
@@ -1748,7 +1828,7 @@ class SBI_Feed_Builder
 			'feed-global-style',
 			SBI_PLUGIN_URL . 'admin/builder/assets/css/global.css',
 			false,
-			SBIVER
+			SBIVER . '.' . filemtime(SBI_PLUGIN_DIR . 'admin/builder/assets/css/global.css')
 		);
 
 		wp_enqueue_script(

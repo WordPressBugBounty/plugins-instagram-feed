@@ -5,7 +5,7 @@
  * 
  * @since 1.0
  */
-namespace Smashballoon\Customizer;
+namespace InstagramFeed\Vendor\Smashballoon\Customizer;
 
 use InstagramFeed\Vendor\Smashballoon\Framework\Packages\License_Tier\License_Tier;
 class Sample_Plugin_License_Tier extends License_Tier

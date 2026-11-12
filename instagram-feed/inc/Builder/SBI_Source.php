@@ -1232,7 +1232,7 @@ class SBI_Source
 	/**
 	 * Updates Personal Account Bio
 	 *
-	 * @return array|bool
+	 * @return bool Whether the bio was saved. False when the source has no info, or its info no longer decrypts.
 	 *
 	 * @since 6.0.8
 	 */
@@ -1242,10 +1242,16 @@ class SBI_Source
 		if (isset($source['info'])) {
 			$encryption = new SB_Instagram_Data_Encryption();
 			$info = json_decode($encryption->maybe_decrypt($source['info']), true);
+			if (!is_array($info)) {
+				// The info no longer decrypts (changed WordPress keys or salts). Keep it as it is: it decrypts again if
+				// the keys come back, and Reconnect rewrites it otherwise.
+				return false;
+			}
 			$info = array('biography' => $bio) + $info;
 			$to_update = array();
 			$to_update['info'] = json_encode($info);
-			SBI_Db::source_update($to_update, array('id' => $account_id));
+			return false !== SBI_Db::source_update($to_update, array('id' => $account_id));
 		}
+		return false;
 	}
 }

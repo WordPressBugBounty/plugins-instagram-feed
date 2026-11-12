@@ -1183,8 +1183,19 @@ if (!sbi_js_exists) {
                     return true;
                 }
                 if (typeof window.cookieyes !== "undefined") { // CookieYes | GDPR Cookie Consent by CookieYes
-                    if (typeof window.cookieyes._ckyConsentStore.get !== 'undefined') {
-                        this.settings.consentGiven = window.cookieyes._ckyConsentStore.get('functional') === 'yes';
+                    // window.cookieyes can be the bare <script id="cookieyes"> element when the CookieYes
+                    // script did not run (pageview quota exceeded, CDN blocked). Read consent only from a
+                    // usable store; otherwise keep privacy mode on.
+                    try {
+                        var ckyConsentStore = window.cookieyes._ckyConsentStore;
+                        if (ckyConsentStore && typeof ckyConsentStore.get === 'function') {
+                            this.settings.consentGiven = ckyConsentStore.get('functional') === 'yes';
+                        }
+                    } catch (e) {
+                        this.settings.consentGiven = false;
+                        if (this.settings.debugEnabled) {
+                            console.warn('Instagram Feed: could not read CookieYes consent', e);
+                        }
                     }
                 } else if (typeof CLI_Cookie !== "undefined") { // GDPR Cookie Consent by WebToffee
                     if (CLI_Cookie.read(CLI_ACCEPT_COOKIE_NAME) !== null) {
@@ -1333,6 +1344,17 @@ if (!sbi_js_exists) {
                     window.sbi.feeds[index].afterConsentToggled();
                 });
             }, 1000);
+        });
+
+        // CookieYes | GDPR Cookie Consent by CookieYes
+        // Its script can run after this one (deferred or delayed), when the handler above found no
+        // banner buttons. Re-check consent on the events CookieYes fires on document instead.
+        ['cookieyes_banner_load', 'cookieyes_consent_update'].forEach(function (eventName) {
+            document.addEventListener(eventName, function () {
+                $.each(window.sbi.feeds, function (index) {
+                    window.sbi.feeds[index].afterConsentToggled();
+                });
+            });
         });
 
         // Cookiebot

@@ -69,12 +69,13 @@ class SBI_Tooltip_Wizard
 			'sbi-admin-tooltip-wizard',
 			SBI_PLUGIN_URL . 'admin/builder/assets/js/tooltip-wizard.js',
 			['jquery'],
-			SBIVER
+			SBIVER . '.' . filemtime(SBI_PLUGIN_DIR . 'admin/builder/assets/js/tooltip-wizard.js')
 		);
 
 		$wp_localize_data = [];
 		if ($this->check_gutenberg_wizard()) {
 			$wp_localize_data['sbi_wizard_gutenberg'] = true;
+			$wp_localize_data['sbi_wizard_feed_id'] = is_scalar($_GET['sbi_wizard']) ? absint($_GET['sbi_wizard']) : 0;
 		}
 
 		wp_localize_script(

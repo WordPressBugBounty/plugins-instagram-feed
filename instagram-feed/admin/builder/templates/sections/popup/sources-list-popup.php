@@ -57,7 +57,7 @@
                         <div class="sbi-fb-left-boss">
                             <div class="sbi-fb-srcs-item-type">
                                 <div v-html="source.account_type == 'personal' ? svgIcons['user'] : svgIcons['flag']"></div>
-                                <span class="sb-small sb-lighter">{{source.header_data.account_type || 'Business Advanced'}}</span>
+                                <span class="sb-small sb-lighter">{{(source.header_data && source.header_data.account_type) || 'Business Advanced'}}</span>
                             </div>
 
                             <div v-if="source.error !== '' || source.error_encryption" class="sb-source-error-wrap">
@@ -69,6 +69,7 @@
 
                                 <span v-html="source.error !== '' ? genericText.errorSource : genericText.errorEncryption"></span><a
                                         href="#" @click.stop.prevent="activateView('sourcePopup', 'creationRedirect')"
+                                        @keydown.enter.stop.prevent="activateView('sourcePopup', 'creationRedirect')"
                                         v-html="genericText.reconnect"></a>
                             </div>
 

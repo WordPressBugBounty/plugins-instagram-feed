@@ -354,7 +354,9 @@ class SB_Instagram_Posts_Manager
 
 		if (isset($response['response']) && is_wp_error($response['response'])) {
 			$error_message_return['error_message'] = __('HTTP Error. Unable to connect to the Instagram API.', 'instagram-feed') . ' ' . __('Feed will not update.', 'instagram-feed');
-			$error_message_return['admin_only'] = sprintf(__('Error connecting to %s.', 'instagram-feed'), $response['url']);
+			// The URL carries the access token: keep it out of stored and displayed errors.
+			$safe_url = preg_replace('/access_token=[^&\s]+/', 'access_token=[redacted]', (string) $response['url']);
+			$error_message_return['admin_only'] = sprintf(__('Error connecting to %s.', 'instagram-feed'), $safe_url);
 
 			$error_message_return['frontend_directions'] = '<a href="https://smashballoon.com/instagram-feed/docs/errors/?utm_campaign=instagram-free&utm_source=error-message&utm_medium=docs' . $hash . '" target="_blank" rel="noopener">' . __('Directions on how to resolve this issue', 'instagram-feed') . '</a>';
 
