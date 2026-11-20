@@ -966,6 +966,13 @@ class SBI_Global_Settings
 			$sbi_consent_privacy_url     = \InstagramFeed\Vendor\Smashballoon\Framework\Packages\Consent\ConsentManager::link_url( 'settings', 'privacy', 'instagram' );
 		}
 
+		// SMASH-2484 — when the returned account is already saved (the earlier
+		// pass in global_enqueue_ressources_scripts() saves it), this pass
+		// deletes and re-inserts it under a new id, until SMASH-2488
+		// (awesomemotive/instagram-feed#645) updates the row in place. Read the
+		// list after this pass, or Manage Sources lists an id that no longer
+		// exists. Pro uses this order, and it stays correct after SMASH-2488.
+		$newly_retrieved_source_connection_data = SBI_Source::maybe_source_connection_data();
 		$sources_list = SBI_Feed_Builder::get_source_list();
 
 		// Extract only license keys and build array for extensions license keys
@@ -1303,7 +1310,6 @@ class SBI_Global_Settings
 			'resetSVG' => '<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M12.668 3.33317L10.0013 5.99984H12.0013C12.0013 7.0607 11.5799 8.07812 10.8297 8.82826C10.0796 9.57841 9.06217 9.99984 8.0013 9.99984C7.33463 9.99984 6.68797 9.83317 6.13463 9.53317L5.1613 10.5065C6.01003 11.0467 6.99526 11.3335 8.0013 11.3332C9.41579 11.3332 10.7723 10.7713 11.7725 9.77107C12.7727 8.77088 13.3346 7.41432 13.3346 5.99984H15.3346L12.668 3.33317ZM4.0013 5.99984C4.0013 4.93897 4.42273 3.92156 5.17287 3.17141C5.92302 2.42126 6.94044 1.99984 8.0013 1.99984C8.66797 1.99984 9.31464 2.1665 9.86797 2.4665L10.8413 1.49317C9.99257 0.953006 9.00734 0.666224 8.0013 0.666504C6.58681 0.666504 5.23026 1.22841 4.23007 2.2286C3.22987 3.2288 2.66797 4.58535 2.66797 5.99984H0.667969L3.33464 8.6665L6.0013 5.99984" fill="#141B38"/></svg>'
 		);
 
-		$newly_retrieved_source_connection_data = SBI_Source::maybe_source_connection_data();
 		if ($newly_retrieved_source_connection_data) {
 			$sbi_settings['newSourceData'] = $newly_retrieved_source_connection_data;
 		}

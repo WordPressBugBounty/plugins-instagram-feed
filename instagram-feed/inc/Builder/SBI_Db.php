@@ -275,9 +275,52 @@ class SBI_Db
 				'database_error',
 				'<strong>' . __('There was an error when trying to update the part of the database that stores connected accounts:', 'instagram-feed') . '</strong><br><br><code>' . $wpdb->last_error . '</code><br>'
 			);
+		} else {
+			self::clear_sources_cache();
 		}
 
 		return $affected;
+	}
+
+	/**
+	 * Clear the source list that source_query() caches for the request,
+	 * so a list read after a source changes includes the change.
+	 *
+	 * @param int|null $sources_count Row count to size the clear by. Pass the
+	 *                                count from before a bulk delete; null
+	 *                                counts the table now.
+	 *
+	 * @return void
+	 *
+	 * @since 6.15.0
+	 */
+	public static function clear_sources_cache($sources_count = null)
+	{
+		if ($sources_count === null) {
+			$sources_count = self::sources_count();
+		}
+
+		// source_query() keys its cache by row offset, 400 rows a page. The
+		// extra page covers a delete that just reduced the count.
+		$pages = (int)ceil($sources_count / 400);
+		for ($page = 0; $page <= $pages; $page++) {
+			wp_cache_delete('sbi_sources_query_' . ($page * 400));
+		}
+	}
+
+	/**
+	 * Number of rows in the sources table
+	 *
+	 * @return int
+	 *
+	 * @since 6.15.0
+	 */
+	public static function sources_count()
+	{
+		global $wpdb;
+		$sources_table_name = $wpdb->prefix . 'sbi_sources';
+
+		return (int)$wpdb->get_var("SELECT COUNT(*) FROM $sources_table_name;");
 	}
 
 	/**
@@ -327,6 +370,8 @@ class SBI_Db
 				'database_error',
 				'<strong>' . __('There was an error when trying to update the part of the database that stores connected accounts:', 'instagram-feed') . '</strong><br><br><code>' . $wpdb->last_error . '</code><br>'
 			);
+		} else {
+			self::clear_sources_cache();
 		}
 
 		return $affected;
@@ -575,12 +620,15 @@ class SBI_Db
 	{
 		global $wpdb;
 		$sources_table_name = $wpdb->prefix . 'sbi_sources';
-		return $wpdb->query(
+		$deleted = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM $sources_table_name WHERE id = %d; ",
 				$source_id
 			)
 		);
+		self::clear_sources_cache();
+
+		return $deleted;
 	}
 
 	/**
@@ -600,6 +648,7 @@ class SBI_Db
 				$source_id
 			)
 		);
+		self::clear_sources_cache();
 
 		echo sbi_json_encode(SBI_Feed_Builder::get_source_list());
 		wp_die();
@@ -622,6 +671,7 @@ class SBI_Db
 				$source_id
 			)
 		);
+		self::clear_sources_cache();
 	}
 
 	/**
@@ -813,7 +863,11 @@ class SBI_Db
 		$sources_table_name = $wpdb->prefix . 'sbi_sources';
 
 		if ($wpdb->get_var("show tables like '$sources_table_name'") === $sources_table_name) {
+			// Count first: after the delete the table is empty, which would
+			// size the cache clear to the first page only.
+			$sources_count = self::sources_count();
 			$wpdb->query("DELETE FROM $sources_table_name");
+			self::clear_sources_cache($sources_count);
 		}
 	}
 

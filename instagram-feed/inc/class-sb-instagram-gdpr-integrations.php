@@ -132,40 +132,14 @@ class SB_Instagram_GDPR_Integrations
 		$sbi_statuses_option = get_option('sbi_statuses', array());
 
 		if (!isset($sbi_statuses_option['gdpr']['image_editor']) || $retest) {
-			$test_image = trailingslashit(SBI_PLUGIN_URL) . 'img/placeholder.png';
+			// Open the bundled image from disk, not by URL: a request to the site's own
+			// URL fails behind HTTP Basic Auth, a firewall or a self-signed certificate.
+			// This tests only that an image editor library can open an image.
+			$test_image = trailingslashit(SBI_PLUGIN_DIR) . 'img/placeholder.png';
 
 			$image_editor = wp_get_image_editor($test_image);
 
-			$sbi_statuses_option['gdpr']['image_editor'] = false;
-			// not uncommon for the image editor to not work using it this way
-			if (!is_wp_error($image_editor)) {
-				$sbi_statuses_option['gdpr']['image_editor'] = true;
-			} elseif (class_exists('\InstagramFeed\Vendor\Smashballoon\Framework\Packages\Consent\ConsentManager') && \InstagramFeed\Vendor\Smashballoon\Framework\Packages\Consent\ConsentManager::is_dsc_enabled()) {
-				// External image-editor probe is consent-gated (phone-home). With
-				// consent off, the flag stays false and feeds still render.
-				$test_image = 'https://plugin.smashballoon.com/editor-test.png';
-
-				$image_editor = wp_get_image_editor($test_image);
-				if (!is_wp_error($image_editor)) {
-					$sbi_statuses_option['gdpr']['image_editor'] = true;
-				} else {
-					if (!function_exists('download_url')) {
-						include_once ABSPATH . 'wp-admin/includes/file.php';
-					}
-					// Set a timeout for downloading the image
-					$timeout_seconds = 5;
-
-					// Download file to temp dir.
-					$temp_file = download_url($test_image, $timeout_seconds);
-
-					$image_editor = wp_get_image_editor($temp_file);
-					if (!is_wp_error($image_editor)) {
-						$sbi_statuses_option['gdpr']['image_editor'] = true;
-					}
-
-					@unlink($temp_file);
-				}
-			}
+			$sbi_statuses_option['gdpr']['image_editor'] = !is_wp_error($image_editor);
 
 			$upload = wp_upload_dir();
 			$upload_dir = $upload['basedir'];

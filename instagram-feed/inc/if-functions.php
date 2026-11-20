@@ -1713,6 +1713,30 @@ function sbi_schedule_report_email()
 }
 
 /**
+ * Schedule the shared cron events again when they are missing.
+ *
+ * Activating Pro while the free plugin was active ran the free plugin's
+ * deactivation routine, which cleared these events. Pro's activation routine
+ * did not run in that request to schedule them again (SMASH-2563). The DB
+ * update to 2.5 calls this once per site. This repair leaves out
+ * sb_instagram_cron_job. No callback listens to it, so losing it broke
+ * nothing. sbi_free_standby_restore_cron_events() schedules it only to match
+ * the activation routine.
+ *
+ * @return void
+ */
+function sbi_schedule_missing_cron_events()
+{
+	if (!wp_next_scheduled('sb_instagram_twicedaily')) {
+		wp_schedule_event(time(), 'twicedaily', 'sb_instagram_twicedaily');
+	}
+
+	if (!wp_next_scheduled('sb_instagram_feed_issue_email')) {
+		sbi_schedule_report_email();
+	}
+}
+
+/**
  * Build and send the feed issue report email.
  *
  * @param array $staleness Optional BackupCacheMonitor::evaluate() state. When

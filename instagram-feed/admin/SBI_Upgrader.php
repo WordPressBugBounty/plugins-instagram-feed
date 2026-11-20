@@ -319,9 +319,13 @@ class SBI_Upgrader
 		);
 
 		// Verify pro not installed.
-		$active = activate_plugin(self::SLUG, $url, false, true);
-		if (!is_wp_error($active)) {
-			deactivate_plugins(plugin_basename(SBI_PLUGIN_DIR));
+		// The free plugin stays active and stands by while Pro is active (SMASH-2563), so it is not deactivated here.
+		// No redirect URL: with one, activate_plugin() sends a Location header,
+		// and this JSON response becomes an HTTP 302.
+		// Not silent, as on the install path below, so activated_plugin fires: Pro's handler then clears
+		// this plugin's usage-tracking event and its stored new-user discount notice.
+		$active = activate_plugin(self::SLUG, '', false, false);
+		if (self::is_activated($active)) {
 			wp_send_json_success(esc_html__('Plugin installed & activated.', 'instagram-feed'));
 		}
 
@@ -372,21 +376,33 @@ class SBI_Upgrader
 			$plugin_basename = $installer->plugin_info();
 
 			if ($plugin_basename) {
-				deactivate_plugins(plugin_basename(SBI_PLUGIN_BASENAME), true);
-
-				// Activate the plugin silently.
+				// The free plugin stays active and stands by while Pro is active (SMASH-2563).
 				$activated = activate_plugin($plugin_basename);
 
-				if (!is_wp_error($activated)) {
+				if (self::is_activated($activated)) {
 					wp_send_json_success(esc_html__('Plugin installed & activated.', 'instagram-feed'));
 				} else {
-					// Reactivate the lite plugin if pro activation failed.
-					$activated = activate_plugin(plugin_basename(SBI_PLUGIN_BASENAME), '', false, true);
 					wp_send_json_error(esc_html__('Pro version installed but needs to be activated from the Plugins page inside your WordPress admin.', 'instagram-feed'));
 				}
 			}
 		}
 
 		wp_send_json_error($error);
+	}
+
+	/**
+	 * Whether an activate_plugin() call left the plugin active.
+	 *
+	 * Core returns an 'unexpected_output' error when the plugin printed output while it loaded or
+	 * activated. By then core has already saved the plugin as active and fired activated_plugin.
+	 * Every other error comes back before the plugin is activated.
+	 *
+	 * @param null|WP_Error $result What activate_plugin() returned.
+	 *
+	 * @return bool
+	 */
+	private static function is_activated($result)
+	{
+		return !is_wp_error($result) || 'unexpected_output' === $result->get_error_code();
 	}
 }

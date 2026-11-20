@@ -178,6 +178,7 @@ class SB_Instagram_Blocks
 			'resized_url' => sbi_get_resized_uploads_url(),
 			'placeholder' => trailingslashit(SBI_PLUGIN_URL) . 'img/placeholder.png',
 			'br_adjust'   => $br_adjust,
+			'ajax_url'    => admin_url('admin-ajax.php'),
 		);
 		if (isset($db['sb_instagram_disable_mob_swipe']) && $db['sb_instagram_disable_mob_swipe']) {
 			$sb_instagram_js_options['no_mob_swipe'] = true;

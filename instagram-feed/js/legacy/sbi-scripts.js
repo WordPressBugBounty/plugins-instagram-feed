@@ -162,9 +162,7 @@ if (!sbi_js_exists) {
                 if (typeof sb_instagram_js_options.ajax_url !== 'undefined' && typeof window.sbiajaxurl === 'undefined') {
                     window.sbiajaxurl = sb_instagram_js_options.ajax_url;
                 }
-                if (typeof window.sbiajaxurl === 'undefined' || window.sbiajaxurl.indexOf(window.location.hostname) === -1) {
-                    window.sbiajaxurl = location.protocol + '//' + window.location.hostname + '/wp-admin/admin-ajax.php';
-                }
+                window.sbiajaxurl = sbiResolveAjaxUrl(window.sbiajaxurl);
 
                 if ($('#sbi-builder-app').length && typeof window.sbiresizedImages === 'undefined') {
                     if ($('.sbi_resized_image_data').length
@@ -1269,6 +1267,43 @@ if (!sbi_js_exists) {
 
         function sbiGetNewFeed(feed, index, feedOptions) {
             return new SbiFeed(feed, index, feedOptions);
+        }
+
+        // Picks the admin-ajax.php URL for every feed request. The localized
+        // admin_url( 'admin-ajax.php' ) has the site's subfolder and port, so it
+        // stays as it is whenever its host is the page's host.
+        function sbiResolveAjaxUrl(localizedUrl) {
+            var parsed;
+            if (typeof localizedUrl !== 'string' || localizedUrl === '') {
+                // No localized URL. WordPress prints ajaxurl on every wp-admin screen
+                // from admin_url( 'admin-ajax.php', 'relative' ), so it keeps the subfolder.
+                if (typeof window.ajaxurl === 'string' && window.ajaxurl !== '') {
+                    return window.ajaxurl;
+                }
+                // Last resort: the page's scheme, host and port. It cannot know a subfolder.
+                return window.location.origin + '/wp-admin/admin-ajax.php';
+            }
+            // The block editor canvas iframe is on blob:, so there is no page host to compare.
+            if (window.location.protocol !== 'http:' && window.location.protocol !== 'https:') {
+                return localizedUrl;
+            }
+            if (typeof window.URL !== 'function') {
+                return localizedUrl;
+            }
+            try {
+                parsed = new window.URL(localizedUrl, window.location.href);
+            } catch (e) {
+                return localizedUrl;
+            }
+            if (parsed.host.toLowerCase() === window.location.host.toLowerCase()) {
+                return localizedUrl;
+            }
+            // The page is on another host than WordPress (www against non-www, a language
+            // or mapped domain, a proxy). admin-ajax.php sends CORS headers only for the
+            // home and admin hosts, and a cross-origin POST carries no login cookies.
+            // So use the page's origin, which also keeps its port, with the localized
+            // path, which keeps the subfolder.
+            return window.location.origin + parsed.pathname + parsed.search;
         }
 
         function sbiAjax(submitData, onSuccess, onError) {

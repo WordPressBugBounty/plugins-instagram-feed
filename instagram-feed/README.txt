@@ -3,7 +3,7 @@ Contributors: smashballoon, craig-at-smash-balloon, am, smub
 Tags: Instagram, Instagram feed, Instagram photos, Instagram widget, Instagram gallery
 Requires at least: 4.1
 Tested up to: 7.1
-Stable tag: 6.16.0
+Stable tag: 6.17.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -307,6 +307,16 @@ For more FAQs related to the Instagram Feed plugin please visit the [FAQ section
 6. Just copy and paste the shortcode into any page, post or widget on your site. You can also use the block editor with our handy Instagram Feed block.
 
 == Changelog ==
+
+= 6.17.0 =
+* Tweak: Activating Instagram Feed Pro no longer deactivates this plugin. It stays on standby while Pro is active and runs your feeds again if you deactivate Pro.
+* Fix: Fixed a fatal error on activation on password-protected or firewalled sites.
+* Fix: Fixed a fatal error when a post image could not be downloaded.
+* Fix: A newly connected account now shows in Settings > Manage Sources without reloading the page.
+* Fix: In the feed customizer, Add Another Source Type no longer lists Public Hashtag, Tagged Posts and Social Wall twice. Picking one now shows what the Pro version adds, instead of a setup form that does nothing in the free version.
+* Fix: Manage Sources no longer asks a working Business or Creator account without a profile picture to reconnect.
+* Fix: Load More now works on sites installed in a subfolder or on a non-standard port when visitors reach the site on another domain or port than the WordPress Address, such as www against non-www.
+* Fix: The "Get more features with Instagram Feed Pro" box on the Settings and All Feeds pages now states the 14-day money-back guarantee.
 
 = 6.16.0 =
 * New: The Embed button in the feed builder now opens a new Embed Feed window. Search for a page or post and add your feed to it, show it on every page through the Site Editor or in a widget, or copy the shortcode. On WordPress versions older than 5.8 the Embed button shows the feed shortcode instead.

@@ -777,7 +777,7 @@ class SBI_Feed_Builder
 				__('Play videos in your feed', 'instagram-feed'),
 				__('Highlight specific posts', 'instagram-feed'),
 				__('Display tagged posts', 'instagram-feed'),
-				__('30 day money back guarantee', 'instagram-feed'),
+				__('14-day money-back guarantee', 'instagram-feed'),
 				__('Fast, friendly, and effective support', 'instagram-feed'),
 			),
 			'ctaShowFeatures' => __('Show Features', 'instagram-feed'),
@@ -1512,12 +1512,18 @@ class SBI_Feed_Builder
 		if (isset($source['account_type']) && isset($source['header_data']['account_type'])) {
 			$accountType = strtolower(trim($source['account_type']));
 			$headerAccountType = strtolower(trim($source['header_data']['account_type']));
+			$connectType = isset($source['connect_type']) ? strtolower(trim($source['connect_type'])) : '';
 
 			$isPersonal = in_array($accountType, ['basic', 'personal']) && $headerAccountType === 'personal';
 			$isProfessional = in_array($headerAccountType, ['business', 'media_creator']);
-			$hasProfilePicture = isset($source['header_data']['profile_picture_url']) && !empty($source['header_data']['profile_picture_url']);
+			// Business Basic sources are saved as account_type 'basic' too, so only connect_type
+			// tells them apart. An empty connect_type is a pre-6.6.0 Basic Display row (a pre-6.6.0
+			// import or a failed 6.6.0 backfill), so it counts as personal, as the backfill's
+			// ELSE 'personal' and the connect defaults do.
+			$isPersonalConnection = in_array($accountType, ['basic', 'personal'], true)
+				&& in_array($connectType, ['personal', ''], true);
 
-			return $isPersonal || ($isProfessional && !$hasProfilePicture);
+			return $isPersonal || ($isProfessional && $isPersonalConnection);
 		}
 		return false;
 	}

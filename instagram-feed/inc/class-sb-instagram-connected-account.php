@@ -331,29 +331,39 @@ class SB_Instagram_Connected_Account
 
 			// Download file to temp dir.
 			$temp_file = download_url($file_name, $timeout_seconds);
-			if (is_wp_error($image_editor)) {
-				return false;
-			}
 
-			$image_editor = wp_get_image_editor($temp_file);
+			// download_url() returns a WP_Error when the download fails, and
+			// wp_get_image_editor() throws a TypeError on one under PHP 8. Keep the
+			// download error so it is logged below.
+			$image_editor = is_wp_error($temp_file) ? $temp_file : wp_get_image_editor($temp_file);
 
 			global $sb_instagram_posts_manager;
 			$details = __('Using backup editor method.', 'instagram-feed') . ' ' . $file_name;
 			$sb_instagram_posts_manager->add_error('image_editor', $details);
+
+			$created = false;
 			// not uncommon for the image editor to not work using it this way.
 			if (!is_wp_error($image_editor)) {
 				$image_editor->set_quality(80);
 
 				$image_editor->resize(150, null);
 
-				$saved_image = $image_editor->save($full_file_name);
+				$saved_image = $image_editor->save($full_file_name, $mime_type);
 
 				if (is_wp_error($saved_image)) {
 					global $sb_instagram_posts_manager;
 					$details = __('Error saving edited image.', 'instagram-feed') . ' ' . $full_file_name;
 					$sb_instagram_posts_manager->add_error('image_editor', $details);
 				} else {
-					return true;
+					// Same record as the direct path, so get_local_avatar_url() finds the saved file and extension.
+					$avatars_info = get_option('sbi_local_avatars_info', array());
+					$avatars_info = is_array($avatars_info) ? $avatars_info : array();
+					$avatars_info[$username] = array(
+						'file_name' => $saved_image['file'],
+						'mime_type' => $saved_image['mime-type'],
+					);
+					update_option('sbi_local_avatars_info', $avatars_info);
+					$created = true;
 				}
 			} else {
 				$message = __('Error editing image.', 'instagram-feed');
@@ -370,9 +380,12 @@ class SB_Instagram_Connected_Account
 				$sb_instagram_posts_manager->add_error('image_editor', $message);
 			}
 
-			if (!empty($temp_file)) {
+			// Delete the download on every path. unlink() throws a TypeError on a WP_Error under PHP 8, even with @.
+			if (is_string($temp_file) && $temp_file !== '') {
 				@unlink($temp_file);
 			}
+
+			return $created;
 		}
 
 		return false;

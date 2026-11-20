@@ -16,7 +16,9 @@
         <div class="sbi-fb-types sbi-fb-fs">
             <h4>{{selectFeedTypeScreen.anotherFeedTypeHeading}}</h4>
             <div class="sbi-fb-types-list">
+				<?php // Lite adds User Timeline only. The Pro types are listed once below and open their upsell. ?>
                 <div class="sbi-fb-type-el" v-for="(feedTypeEl, feedTypeIn) in feedTypes"
+					 v-if="feedTypeEl.type == 'user'"
                      role="button"
                      tabindex="0"
                      :aria-label="feedTypeEl.title"

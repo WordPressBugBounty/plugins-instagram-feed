@@ -20,6 +20,16 @@ class SBI_Source
 	protected const BATCH_SIZE = 10;
 
 	/**
+	 * Caps on one sbi_granular_scopes value (SMASH-1817). The broker
+	 * applies the same scope and id caps, so a larger value did not come
+	 * from it. The byte cap is checked before json_decode(): both caps at
+	 * their widest entries encode to about 12 KB.
+	 */
+	private const GRANULAR_SCOPES_MAX_SCOPES = 50;
+	private const GRANULAR_SCOPES_MAX_TARGET_IDS = 200;
+	private const GRANULAR_SCOPES_MAX_BYTES = 16384;
+
+	/**
 	 * AJAX hooks for various feed data related functionality
 	 *
 	 * @since 6.0
@@ -611,22 +621,36 @@ class SBI_Source
 	/**
 	 * Builds the connect-time baseline stored with each source: the
 	 * granted/declined scope set, the asset ids visible to the token,
-	 * and the data-access expiry when the flow provides one. Fields the
-	 * current flow can't provide are stored as null so sources with a
-	 * baseline are distinguishable from sources connected before one
-	 * was captured.
+	 * and the data-access expiry and per-scope target ids when the
+	 * broker forwards them. Fields the current flow can't provide are
+	 * stored as null so sources with a baseline are distinguishable from
+	 * sources connected before one was captured.
+	 *
+	 * The data-access expiry and granular_scopes are only as trustworthy as
+	 * sbi_access_token on the connect return: the sbi_con nonce gates them,
+	 * but the plugin does not verify the v2 MAC (the broker checks it at
+	 * /v2/return), so no reader may treat them as authenticated.
 	 *
 	 * Asset lists are bounded by the connect flow's limit=500 accounts
-	 * request — the stored size budget depends on that cap.
+	 * request — the stored size budget depends on that cap. The
+	 * granular_scopes list is bounded by the caps in
+	 * sanitize_granular_scopes().
 	 *
 	 * @param array|null $permission_sets Parsed sets from fetch_connect_permissions(), or null when unavailable.
 	 * @param array|null $accounts_data Response of /me/accounts, or null when unavailable.
 	 * @param int|null   $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 *                                           0 means Meta set no data-access expiry. A negative int or
+	 *                                           a non-canonical string is stored as null.
+	 * @param array|null $granular_scopes List from sanitize_granular_scopes(), or null when the broker sent none.
 	 *
 	 * @return array
 	 */
-	public static function build_connect_baseline($permission_sets, $accounts_data, $data_access_expires_at = null)
-	{
+	public static function build_connect_baseline(
+		$permission_sets,
+		$accounts_data,
+		$data_access_expires_at = null,
+		$granular_scopes = null
+	) {
 		$defaults = array(
 			'scopes' => null,
 			'declined_scopes' => null,
@@ -661,10 +685,135 @@ class SBI_Source
 			'baseline_version' => 1,
 			'capture_status' => $capture_status,
 			'captured_at' => time(),
-			'data_access_expires_at' => !empty($data_access_expires_at) ? (int)$data_access_expires_at : null,
+			// 0 is Meta's "no data-access expiry", a real value: only a
+			// missing or non-canonical one is stored as null.
+			'data_access_expires_at' => self::sanitize_data_access_expiry($data_access_expires_at),
 			'scopes' => $permission_sets['scopes'],
 			'declined_scopes' => $permission_sets['declined_scopes'],
+			'granular_scopes' => is_array($granular_scopes) ? $granular_scopes : null,
 			'asset_targets' => $asset_targets,
+		);
+	}
+
+	/**
+	 * Returns a data-access expiry as a non-negative int, or null. The
+	 * broker's CallbackContract::dataAccessExpiry() only emits a canonical
+	 * digit string, so this accepts that or a non-negative int and nothing
+	 * else is_numeric() would coerce: a sign, a space, a decimal point, an
+	 * exponent, a leading zero or a value past PHP_INT_MAX gives null. 0 is
+	 * Meta's "no data-access expiry" and is kept.
+	 *
+	 * @param mixed $value The request value, or an int from a caller.
+	 *
+	 * @return int|null
+	 */
+	private static function sanitize_data_access_expiry($value)
+	{
+		if (is_int($value)) {
+			return $value >= 0 ? $value : null;
+		}
+
+		if (!is_string($value) || 1 !== preg_match('/\A[0-9]+\z/', $value)) {
+			return null;
+		}
+
+		return (string)(int)$value === $value ? (int)$value : null;
+	}
+
+	/**
+	 * Validates the sbi_granular_scopes value the connect broker forwards
+	 * (SMASH-1817): the per-scope granular_scopes from Meta's debug_token,
+	 * as JSON shaped [{"scope":"…","target_ids":["…",…]},…]. target_ids
+	 * is optional.
+	 *
+	 * The value comes from the redirect query string, so its shape is not
+	 * trusted, and its origin is only as trustworthy as sbi_access_token
+	 * (see build_connect_baseline()). The checks repeat the broker's rules:
+	 *  - a scope matches ^[a-z_]{1,64}$ and a target id ^[0-9]{1,32}$;
+	 *  - an entry with any bad part is dropped whole, because a partial
+	 *    target list would read as a lost asset in a later baseline diff;
+	 *  - a value over the byte, scope or id cap is dropped whole.
+	 *
+	 * Every kept character is [a-z_0-9], so the stored list is inert at any
+	 * sink, including after wp_localize_script() decodes it.
+	 *
+	 * @param mixed $raw The unslashed request value.
+	 *
+	 * @return array|null List of array('scope' => string, 'target_ids' => string[]|null),
+	 *                    or null when the value is absent or unusable.
+	 */
+	public static function sanitize_granular_scopes($raw)
+	{
+		if (!is_string($raw) || $raw === '' || strlen($raw) > self::GRANULAR_SCOPES_MAX_BYTES) {
+			return null;
+		}
+
+		// Decoded without $assoc so a JSON object stays a stdClass: only a
+		// JSON array becomes a PHP array. Depth 4 fits list > entry >
+		// target_ids > id exactly; deeper input fails to decode.
+		$entries = json_decode($raw, false, 4);
+		if (!is_array($entries) || count($entries) > self::GRANULAR_SCOPES_MAX_SCOPES) {
+			return null;
+		}
+
+		$granular_scopes = array();
+		$target_id_total = 0;
+		foreach ($entries as $entry) {
+			if (is_object($entry) && isset($entry->target_ids) && is_array($entry->target_ids)) {
+				$target_id_total += count($entry->target_ids);
+			}
+			$valid_entry = self::sanitize_granular_scope_entry($entry);
+			if (null !== $valid_entry) {
+				$granular_scopes[] = $valid_entry;
+			}
+		}
+
+		if ($target_id_total > self::GRANULAR_SCOPES_MAX_TARGET_IDS) {
+			return null;
+		}
+
+		// A non-empty list with no valid entry tells us nothing; storing an
+		// empty list would claim the token holds no granular scopes.
+		if (!empty($entries) && empty($granular_scopes)) {
+			return null;
+		}
+
+		return $granular_scopes;
+	}
+
+	/**
+	 * Validates one granular_scopes entry for sanitize_granular_scopes().
+	 *
+	 * @param mixed $entry One decoded list element (a stdClass for a JSON object).
+	 *
+	 * @return array|null array('scope' => string, 'target_ids' => string[]|null), or null when malformed.
+	 */
+	private static function sanitize_granular_scope_entry($entry)
+	{
+		if (!is_object($entry) || !isset($entry->scope) || !is_string($entry->scope)) {
+			return null;
+		}
+		// \A and \z, not ^ and $: $ also matches before a trailing newline.
+		if (!preg_match('/\A[a-z_]{1,64}\z/', $entry->scope)) {
+			return null;
+		}
+
+		$target_ids = null;
+		if (property_exists($entry, 'target_ids')) {
+			if (!is_array($entry->target_ids)) {
+				return null;
+			}
+			foreach ($entry->target_ids as $target_id) {
+				if (!is_string($target_id) || !preg_match('/\A[0-9]{1,32}\z/', $target_id)) {
+					return null;
+				}
+			}
+			$target_ids = $entry->target_ids;
+		}
+
+		return array(
+			'scope' => $entry->scope,
+			'target_ids' => $target_ids,
 		);
 	}
 
@@ -684,15 +833,22 @@ class SBI_Source
 			return false;
 		}
 
-		// Not sent by the broker yet; captured the moment it starts forwarding one.
-		$data_access_expires_at = !empty($_GET['sbi_data_access_expiration_time'])
-			? (int)$_GET['sbi_data_access_expiration_time']
+		// Forwarded by the connect broker (SMASH-1817); absent from older
+		// brokers. A data_access_expiration_time of 0 is Meta's "no
+		// data-access expiry" and is kept: null is reserved for "the broker
+		// sent none" or a value the broker never sends.
+		$data_access_expires_at = isset($_GET['sbi_data_access_expiration_time'])
+			? self::sanitize_data_access_expiry($_GET['sbi_data_access_expiration_time'])
+			: null;
+		// JSON, so it must be unslashed before decoding. Validated in full.
+		$granular_scopes = isset($_GET['sbi_granular_scopes'])
+			? self::sanitize_granular_scopes(wp_unslash($_GET['sbi_granular_scopes']))
 			: null;
 
 		if (isset($_GET['sbi_access_token']) && isset($_GET['sbi_graph_api'])) {
-			return self::retrieve_available_advanced_business_accounts($data_access_expires_at);
+			return self::retrieve_available_advanced_business_accounts($data_access_expires_at, $granular_scopes);
 		} elseif (isset($_GET['sbi_access_token']) && isset($_GET['sbi_account_type'])) {
-			return self::retrieve_available_basic_accounts($data_access_expires_at);
+			return self::retrieve_available_basic_accounts($data_access_expires_at, $granular_scopes);
 		}
 
 		return false;
@@ -701,14 +857,17 @@ class SBI_Source
 	/**
 	 * Uses the Facebook API to retrieve a list of business accounts
 	 *
-	 * @param int|null $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 * @param int|null   $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 * @param array|null $granular_scopes Validated per-scope target ids when the broker forwards them.
 	 *
 	 * @return array|bool
 	 *
 	 * @since 6.0
 	 */
-	public static function retrieve_available_advanced_business_accounts($data_access_expires_at = null)
-	{
+	public static function retrieve_available_advanced_business_accounts(
+		$data_access_expires_at = null,
+		$granular_scopes = null
+	) {
 
 		$return = array(
 			'type' => 'business',
@@ -775,7 +934,8 @@ class SBI_Source
 		$connect_baseline = self::build_connect_baseline(
 			self::fetch_connect_permissions($access_token),
 			$pages_data_arr,
-			$data_access_expires_at
+			$data_access_expires_at,
+			$granular_scopes
 		);
 		// Held briefly so the source rows written when the user picks accounts
 		// (a separate request) receive the baseline. The token fingerprint pins
@@ -863,13 +1023,14 @@ class SBI_Source
 	 * Uses the Instagram Basic Display API to get available personal
 	 * accounts
 	 *
-	 * @param int|null $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 * @param int|null   $data_access_expires_at Data-access expiry timestamp when the flow provides one.
+	 * @param array|null $granular_scopes Validated per-scope target ids when the broker forwards them.
 	 *
 	 * @return array|bool
 	 *
 	 * @since 6.0
 	 */
-	public static function retrieve_available_basic_accounts($data_access_expires_at = null)
+	public static function retrieve_available_basic_accounts($data_access_expires_at = null, $granular_scopes = null)
 	{
 		$encryption = new SB_Instagram_Data_Encryption();
 		$return = array(
@@ -913,9 +1074,9 @@ class SBI_Source
 			$header_details_array['connect_type'] = $connect_type;
 			// No scope or asset surface exists for Instagram-Login tokens; the
 			// baseline still records when the source was connected and any
-			// data-access expiry the flow forwards.
+			// data-access expiry or granular scopes the broker forwards.
 			$header_details_array['connect_baseline'] =
-				self::build_connect_baseline(null, null, $data_access_expires_at);
+				self::build_connect_baseline(null, null, $data_access_expires_at, $granular_scopes);
 			$header_details = sbi_json_encode($header_details_array);
 		} else {
 			$source_data['error'] = $connection;

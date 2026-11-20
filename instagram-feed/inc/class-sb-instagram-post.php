@@ -466,6 +466,7 @@ class SB_Instagram_Post
 					$suffix = $res_setting;
 					$this_image_file_name = $new_file_name . $suffix . $extension;
 
+					$temp_file = '';
 					$image_editor = wp_get_image_editor($file_name);
 
 					// If there is an error then lets try a fallback approach
@@ -478,7 +479,10 @@ class SB_Instagram_Post
 						// Download file to temp dir.
 						$temp_file = download_url($file_name, $timeout_seconds);
 
-						$image_editor = wp_get_image_editor($temp_file);
+						// download_url() returns a WP_Error when the download fails (an expired or
+						// removed media URL). wp_get_image_editor() throws a TypeError on one under
+						// PHP 8, so keep the download error and mark the post as an error below.
+						$image_editor = is_wp_error($temp_file) ? $temp_file : wp_get_image_editor($temp_file);
 
 						global $sb_instagram_posts_manager;
 						$details = 'Using backup editor method.' . $file_name;
@@ -523,7 +527,8 @@ class SB_Instagram_Post
 						$sb_instagram_posts_manager->add_error('image_editor', $message);
 					}
 
-					if (!empty($temp_file)) {
+					// unlink() throws a TypeError on a WP_Error under PHP 8, even with @.
+					if (is_string($temp_file) && $temp_file !== '') {
 						@unlink($temp_file);
 					}
 				}
