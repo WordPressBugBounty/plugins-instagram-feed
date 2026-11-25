@@ -121,6 +121,8 @@ class SB_Instagram_Connected_Account
 				$empty_sources = true;
 			} else {
 				$connected_accounts = array_merge($connected_accounts, SBI_Source::convert_sources_to_connected_accounts($sources));
+				// source_query() returns up to 400 rows a page; a short page is the last one.
+				$empty_sources = count($sources) < 400;
 			}
 
 			$i++;

@@ -718,6 +718,7 @@ class SB_Instagram_Posts_Manager
 		delete_option('sbi_hashtag_ids');
 		delete_option('sbi_local_avatars');
 		delete_option('sbi_local_avatars_info');
+		delete_option(SB_Instagram_Post::DOWNLOAD_RETRY_OPTION);
 
 		$upload = wp_upload_dir();
 		$upload_dir = $upload['basedir'];

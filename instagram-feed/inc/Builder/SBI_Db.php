@@ -57,6 +57,14 @@ class SBI_Db
 			$results = $wpdb->get_results($sql, ARRAY_A);
 
 			if (empty($results)) {
+				// Cache the empty page too, so a request that walks past the
+				// last page doesn't run the LEFT JOIN again for each caller.
+				// A failed query isn't cached: it would hide every source
+				// until the entry expires. clear_sources_cache() drops it on
+				// the next source write.
+				if (empty($wpdb->last_error)) {
+					wp_cache_set($cache_key, array(), '', HOUR_IN_SECONDS);
+				}
 				return array();
 			}
 
@@ -882,7 +890,11 @@ class SBI_Db
 		$wpdb->query("DROP TABLE IF EXISTS $feed_caches_table_name");
 
 		$sources_table_name = $wpdb->prefix . 'sbi_sources';
-		$wpdb->query("DROP TABLE IF EXISTS $sources_table_name");
+		if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $sources_table_name)) === $sources_table_name) {
+			$sources_count = self::sources_count();
+			$wpdb->query("DROP TABLE IF EXISTS $sources_table_name");
+			self::clear_sources_cache($sources_count);
+		}
 	}
 
 	public static function reset_db_update()

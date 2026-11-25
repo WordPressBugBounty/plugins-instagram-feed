@@ -22,6 +22,13 @@ class SBI_Callout
 	public $plugins_list;
 	public $should_show_callout;
 
+	/**
+	 * The callout plugins list built once per request; null until built.
+	 *
+	 * @var array|null
+	 */
+	private static $callout_plugins_list = null;
+
 	public function __construct()
 	{
 		$this->dismiss_notice();
@@ -72,6 +79,12 @@ class SBI_Callout
 	 */
 	public static function get_callout_plugins_list()
 	{
+		// The constructor, should_show_callout() and print_callout() all need
+		// the list, and each build runs a COUNT per active plugin's feeds table.
+		if (self::$callout_plugins_list !== null) {
+			return self::$callout_plugins_list;
+		}
+
 		if (!function_exists('get_plugins')) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -106,7 +119,20 @@ class SBI_Callout
 			}
 			return 0;
 		});
+
+		self::$callout_plugins_list = $plugins_list;
 		return $plugins_list;
+	}
+
+	/**
+	 * Forget the plugins list built for this request, so the next call reads
+	 * the feeds tables again.
+	 *
+	 * @return void
+	 */
+	public static function reset_callout_plugins_list()
+	{
+		self::$callout_plugins_list = null;
 	}
 
 	/**

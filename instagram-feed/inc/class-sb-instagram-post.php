@@ -17,6 +17,37 @@ if (!defined('ABSPATH')) {
 class SB_Instagram_Post
 {
 	/**
+	 * Option holding the retry state of failed image downloads. A post's entry
+	 * is removed when its image is saved or marked as an error, or when it is
+	 * stale and a new post needs room. Reset Image Storage deletes the option.
+	 */
+	public const DOWNLOAD_RETRY_OPTION = 'sbi_image_download_retries';
+
+	/**
+	 * Failed downloads before a post is marked as an error.
+	 */
+	public const DOWNLOAD_MAX_ATTEMPTS = 3;
+
+	/**
+	 * Seconds between download attempts.
+	 */
+	public const DOWNLOAD_RETRY_WAIT = 3600;
+
+	/**
+	 * Posts tracked at once. When the map is full, stale entries make room
+	 * first. If none is stale, a post not in it is not added, and its first
+	 * failed download marks it as an error.
+	 */
+	public const DOWNLOAD_RETRY_MAX_ENTRIES = 200;
+
+	/**
+	 * Seconds after an entry's wait ends before it counts as stale: one day.
+	 * Its post has most likely left the feed. Stale entries are dropped only
+	 * when the map is full and a new post needs room.
+	 */
+	public const DOWNLOAD_RETRY_STALE_AFTER = 86400;
+
+	/**
 	 * @var string
 	 */
 	private $instagram_post_id;
@@ -429,6 +460,12 @@ class SB_Instagram_Post
 		$extension = $webp_supported ? '.webp' : '.jpg';
 
 		if (isset($this->instagram_api_data['id'])) {
+			// A post whose last download failed waits out its backoff as pending,
+			// however often the feed's JS asks for it.
+			if (self::download_retry_waiting($this->instagram_post_id)) {
+				return;
+			}
+
 			$image_source_set = SB_Instagram_Parse::get_media_src_set($this->instagram_api_data);
 			$account_type = SB_Instagram_Parse::get_account_type($this->instagram_api_data);
 			$image_sizes_to_make = isset($image_sizes[$account_type]) ? $image_sizes[$account_type] : array();
@@ -447,6 +484,7 @@ class SB_Instagram_Post
 
 			// the process is considered a success if one image is successfully resized.
 			$one_successful_image_resize = false;
+			$download_failed = false;
 
 			foreach ($image_sizes_to_make as $res_setting => $image_size) {
 				if ($account_type === 'business') {
@@ -481,8 +519,12 @@ class SB_Instagram_Post
 
 						// download_url() returns a WP_Error when the download fails (an expired or
 						// removed media URL). wp_get_image_editor() throws a TypeError on one under
-						// PHP 8, so keep the download error and mark the post as an error below.
+						// PHP 8, so keep the download error. Below, the post waits and is
+						// retried, and is marked as an error after the last attempt.
 						$image_editor = is_wp_error($temp_file) ? $temp_file : wp_get_image_editor($temp_file);
+						if (is_wp_error($temp_file)) {
+							$download_failed = true;
+						}
 
 						global $sb_instagram_posts_manager;
 						$details = 'Using backup editor method.' . $file_name;
@@ -548,7 +590,16 @@ class SB_Instagram_Post
 				);
 
 				$this->add_resized_image_to_obj_array('id', $new_file_name);
+				self::forget_download_retry($this->instagram_post_id);
+			} elseif (
+				$download_failed
+				&& self::record_download_failure($this->instagram_post_id) < self::DOWNLOAD_MAX_ATTEMPTS
+			) {
+				// A download can fail for a moment (a timeout, a CDN hiccup), so the
+				// post stays pending and is tried again after the backoff.
+				return;
 			} else {
+				self::forget_download_retry($this->instagram_post_id);
 				// an error status means that image resizing won't be attempted again for this post
 				$this->update_sbi_instagram_posts(
 					array(
@@ -560,6 +611,158 @@ class SB_Instagram_Post
 				);
 			}
 		}
+	}
+
+	/**
+	 * Whether a post is still inside the wait after a failed image download.
+	 *
+	 * @param string $instagram_post_id The Instagram post ID.
+	 *
+	 * @return bool
+	 */
+	public static function download_retry_waiting($instagram_post_id)
+	{
+		$retries = self::get_download_retries();
+		if (!isset($retries[$instagram_post_id]['next'])) {
+			return false;
+		}
+
+		return time() < (int)$retries[$instagram_post_id]['next'];
+	}
+
+	/**
+	 * Count one more failed download for a post and start its wait.
+	 *
+	 * The caller marks the post as an error when the result reaches
+	 * DOWNLOAD_MAX_ATTEMPTS. When the map is full and the post is new, the
+	 * same write first drops stale entries (DOWNLOAD_RETRY_STALE_AFTER).
+	 *
+	 * @param string $instagram_post_id The Instagram post ID.
+	 *
+	 * @return int The number of failed downloads so far, this one included.
+	 *             DOWNLOAD_MAX_ATTEMPTS for a new post when the map is still
+	 *             full after that.
+	 */
+	public static function record_download_failure($instagram_post_id)
+	{
+		$retries = self::get_stored_download_retries();
+
+		// A full map takes no new post. Evicting an entry to make room would
+		// restart that post at attempt 1, so it might never reach the error state.
+		// Only entries whose wait ended more than a day ago make room: their
+		// posts have most likely left the feed. Pruning only here keeps every
+		// count while there is room, on a site loaded less than once a day too.
+		// An entry with no valid "next" is stale.
+		if (!isset($retries[$instagram_post_id]) && count($retries) >= self::DOWNLOAD_RETRY_MAX_ENTRIES) {
+			$stale_before = time() - self::DOWNLOAD_RETRY_STALE_AFTER;
+			foreach ($retries as $post_id => $retry) {
+				$next = isset($retry['next']) ? (int)$retry['next'] : 0;
+				if ($next < $stale_before) {
+					unset($retries[$post_id]);
+				}
+			}
+
+			if (count($retries) >= self::DOWNLOAD_RETRY_MAX_ENTRIES) {
+				return self::DOWNLOAD_MAX_ATTEMPTS;
+			}
+		}
+
+		$attempts = 1;
+		if (isset($retries[$instagram_post_id]['attempts'])) {
+			$attempts = (int)$retries[$instagram_post_id]['attempts'] + 1;
+		}
+
+		if ($attempts < self::DOWNLOAD_MAX_ATTEMPTS) {
+			$retries[$instagram_post_id] = array(
+				'attempts' => $attempts,
+				'next' => time() + self::DOWNLOAD_RETRY_WAIT,
+			);
+		} else {
+			unset($retries[$instagram_post_id]);
+		}
+
+		update_option(self::DOWNLOAD_RETRY_OPTION, $retries, false);
+
+		return $attempts;
+	}
+
+	/**
+	 * Drop a post's retry state once its image is saved or marked as an error.
+	 *
+	 * @param string $instagram_post_id The Instagram post ID.
+	 *
+	 * @return void
+	 */
+	public static function forget_download_retry($instagram_post_id)
+	{
+		// Most saved posts have no entry. The copy cached for this request
+		// answers for them without a database query. An entry that another
+		// request adds after that read stays behind until a full map prunes
+		// it as stale.
+		$retries = self::get_download_retries();
+		if (!isset($retries[$instagram_post_id])) {
+			return;
+		}
+
+		$retries = self::get_stored_download_retries();
+		if (!isset($retries[$instagram_post_id])) {
+			return;
+		}
+
+		unset($retries[$instagram_post_id]);
+		update_option(self::DOWNLOAD_RETRY_OPTION, $retries, false);
+	}
+
+	/**
+	 * Retry state for failed image downloads, keyed by Instagram post id.
+	 *
+	 * This is the copy get_option() cached for this request. It is fine for
+	 * reads. A write starts from get_stored_download_retries() instead.
+	 * Entries that are not arrays are left out.
+	 *
+	 * @return array
+	 */
+	private static function get_download_retries()
+	{
+		$retries = get_option(self::DOWNLOAD_RETRY_OPTION, array());
+		if (!is_array($retries)) {
+			return array();
+		}
+
+		// Every entry this class writes is an array. Anything else came from an
+		// outside write. Leaving it out here keeps the reads of a post's own
+		// entry from throwing on it, and the next write drops it.
+		return array_filter($retries, 'is_array');
+	}
+
+	/**
+	 * Retry state as the database holds it now, for a write.
+	 *
+	 * Another request can change the option after this request first read it,
+	 * for example during a 5-second download. A writer that wrote back the
+	 * cached copy would drop that request's entries. So each writer reads the
+	 * option again here, changes only its own post and writes at once.
+	 *
+	 * This narrows the window but does not close it. Two requests that both
+	 * read before either writes still lose one change. That costs an extra
+	 * download or leaves a stale entry, which a full map prunes later. It
+	 * never shows a wrong image. Like get_download_retries(), it leaves out
+	 * entries that are not arrays.
+	 *
+	 * @return array
+	 */
+	private static function get_stored_download_retries()
+	{
+		// The option is not autoloaded. get_option() caches it under its own key
+		// in the 'options' group, or lists it in 'notoptions' when it was missing.
+		wp_cache_delete(self::DOWNLOAD_RETRY_OPTION, 'options');
+		$notoptions = wp_cache_get('notoptions', 'options');
+		if (is_array($notoptions) && isset($notoptions[self::DOWNLOAD_RETRY_OPTION])) {
+			unset($notoptions[self::DOWNLOAD_RETRY_OPTION]);
+			wp_cache_set('notoptions', $notoptions, 'options');
+		}
+
+		return self::get_download_retries();
 	}
 
 	/**
